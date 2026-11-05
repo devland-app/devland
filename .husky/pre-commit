@@ -1,0 +1,8 @@
+# Bloqueia segredos antes de entrarem no histórico (instale com: brew install gitleaks).
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact --no-banner || exit 1
+else
+  echo "Aviso: gitleaks não instalado; checagem local de segredos pulada (o CI ainda verifica)."
+fi
+
+npx lint-staged
