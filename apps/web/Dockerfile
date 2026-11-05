@@ -17,7 +17,13 @@ RUN npm run build -w @devzoo/web
 RUN chmod -R a+rX apps/web/dist
 
 # Imagem do nginx que já roda como usuário não-root, na porta 8080.
-FROM nginxinc/nginx-unprivileged:1.29-alpine AS runtime
+# 1.30 é a linha estável atual; a 1.29 deixou de receber atualizações de segurança.
+FROM nginxinc/nginx-unprivileged:1.30-alpine AS runtime
+# Entre um rebuild e outro da imagem oficial, o Alpine publica correções de segurança: o apk upgrade
+# as aplica. Precisa de root só para isso; depois o container volta ao usuário não-root do nginx.
+USER root
+RUN apk upgrade --no-cache
+USER nginx
 # --chmod=644: o usuário nginx precisa ler a config, que pertence ao root.
 COPY --chmod=644 apps/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html

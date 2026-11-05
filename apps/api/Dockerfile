@@ -14,15 +14,21 @@ RUN npm run build -w @devzoo/api
 
 FROM node:22-alpine AS runtime
 ENV NODE_ENV=production
+# Aplica as correções de segurança do Alpine publicadas depois do último rebuild da imagem do Node.
+RUN apk upgrade --no-cache
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 # O COPY preserva a permissão da máquina de origem e o processo roda como "node", que precisa ler
 # os package.json (é por eles que o Node sabe que o projeto usa ESM). a+rX: todos leem; X libera pastas.
+# Depois de instalar as dependências, npm e corepack saem da imagem: a API não usa nenhum dos dois
+# em execução, e as dependências internas deles eram a origem das vulnerabilidades apontadas pelo Trivy.
 RUN chmod -R a+rX /app \
   && npm ci --omit=dev --ignore-scripts -w @devzoo/api \
-  && npm cache clean --force
+  && npm cache clean --force \
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 COPY --from=build /app/apps/api/dist apps/api/dist
 
 USER node
