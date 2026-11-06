@@ -34,13 +34,23 @@ jobs:
   secrets-scan:
     name: Varredura de segredos (gitleaks)
     runs-on: ubuntu-latest
+    env:
+      GITLEAKS_VERSION: 8.30.1
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # A gitleaks-action exige licença em repositórios de organização; o binário oficial (MIT) não.
+      # O checksum publicado na release garante que o arquivo baixado é o original.
+      - name: Instala o gitleaks
+        run: |
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          file="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfLO "${base}/${file}"
+          curl -sSfL "${base}/gitleaks_${GITLEAKS_VERSION}_checksums.txt" | grep " ${file}\$" | sha256sum -c -
+          tar -xzf "${file}" gitleaks
+      - name: Varre todo o histórico de commits
+        run: ./gitleaks git --redact --no-banner --verbose .
 
   docker:
     name: Imagem ${{ matrix.app }}
