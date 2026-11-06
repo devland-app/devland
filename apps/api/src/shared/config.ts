@@ -10,6 +10,7 @@ export type NodeEnv = (typeof NODE_ENVS)[number];
 export interface AppConfig {
   nodeEnv: NodeEnv;
   port: number;
+  databaseUrl: string;
 }
 
 export class ConfigError extends Error {
@@ -25,6 +26,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const config: AppConfig = {
     nodeEnv: parseNodeEnv(env.NODE_ENV, problems),
     port: parsePort(env.PORT, problems),
+    databaseUrl: parseDatabaseUrl(env.DATABASE_URL, problems),
   };
 
   if (problems.length > 0) {
@@ -56,4 +58,24 @@ function parsePort(value: string | undefined, problems: string[]): number {
   }
   problems.push("PORT deve ser um número inteiro entre 1 e 65535");
   return DEFAULT_PORT;
+}
+
+function parseDatabaseUrl(value: string | undefined, problems: string[]): string {
+  if (!value) {
+    problems.push("DATABASE_URL é obrigatória (ex.: postgres://usuario:senha@host:5432/banco)");
+    return "";
+  }
+  if (!isPostgresUrl(value)) {
+    problems.push("DATABASE_URL deve ser uma URL postgres:// ou postgresql://");
+  }
+  return value;
+}
+
+function isPostgresUrl(value: string): boolean {
+  try {
+    const { protocol } = new URL(value);
+    return protocol === "postgres:" || protocol === "postgresql:";
+  } catch {
+    return false;
+  }
 }
