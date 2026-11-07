@@ -18,6 +18,7 @@ components:
         - description
         - priceCents
         - stock
+        - imageUrl
       properties:
         id:
           type: integer
@@ -48,6 +49,12 @@ components:
           description: Unidades disponíveis
           examples:
             - 25
+        imageUrl:
+          type: string
+          format: uri-reference
+          description: Ilustração do mascote (SVG), relativa à URL da API
+          examples:
+            - /images/mascots/caranguejo-dos-conteineres.svg
 paths:
   /health:
     get:

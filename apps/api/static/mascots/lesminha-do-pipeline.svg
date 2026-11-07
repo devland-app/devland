@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Lesminha do Pipeline: uma lesma verde com casco laranja, abaixo de três etapas de um pipeline</title>
+  <circle cx="120" cy="120" r="116" fill="#e3f6e5"/>
+  <ellipse cx="116" cy="200" rx="80" ry="9" fill="#3b2f4a" opacity="0.08"/>
+  <path d="M60 46 H180" stroke="#3b2f4a" stroke-width="4"/>
+  <circle cx="60" cy="46" r="13" fill="#4caf50" stroke="#3b2f4a" stroke-width="3.5"/>
+  <circle cx="120" cy="46" r="13" fill="#4caf50" stroke="#3b2f4a" stroke-width="3.5"/>
+  <circle cx="180" cy="46" r="13" fill="#ffd54f" stroke="#3b2f4a" stroke-width="3.5"/>
+  <path d="M54 46 L58.5 50.5 L66 42 M114 46 L118.5 50.5 L126 42" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="174" cy="46" r="2.2" fill="#3b2f4a"/>
+  <circle cx="180" cy="46" r="2.2" fill="#3b2f4a"/>
+  <circle cx="186" cy="46" r="2.2" fill="#3b2f4a"/>
+  <path d="M174 106 Q168 88 160 80 M188 108 Q194 90 202 84" fill="none" stroke="#3b2f4a" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="160" cy="80" r="5" fill="#3b2f4a"/>
+  <circle cx="202" cy="84" r="5" fill="#3b2f4a"/>
+  <path d="M46 192 Q34 192 34 180 Q34 166 52 166 L146 166 Q146 104 172 102 Q200 100 200 134 Q200 160 188 174 Q194 192 174 192 Z" fill="#9ad18b" stroke="#3b2f4a" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="100" cy="124" r="44" fill="#ffb74d" stroke="#3b2f4a" stroke-width="4"/>
+  <path d="M100 124 m-5 0 a5 5 0 1 1 10 0 a13 13 0 1 1 -26 0 a21 21 0 1 1 42 0 a29 29 0 1 1 -58 0" fill="none" stroke="#e08a2c" stroke-width="4.5" stroke-linecap="round"/>
+  <ellipse cx="166" cy="132" rx="4.5" ry="5.5" fill="#3b2f4a"/>
+  <ellipse cx="186" cy="132" rx="4.5" ry="5.5" fill="#3b2f4a"/>
+  <circle cx="167.5" cy="130" r="1.6" fill="#fff"/>
+  <circle cx="187.5" cy="130" r="1.6" fill="#fff"/>
+  <ellipse cx="158" cy="146" rx="6" ry="3.5" fill="#ff9eb5" opacity="0.85"/>
+  <ellipse cx="194" cy="146" rx="6" ry="3.5" fill="#ff9eb5" opacity="0.85"/>
+  <path d="M170 146 Q176 152 182 146" fill="none" stroke="#3b2f4a" stroke-width="3" stroke-linecap="round"/>
+</svg>

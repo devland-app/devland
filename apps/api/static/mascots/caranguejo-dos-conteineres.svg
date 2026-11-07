@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Caranguejo dos Contêineres: um caranguejo laranja segurando um contêiner azul</title>
+  <circle cx="120" cy="120" r="116" fill="#dcefff"/>
+  <ellipse cx="120" cy="206" rx="72" ry="10" fill="#3b2f4a" opacity="0.08"/>
+  <g stroke-linecap="round">
+    <path d="M66 158 L44 172 M68 170 L48 188 M76 180 L62 200 M174 158 L196 172 M172 170 L192 188 M164 180 L178 200" stroke="#3b2f4a" stroke-width="10"/>
+    <path d="M66 158 L44 172 M68 170 L48 188 M76 180 L62 200 M174 158 L196 172 M172 170 L192 188 M164 180 L178 200" stroke="#ff6b4a" stroke-width="5"/>
+    <path d="M78 140 L62 104 M162 140 L178 104" stroke="#3b2f4a" stroke-width="14"/>
+    <path d="M78 140 L62 104 M162 140 L178 104" stroke="#ff6b4a" stroke-width="8"/>
+  </g>
+  <rect x="66" y="40" width="108" height="56" rx="6" fill="#3d8bd9" stroke="#3b2f4a" stroke-width="4"/>
+  <path d="M86 50 V86 M104 50 V86 M122 50 V86 M140 50 V86 M158 50 V86" stroke="#2c6fb3" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="62" cy="96" r="17" fill="#ff6b4a" stroke="#3b2f4a" stroke-width="4"/>
+  <circle cx="178" cy="96" r="17" fill="#ff6b4a" stroke="#3b2f4a" stroke-width="4"/>
+  <path d="M62 96 L50 80 M178 96 L190 80" stroke="#3b2f4a" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="120" cy="150" rx="60" ry="40" fill="#ff6b4a" stroke="#3b2f4a" stroke-width="4"/>
+  <ellipse cx="100" cy="142" rx="6" ry="7" fill="#3b2f4a"/>
+  <ellipse cx="140" cy="142" rx="6" ry="7" fill="#3b2f4a"/>
+  <circle cx="102" cy="139.5" r="2" fill="#fff"/>
+  <circle cx="142" cy="139.5" r="2" fill="#fff"/>
+  <ellipse cx="86" cy="158" rx="8" ry="4.5" fill="#ff9eb5" opacity="0.8"/>
+  <ellipse cx="154" cy="158" rx="8" ry="4.5" fill="#ff9eb5" opacity="0.8"/>
+  <path d="M112 156 Q120 164 128 156" fill="none" stroke="#3b2f4a" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

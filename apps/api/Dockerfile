@@ -30,6 +30,10 @@ RUN chmod -R a+rX /app \
   && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
     /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 COPY --from=build /app/apps/api/dist apps/api/dist
+# Ilustrações dos mascotes. Ficam depois do npm ci para que trocar um desenho não invalide o cache das
+# dependências; o chmod tem o mesmo motivo do anterior (permissão herdada da máquina de origem).
+COPY apps/api/static apps/api/static
+RUN chmod -R a+rX apps/api/static
 
 USER node
 EXPOSE 3333

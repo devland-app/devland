@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Abelha dos Logs: uma abelha amarela voando sobre um cartão com linhas de log</title>
+  <defs>
+    <clipPath id="bee-body">
+      <ellipse cx="112" cy="116" rx="54" ry="42"/>
+    </clipPath>
+  </defs>
+  <circle cx="120" cy="120" r="116" fill="#fff4cc"/>
+  <ellipse cx="96" cy="70" rx="22" ry="30" transform="rotate(-20 96 70)" fill="#fff" opacity="0.9" stroke="#3b2f4a" stroke-width="3"/>
+  <ellipse cx="134" cy="68" rx="22" ry="30" transform="rotate(20 134 68)" fill="#fff" opacity="0.9" stroke="#3b2f4a" stroke-width="3"/>
+  <path d="M82 80 Q74 60 62 56 M98 76 Q100 56 92 46" fill="none" stroke="#3b2f4a" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="62" cy="56" r="5" fill="#3b2f4a"/>
+  <circle cx="92" cy="46" r="5" fill="#3b2f4a"/>
+  <path d="M164 116 L182 108 L182 124 Z" fill="#3b2f4a" stroke="#3b2f4a" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="112" cy="116" rx="54" ry="42" fill="#ffd23f"/>
+  <g clip-path="url(#bee-body)" fill="#3b2f4a">
+    <rect x="118" y="60" width="14" height="120"/>
+    <rect x="144" y="60" width="14" height="120"/>
+  </g>
+  <ellipse cx="112" cy="116" rx="54" ry="42" fill="none" stroke="#3b2f4a" stroke-width="4"/>
+  <ellipse cx="80" cy="110" rx="5.5" ry="6.5" fill="#3b2f4a"/>
+  <ellipse cx="102" cy="110" rx="5.5" ry="6.5" fill="#3b2f4a"/>
+  <circle cx="81.5" cy="107.5" r="1.8" fill="#fff"/>
+  <circle cx="103.5" cy="107.5" r="1.8" fill="#fff"/>
+  <ellipse cx="70" cy="124" rx="6.5" ry="4" fill="#ff9eb5" opacity="0.85"/>
+  <ellipse cx="110" cy="124" rx="6.5" ry="4" fill="#ff9eb5" opacity="0.85"/>
+  <path d="M84 124 Q91 131 98 124" fill="none" stroke="#3b2f4a" stroke-width="3" stroke-linecap="round"/>
+  <rect x="40" y="168" width="160" height="46" rx="10" fill="#fff" stroke="#3b2f4a" stroke-width="3.5"/>
+  <circle cx="58" cy="183" r="4" fill="#4caf50"/>
+  <circle cx="58" cy="199" r="4" fill="#ffb300"/>
+  <path d="M70 183 H160 M70 199 H136" stroke="#b9b0c4" stroke-width="5" stroke-linecap="round"/>
+</svg>
