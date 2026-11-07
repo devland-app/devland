@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { SoundToggle } from "../features/sound/SoundToggle.tsx";
 import { ThemeToggle } from "../features/theme/ThemeToggle.tsx";
-import { WalletBadge } from "../features/wallet/WalletBadge.tsx";
+import { WalletBalance } from "../features/wallet/WalletBalance.tsx";
 import type { Route } from "./useHashRoute.ts";
 
 const TABS: Array<{ hash: string; label: string; isCurrent: (route: Route) => boolean }> = [
@@ -47,7 +47,7 @@ export function Header({ route, actions }: HeaderProps) {
             ))}
           </nav>
           <div className="actions">
-            <WalletBadge />
+            <WalletBalance />
             <SoundToggle />
             <ThemeToggle />
             {actions}

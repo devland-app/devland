@@ -1,11 +1,17 @@
-.wallet-badge {
+/* Texto simples, sem relevo nem fundo: é informação, não um botão. */
+.wallet-balance {
+  display: inline-flex;
+  align-items: center;
   gap: 0.35rem;
-  padding-inline: 0.6rem 0.85rem;
+  margin: 0;
+  padding-inline: 0.2rem 0.4rem;
+  color: var(--ink);
+  font: 800 1.1rem/1 var(--font-display);
   font-variant-numeric: tabular-nums;
 }
-.wallet-badge .coin-icon {
-  width: 1.35em;
-  height: 1.35em;
+.wallet-balance .coin-icon {
+  width: 1.4em;
+  height: 1.4em;
 }
 .wallet-amount {
   display: inline-block;
