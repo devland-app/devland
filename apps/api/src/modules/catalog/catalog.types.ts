@@ -13,6 +13,6 @@ export interface Product {
   lesson: {
     explanation: string;
     realWorld: string;
-    inDevZoo: string;
+    inProject: string;
   };
 }

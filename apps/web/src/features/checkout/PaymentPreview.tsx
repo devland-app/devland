@@ -16,7 +16,7 @@ export function PaymentPreview({ method, orderId }: { method: PaymentMethod; ord
 function FakePix({ orderId }: { orderId: string }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   // Derivado do pedido: estável entre renderizações e sem nenhum valor de verdade.
-  const code = `DEVZOO-SIMULADO-${orderId.slice(0, 8).toUpperCase()}`;
+  const code = `DEVLAND-SIMULADO-${orderId.slice(0, 8).toUpperCase()}`;
   const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
 
   useEffect(() => {
@@ -65,7 +65,7 @@ function ToyCard({ broke }: { broke: boolean }) {
         <span className="toy-chip" />
         <span className="toy-number">0000 0000 0000 0000</span>
         <span className="toy-meta">
-          <span>Visitante DevZoo</span>
+          <span>Visitante DevLand</span>
           <span>Val 12/99</span>
         </span>
       </div>

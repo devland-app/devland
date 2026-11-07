@@ -175,7 +175,7 @@ const addMascotLessons: Migration = {
       await db("products").where({ slug }).update({
         lesson_explanation: lesson.explanation,
         lesson_real_world: lesson.realWorld,
-        lesson_in_devzoo: lesson.inDevZoo,
+        lesson_in_devzoo: lesson.inProject,
       });
     }
     // Produto sem texto (criado fora do catálogo inicial) recebe um aviso em vez de ficar nulo.
@@ -247,6 +247,39 @@ const rewriteDescriptions: Migration = {
   },
 };
 
+// A loja passou a se chamar DevLand. A coluna ganha um nome neutro (não depende mais da marca) e
+// os textos já gravados trocam o nome antigo pelo novo.
+const LESSON_TEXT_COLUMNS = [
+  "description",
+  "lesson_explanation",
+  "lesson_real_world",
+  "lesson_in_project",
+];
+
+const renameToDevLand: Migration = {
+  name: "catalog_007_rename_to_devland",
+  async up(db) {
+    await db.schema.alterTable("products", (table) => {
+      table.renameColumn("lesson_in_devzoo", "lesson_in_project");
+    });
+    for (const column of LESSON_TEXT_COLUMNS) {
+      await db("products").update({
+        [column]: db.raw("replace(??, 'DevZoo', 'DevLand')", [column]),
+      });
+    }
+  },
+  async down(db) {
+    for (const column of LESSON_TEXT_COLUMNS) {
+      await db("products").update({
+        [column]: db.raw("replace(??, 'DevLand', 'DevZoo')", [column]),
+      });
+    }
+    await db.schema.alterTable("products", (table) => {
+      table.renameColumn("lesson_in_project", "lesson_in_devzoo");
+    });
+  },
+};
+
 export const catalogMigrations: Migration[] = [
   createProducts,
   insertInitialProducts,
@@ -254,4 +287,5 @@ export const catalogMigrations: Migration[] = [
   raiseStockForCollections,
   addMascotLessons,
   rewriteDescriptions,
+  renameToDevLand,
 ];

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const STORAGE_KEY = "devzoo-banner-dismissed";
+const STORAGE_KEY = "devland-banner-dismissed";
 
 function wasDismissed(): boolean {
   try {

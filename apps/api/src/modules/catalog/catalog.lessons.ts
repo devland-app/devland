@@ -1,9 +1,9 @@
 // O que cada mascote ensina: o conceito em linguagem simples, um exemplo do dia a dia e onde a
-// própria DevZoo aplica aquilo. Texto de conteúdo, lido pela migration que o grava no banco.
+// própria DevLand aplica aquilo. Texto de conteúdo, lido pela migration que o grava no banco.
 export interface MascotLesson {
   explanation: string;
   realWorld: string;
-  inDevZoo: string;
+  inProject: string;
 }
 
 export const MASCOT_LESSONS: Record<string, MascotLesson> = {
@@ -16,8 +16,8 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
     realWorld:
       "É como mudar de casa com tudo em caixas etiquetadas: não importa o caminhão nem a cidade, o " +
       "conteúdo chega igual.",
-    inDevZoo:
-      "A DevZoo inteira roda em três contêineres (banco, API e loja) com um único comando: docker " +
+    inProject:
+      "A DevLand inteira roda em três contêineres (banco, API e loja) com um único comando: docker " +
       "compose up --build. As imagens rodam sem usuário root e passam por um scanner de " +
       "vulnerabilidades antes de irem para o Docker Hub.",
   },
@@ -30,8 +30,8 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
     realWorld:
       "Lembra uma fábrica de biscoitos: massa, forma, forno e embalagem, com controle de qualidade em " +
       "cada parada.",
-    inDevZoo:
-      "Todo pull request da DevZoo passa por lint, formatação, build, auditoria de dependências, " +
+    inProject:
+      "Todo pull request da DevLand passa por lint, formatação, build, auditoria de dependências, " +
       "checagem do contrato da API, varredura de segredos e scanner das imagens. Quando algo entra " +
       "na main, as imagens novas são publicadas sozinhas no Docker Hub.",
   },
@@ -43,8 +43,8 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
     realWorld:
       "Parece um documento compartilhado em que cada pessoa escreve o próprio rascunho antes de " +
       "juntar tudo no texto final, com o histórico de versões guardado.",
-    inDevZoo:
-      "Cada mudança na DevZoo nasce numa branch própria (feat/…, fix/…), entra na develop por pull " +
+    inProject:
+      "Cada mudança na DevLand nasce numa branch própria (feat/…, fix/…), entra na develop por pull " +
       "request e só depois vai para a main numa release. As mensagens de commit seguem um padrão " +
       "conferido automaticamente.",
   },
@@ -56,7 +56,7 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
     realWorld:
       "É o maestro de uma orquestra: cada músico sabe tocar, mas é o maestro que diz quando cada um " +
       "entra e mantém todo mundo no mesmo ritmo.",
-    inDevZoo:
+    inProject:
       "O docker compose sobe o banco primeiro, espera ele ficar saudável, depois a API (que confere o " +
       "banco na rota /health) e só então a loja. Se um serviço cai, ele é reiniciado sozinho.",
   },
@@ -66,8 +66,8 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
       "pegaram, e a saída mais segura é o rollback: voltar rapidinho para a última versão que " +
       "funcionava, investigar com calma e tentar de novo.",
     realWorld: "É o botão de desfazer de um editor de texto, só que para um site inteiro.",
-    inDevZoo:
-      "Cada imagem da DevZoo no Docker Hub ganha uma etiqueta com o código do commit (sha-…), e as " +
+    inProject:
+      "Cada imagem da DevLand no Docker Hub ganha uma etiqueta com o código do commit (sha-…), e as " +
       "releases ganham número de versão (0.2.0). Para voltar, basta subir a etiqueta anterior.",
   },
   "abelha-dos-logs": {
@@ -78,8 +78,8 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
     realWorld:
       "Funciona como a caixa-preta de um avião: quando algo dá errado, é ela que conta o que " +
       "aconteceu.",
-    inDevZoo:
-      "A API da DevZoo registra cada requisição em JSON estruturado, com tempo de resposta e código " +
+    inProject:
+      "A API da DevLand registra cada requisição em JSON estruturado, com tempo de resposta e código " +
       "de status. Um erro interno aparece completo no log, mas quem usa a loja vê só uma mensagem " +
       "genérica.",
   },
@@ -90,8 +90,8 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
       "demais pode ficar desatualizado.",
     realWorld:
       "É como deixar o café passado na garrafa térmica em vez de passar um novo a cada xícara.",
-    inDevZoo:
-      "O nginx da DevZoo manda o navegador guardar os arquivos da loja por um ano (eles mudam de " +
+    inProject:
+      "O nginx da DevLand manda o navegador guardar os arquivos da loja por um ano (eles mudam de " +
       "nome a cada versão), e as ilustrações dos mascotes ficam em cache por um dia.",
   },
   "raposa-dos-segredos": {
@@ -101,7 +101,7 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
       "cofre: variáveis de ambiente e gerenciadores de segredos.",
     realWorld:
       "Ninguém cola a senha do banco num post-it na porta da geladeira, mesmo que só a família veja.",
-    inDevZoo:
+    inProject:
       "O token do Docker Hub fica no GitHub Secrets, os valores locais ficam num .env fora do git e " +
       "o gitleaks procura segredos em cada pull request. E a loja segue a regra até no checkout: ela " +
       "nunca pede dados de cartão.",

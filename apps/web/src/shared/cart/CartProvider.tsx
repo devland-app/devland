@@ -4,7 +4,7 @@ import { useAdoptions } from "../adoptions/adoptionsContext.ts";
 import { readStored, writeStored } from "../storage.ts";
 import { CartContext, type CartContextValue, type CartLine } from "./cartContext.ts";
 
-const STORAGE_KEY = "devzoo-cart";
+const STORAGE_KEY = "devland-cart";
 
 // O que está no localStorage pode ser de uma versão antiga da loja: só aceita linhas completas.
 function isCartLine(value: unknown): value is CartLine {

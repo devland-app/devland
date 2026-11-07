@@ -1,14 +1,17 @@
 # Sobe a aplicação inteira: docker compose up --build
 # Valores vêm do arquivo .env (copie de .env.example). Nada sensível fica aqui.
 
+# Nome fixo do projeto: containers, volume e imagens saem como devland-*, em qualquer pasta.
+name: devland
+
 services:
   db:
     image: postgres:17-alpine
     # Os valores padrão existem para o projeto subir com um único comando em desenvolvimento.
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-devzoo}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devzoo}
-      POSTGRES_DB: ${POSTGRES_DB:-devzoo}
+      POSTGRES_USER: ${POSTGRES_USER:-devland}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devland}
+      POSTGRES_DB: ${POSTGRES_DB:-devland}
     # Porta publicada só em 127.0.0.1: a API em modo dev (fora do Docker) e clientes SQL da própria
     # máquina alcançam o banco, mas ele não fica exposto para a rede.
     ports:
@@ -30,7 +33,7 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: ${API_PORT:-3333}
-      DATABASE_URL: postgres://${POSTGRES_USER:-devzoo}:${POSTGRES_PASSWORD:-devzoo}@db:5432/${POSTGRES_DB:-devzoo}
+      DATABASE_URL: postgres://${POSTGRES_USER:-devland}:${POSTGRES_PASSWORD:-devland}@db:5432/${POSTGRES_DB:-devland}
       # Origens do front que podem chamar a API pelo navegador (nginx do compose e Vite em dev).
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080,http://localhost:5173}
     ports:

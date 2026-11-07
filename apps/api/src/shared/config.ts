@@ -94,7 +94,7 @@ function parseCorsOrigins(
 ): string[] {
   if (!value) {
     if (nodeEnv === "production") {
-      problems.push("CORS_ORIGIN é obrigatória em produção (ex.: https://devzoo.netlify.app)");
+      problems.push("CORS_ORIGIN é obrigatória em produção (ex.: https://devland.netlify.app)");
     }
     return DEV_CORS_ORIGINS;
   }

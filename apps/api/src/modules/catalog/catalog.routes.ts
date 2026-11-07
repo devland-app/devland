@@ -52,11 +52,11 @@ const productSchema = {
       type: "object",
       description: "O conceito de DevOps que o mascote ensina",
       additionalProperties: false,
-      required: ["explanation", "realWorld", "inDevZoo"],
+      required: ["explanation", "realWorld", "inProject"],
       properties: {
         explanation: { type: "string", description: "O conceito em linguagem simples" },
         realWorld: { type: "string", description: "Um exemplo do dia a dia" },
-        inDevZoo: { type: "string", description: "Onde a própria DevZoo aplica o conceito" },
+        inProject: { type: "string", description: "Onde a própria DevLand aplica o conceito" },
       },
     },
   },

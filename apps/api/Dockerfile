@@ -10,7 +10,7 @@ COPY apps/web/package.json apps/web/
 RUN npm ci --ignore-scripts
 COPY apps/api/tsconfig.json apps/api/
 COPY apps/api/src apps/api/src
-RUN npm run build -w @devzoo/api
+RUN npm run build -w @devland/api
 
 FROM node:22-alpine AS runtime
 ENV NODE_ENV=production
@@ -25,7 +25,7 @@ COPY apps/web/package.json apps/web/
 # Depois de instalar as dependências, npm e corepack saem da imagem: a API não usa nenhum dos dois
 # em execução, e as dependências internas deles eram a origem das vulnerabilidades apontadas pelo Trivy.
 RUN chmod -R a+rX /app \
-  && npm ci --omit=dev --ignore-scripts -w @devzoo/api \
+  && npm ci --omit=dev --ignore-scripts -w @devland/api \
   && npm cache clean --force \
   && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
     /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack

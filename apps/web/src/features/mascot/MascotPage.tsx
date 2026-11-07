@@ -71,9 +71,9 @@ export function MascotPage({ slug }: MascotPageProps) {
             <h2 id="lesson-real">No dia a dia</h2>
             <p>{product.lesson.realWorld}</p>
           </section>
-          <section className="lesson lesson--devzoo clay" aria-labelledby="lesson-devzoo">
-            <h2 id="lesson-devzoo">Onde a DevZoo usa isso</h2>
-            <p>{product.lesson.inDevZoo}</p>
+          <section className="lesson lesson--project clay" aria-labelledby="lesson-project">
+            <h2 id="lesson-project">Onde a DevLand usa isso</h2>
+            <p>{product.lesson.inProject}</p>
           </section>
 
           <p className="fine">

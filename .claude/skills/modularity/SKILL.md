@@ -1,9 +1,9 @@
 ---
 name: modularity
-description: Como organizar o monólito modular da API do DevZoo (catalog, orders, payments) e o front, com fronteiras explícitas, SOLID e dependências apontando para dentro. Use ao criar módulos, arquivos, endpoints ou ao decidir onde um código deve morar.
+description: Como organizar o monólito modular da API do DevLand (catalog, orders, payments) e o front, com fronteiras explícitas, SOLID e dependências apontando para dentro. Use ao criar módulos, arquivos, endpoints ou ao decidir onde um código deve morar.
 ---
 
-# Modularidade no DevZoo
+# Modularidade no DevLand
 
 O enunciado do Projeto A exige **monólito modular com fronteiras explícitas**. Um deploy só, mas
 módulos que poderiam virar serviços separados sem reescrever o domínio.

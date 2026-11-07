@@ -4,7 +4,7 @@ import { readStored, writeStored } from "../storage.ts";
 import { SoundContext, type SoundContextValue } from "./soundContext.ts";
 import { playSound } from "./synth.ts";
 
-const STORAGE_KEY = "devzoo-sound";
+const STORAGE_KEY = "devland-sound";
 
 const isBoolean = (value: unknown): value is boolean => typeof value === "boolean";
 

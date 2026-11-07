@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
-  title: DevZoo API
+  title: DevLand API
   version: 0.2.0
-  description: API da DevZoo, uma loja simulada de mascotes inspirados em DevOps.
+  description: API da DevLand, uma loja simulada de mascotes inspirados em DevOps.
     Nenhuma compra é real e nenhum valor é cobrado.
 components:
   schemas:
@@ -65,7 +65,7 @@ components:
           required:
             - explanation
             - realWorld
-            - inDevZoo
+            - inProject
           properties:
             explanation:
               type: string
@@ -73,9 +73,9 @@ components:
             realWorld:
               type: string
               description: Um exemplo do dia a dia
-            inDevZoo:
+            inProject:
               type: string
-              description: Onde a própria DevZoo aplica o conceito
+              description: Onde a própria DevLand aplica o conceito
     OrderItem:
       type: object
       additionalProperties: false

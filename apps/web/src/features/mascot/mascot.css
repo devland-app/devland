@@ -235,7 +235,7 @@
   max-width: 65ch;
   line-height: 1.65;
 }
-.lesson--devzoo {
+.lesson--project {
   background: color-mix(in srgb, var(--mint) 18%, var(--surface));
 }
 

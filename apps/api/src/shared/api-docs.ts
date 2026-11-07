@@ -11,10 +11,10 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
     openapi: {
       openapi: "3.1.0",
       info: {
-        title: "DevZoo API",
+        title: "DevLand API",
         version: readApiVersion(),
         description:
-          "API da DevZoo, uma loja simulada de mascotes inspirados em DevOps. " +
+          "API da DevLand, uma loja simulada de mascotes inspirados em DevOps. " +
           "Nenhuma compra é real e nenhum valor é cobrado.",
       },
       servers: [{ url: "http://localhost:3333", description: "Ambiente local (docker compose)" }],

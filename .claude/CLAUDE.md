@@ -1,4 +1,4 @@
-# DevZoo
+# DevLand
 
 Marketplace de miniaturas colecionáveis com mascotes originais inspirados em conceitos de DevOps
 (o caranguejo dos contêineres, a lesminha do pipeline, a corujinha das branches). Os mascotes são
@@ -17,17 +17,17 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 
 ## Comandos
 
-| Ação                 | Comando                                                         |
-| -------------------- | --------------------------------------------------------------- |
-| Instalar             | `npm install` (também ativa os hooks do husky)                  |
-| Lint e formatação    | `npm run lint` · `npm run format:check` · `npm run format`      |
-| Build                | `npm run build` (compila API e web)                             |
-| API em dev           | `npm run dev -w @devzoo/api` (tsx watch, porta 3333)            |
-| Web em dev           | `npm run dev -w @devzoo/web` (Vite, porta 5173)                 |
-| Subir tudo no Docker | `docker compose up --build` · web em :8080, API em :3333        |
-| Estado dos serviços  | `docker compose ps` (todos devem ficar `healthy`)               |
-| Gerar o contrato     | `npm run openapi -w @devzoo/api` (atualiza `docs/openapi.yaml`) |
-| Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)      |
+| Ação                 | Comando                                                          |
+| -------------------- | ---------------------------------------------------------------- |
+| Instalar             | `npm install` (também ativa os hooks do husky)                   |
+| Lint e formatação    | `npm run lint` · `npm run format:check` · `npm run format`       |
+| Build                | `npm run build` (compila API e web)                              |
+| API em dev           | `npm run dev -w @devland/api` (tsx watch, porta 3333)            |
+| Web em dev           | `npm run dev -w @devland/web` (Vite, porta 5173)                 |
+| Subir tudo no Docker | `docker compose up --build` · web em :8080, API em :3333         |
+| Estado dos serviços  | `docker compose ps` (todos devem ficar `healthy`)                |
+| Gerar o contrato     | `npm run openapi -w @devland/api` (atualiza `docs/openapi.yaml`) |
+| Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)       |
 
 ## Arquitetura da API
 
@@ -42,7 +42,7 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Contrato OpenAPI 3.1 gerado dos JSON Schemas das rotas: Swagger UI em `/docs`, JSON em
   `/docs/json`. Toda rota tem `tags`, `operationId`, `summary` e descrição em cada resposta.
   Modelos reutilizados entram com `app.addSchema` e `$id` (viram components, como `Product`).
-- Mudou rota ou schema? Rode `npm run openapi -w @devzoo/api` e commite o `docs/openapi.yaml`:
+- Mudou rota ou schema? Rode `npm run openapi -w @devland/api` e commite o `docs/openapi.yaml`:
   o CI regenera o arquivo e falha se o versionado estiver diferente.
 
 ## Regras da loja
@@ -84,8 +84,8 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
   ao apertar. Cor sempre por token, nunca literal que só funciona num tema.
 - Modais e gaveta usam `<dialog>` nativo com `showModal()` (`shared/ui/Dialog.tsx`): foco preso,
   Esc fecha e o foco volta para quem abriu.
-- No `localStorage`: `devzoo-cart` (carrinho), `devzoo-orders` (códigos dos pedidos, a base da
-  coleção), `devzoo-theme` e `devzoo-banner-dismissed`. Tudo lido com validação, porque pode estar
+- No `localStorage`: `devland-cart` (carrinho), `devland-orders` (códigos dos pedidos, a base da
+  coleção), `devland-theme` e `devland-banner-dismissed`. Tudo lido com validação, porque pode estar
   vazio, antigo ou indisponível.
 - Coleção: cada mascote é adotado uma vez. O botão "Adotar" é liga/desliga (`aria-pressed`,
   "Incluído"); adotado ou aguardando pagamento fica desabilitado. A página de cada mascote mostra a
@@ -102,7 +102,7 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 
 ## Git
 
-- Repositório: `devzoo-store/devzoo` (organização no GitHub).
+- Repositório: `devland-app/devland` (organização no GitHub).
 - Conventional Commits em inglês, no imperativo e com inicial minúscula, validados pelo commitlint
   no hook `commit-msg`: `feat(api): add product listing`, `fix(web): handle empty catalog`,
   `build: ...`, `ci: ...`, `docs: ...`, `test: ...`.
@@ -131,9 +131,9 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
     criar a pasta, ela também fica `644`, sem `x`, e vira inacessível.
 - O Trivy do CI reprova vulnerabilidades HIGH/CRITICAL que já têm correção. Por isso as imagens
   rodam `apk upgrade` e a da API remove npm e corepack, que não são usados em execução. Para checar
-  localmente: `docker save devzoo-api -o api.tar` e `aquasec/trivy image --input api.tar`.
+  localmente: `docker save devland-api -o api.tar` e `aquasec/trivy image --input api.tar`.
 - O CI (`.github/workflows/ci.yml`) roda lint, format, build e `npm audit` (SCA), gitleaks e Trivy
-  nas imagens. Em push na `main` ou em tag `vX.Y.Z`, publica `devzoo-api` e `devzoo-web` no
+  nas imagens. Em push na `main` ou em tag `vX.Y.Z`, publica `devland-api` e `devland-web` no
   Docker Hub (tags descritas na seção Git).
 - O gitleaks roda pelo binário oficial, não pela `gitleaks-action`, que exige licença em
   repositórios de organização.

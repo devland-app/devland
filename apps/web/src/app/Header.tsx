@@ -43,9 +43,9 @@ export function Header({ route, actions }: HeaderProps) {
       )}
       <div className="nav-band gutter">
         <div className="wrap nav-row">
-          <a className="logo" href="#vitrine" aria-label="DevZoo, ir para a vitrine">
+          <a className="logo" href="#vitrine" aria-label="DevLand, ir para a vitrine">
             <img src="/favicon.svg" alt="" width={46} height={46} />
-            DevZoo
+            DevLand
           </a>
           <nav className="tabs" aria-label="Seções da loja">
             {TABS.map((tab) => (
