@@ -3,10 +3,11 @@ import "./checkout.css";
 import { useEffect, useRef, useState } from "react";
 
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
-import { ApiError, apiAssetUrl, createOrder, payOrder } from "../../shared/api/client.ts";
+import { ApiError, createOrder, payOrder } from "../../shared/api/client.ts";
 import type { Order, Payment, PaymentMethod } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
 import { useSound } from "../../shared/sound/soundContext.ts";
+import { MascotArt } from "../../shared/ui/MascotArt.tsx";
 import { formatCents } from "../../shared/format.ts";
 import { rememberOrder } from "../../shared/myOrders.ts";
 import { Dialog } from "../../shared/ui/Dialog.tsx";
@@ -238,13 +239,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
                     ? products.state.products.find((candidate) => candidate.id === item.productId)
                     : undefined;
                 return product ? (
-                  <img
-                    key={item.productId}
-                    src={apiAssetUrl(product.imageUrl)}
-                    alt=""
-                    width={72}
-                    height={72}
-                  />
+                  <MascotArt key={item.productId} product={product} size={72} />
                 ) : null;
               })}
             </div>

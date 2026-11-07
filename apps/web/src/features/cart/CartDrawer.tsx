@@ -1,11 +1,11 @@
 import "./cart.css";
 
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
-import { apiAssetUrl } from "../../shared/api/client.ts";
 import type { Order } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
 import { formatCents } from "../../shared/format.ts";
 import { Dialog } from "../../shared/ui/Dialog.tsx";
+import { MascotArt } from "../../shared/ui/MascotArt.tsx";
 
 interface CartDrawerProps {
   open: boolean;
@@ -59,7 +59,7 @@ export function CartDrawer({ open, onClose, onCheckout, onPayPending }: CartDraw
           <ul className="cart-list">
             {cart.lines.map((line) => (
               <li key={line.productId} className="cart-item">
-                <img src={apiAssetUrl(line.imageUrl)} alt="" width={64} height={64} />
+                <MascotArt product={line} size={64} />
                 <div className="cart-item-body">
                   <h3>{line.name}</h3>
                   <span className="subtotal">{formatCents(line.priceCents)}</span>

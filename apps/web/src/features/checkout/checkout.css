@@ -277,6 +277,9 @@
   justify-content: center;
   gap: 0.4rem;
 }
+.adopted-thumbs .mascot-art {
+  width: 72px;
+}
 
 .badge-free {
   font: 800 0.95rem/1 var(--font-display);

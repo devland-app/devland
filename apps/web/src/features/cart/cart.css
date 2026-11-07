@@ -55,6 +55,9 @@
   background: var(--surface-2);
   box-shadow: 0 3px 0 var(--line);
 }
+.cart-item .mascot-art {
+  width: 64px;
+}
 .cart-item-body {
   display: grid;
   gap: 0.3rem;

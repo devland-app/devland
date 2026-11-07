@@ -68,7 +68,7 @@ function useBlink(pace: BlinkPace): boolean {
 type Drawing = { status: "loading" } | { status: "ready"; svg: string } | { status: "failed" };
 
 interface MascotArtProps {
-  product: Pick<Product, "slug" | "imageUrl">;
+  product: Pick<Product, "imageUrl">;
   // Tamanho da imagem de reserva, usada se o desenho não carregar.
   size: number;
   // Texto para leitor de tela; sem ele, o desenho é decorativo (o nome já está ao lado).
@@ -98,7 +98,7 @@ export function MascotArt({
     let active = true;
     loadSvg(product.imageUrl)
       .then((raw) => {
-        const svg = prepareInlineSvg(raw, `${product.slug}-${instanceId}`);
+        const svg = prepareInlineSvg(raw, `mascot-${instanceId}`);
         if (active) setDrawing(svg ? { status: "ready", svg } : { status: "failed" });
       })
       .catch(() => {
@@ -107,7 +107,7 @@ export function MascotArt({
     return () => {
       active = false;
     };
-  }, [product.imageUrl, product.slug, instanceId]);
+  }, [product.imageUrl, instanceId]);
 
   const classes = ["mascot-art", blinking && "is-blinking", className].filter(Boolean).join(" ");
 
