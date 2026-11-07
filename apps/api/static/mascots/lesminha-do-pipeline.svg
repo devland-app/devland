@@ -1,26 +1,78 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
-  <title id="title">Lesminha do Pipeline: uma lesma verde com casco laranja, abaixo de três etapas de um pipeline</title>
-  <circle cx="120" cy="120" r="116" fill="#e3f6e5"/>
-  <ellipse cx="116" cy="200" rx="80" ry="9" fill="#3b2f4a" opacity="0.08"/>
-  <path d="M60 46 H180" stroke="#3b2f4a" stroke-width="4"/>
-  <circle cx="60" cy="46" r="13" fill="#4caf50" stroke="#3b2f4a" stroke-width="3.5"/>
-  <circle cx="120" cy="46" r="13" fill="#4caf50" stroke="#3b2f4a" stroke-width="3.5"/>
-  <circle cx="180" cy="46" r="13" fill="#ffd54f" stroke="#3b2f4a" stroke-width="3.5"/>
-  <path d="M54 46 L58.5 50.5 L66 42 M114 46 L118.5 50.5 L126 42" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="174" cy="46" r="2.2" fill="#3b2f4a"/>
-  <circle cx="180" cy="46" r="2.2" fill="#3b2f4a"/>
-  <circle cx="186" cy="46" r="2.2" fill="#3b2f4a"/>
-  <path d="M174 106 Q168 88 160 80 M188 108 Q194 90 202 84" fill="none" stroke="#3b2f4a" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="160" cy="80" r="5" fill="#3b2f4a"/>
-  <circle cx="202" cy="84" r="5" fill="#3b2f4a"/>
-  <path d="M46 192 Q34 192 34 180 Q34 166 52 166 L146 166 Q146 104 172 102 Q200 100 200 134 Q200 160 188 174 Q194 192 174 192 Z" fill="#9ad18b" stroke="#3b2f4a" stroke-width="4" stroke-linejoin="round"/>
-  <circle cx="100" cy="124" r="44" fill="#ffb74d" stroke="#3b2f4a" stroke-width="4"/>
-  <path d="M100 124 m-5 0 a5 5 0 1 1 10 0 a13 13 0 1 1 -26 0 a21 21 0 1 1 42 0 a29 29 0 1 1 -58 0" fill="none" stroke="#e08a2c" stroke-width="4.5" stroke-linecap="round"/>
-  <ellipse cx="166" cy="132" rx="4.5" ry="5.5" fill="#3b2f4a"/>
-  <ellipse cx="186" cy="132" rx="4.5" ry="5.5" fill="#3b2f4a"/>
-  <circle cx="167.5" cy="130" r="1.6" fill="#fff"/>
-  <circle cx="187.5" cy="130" r="1.6" fill="#fff"/>
-  <ellipse cx="158" cy="146" rx="6" ry="3.5" fill="#ff9eb5" opacity="0.85"/>
-  <ellipse cx="194" cy="146" rx="6" ry="3.5" fill="#ff9eb5" opacity="0.85"/>
-  <path d="M170 146 Q176 152 182 146" fill="none" stroke="#3b2f4a" stroke-width="3" stroke-linecap="round"/>
+  <title id="title">Lesminha do Pipeline: uma lesma verde de massinha com casco laranja, abaixo de três etapas de um pipeline</title>
+  <defs>
+    <!-- Efeito massinha: sombra projetada, sombra e brilho internos, brilho especular e granulado. -->
+    <filter id="clay" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="dropBlur"/>
+      <feOffset in="dropBlur" dx="2" dy="6" result="dropOffset"/>
+      <feFlood flood-color="#3b2f4a" flood-opacity="0.25"/>
+      <feComposite in2="dropOffset" operator="in" result="drop"/>
+      <feOffset in="SourceAlpha" dx="-7" dy="-9" result="upLeft"/>
+      <feGaussianBlur in="upLeft" stdDeviation="6" result="upLeftBlur"/>
+      <feComposite in="SourceAlpha" in2="upLeftBlur" operator="arithmetic" k2="1" k3="-1" result="shadowMask"/>
+      <feFlood flood-color="#2a1f35" flood-opacity="0.32"/>
+      <feComposite in2="shadowMask" operator="in" result="innerShadow"/>
+      <feOffset in="SourceAlpha" dx="5" dy="7" result="downRight"/>
+      <feGaussianBlur in="downRight" stdDeviation="4" result="downRightBlur"/>
+      <feComposite in="SourceAlpha" in2="downRightBlur" operator="arithmetic" k2="1" k3="-1" result="lightMask"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.45"/>
+      <feComposite in2="lightMask" operator="in" result="innerLight"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="bump"/>
+      <feSpecularLighting in="bump" surfaceScale="8" specularConstant="0.9" specularExponent="16" lighting-color="#ffffff" result="spec">
+        <feDistantLight azimuth="225" elevation="48"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="shine"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.07 0" result="grain"/>
+      <feComposite in="grain" in2="SourceAlpha" operator="in" result="texture"/>
+      <feMerge>
+        <feMergeNode in="drop"/>
+        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="innerShadow"/>
+        <feMergeNode in="innerLight"/>
+        <feMergeNode in="shine"/>
+        <feMergeNode in="texture"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+    <radialGradient id="eye" cx="35%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#5a4a6b"/>
+      <stop offset="1" stop-color="#1e1626"/>
+    </radialGradient>
+    <radialGradient id="bg" cx="40%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#f1fbf2"/>
+      <stop offset="1" stop-color="#cdeccf"/>
+    </radialGradient>
+  </defs>
+  <circle cx="120" cy="120" r="116" fill="url(#bg)"/>
+  <ellipse cx="116" cy="202" rx="82" ry="10" fill="#3b2f4a" opacity="0.12" filter="url(#soft)"/>
+  <g filter="url(#clay)">
+    <path d="M60 46 H180" stroke="#b0bec5" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="60" cy="46" r="15" fill="#43a047"/>
+    <circle cx="120" cy="46" r="15" fill="#43a047"/>
+    <circle cx="180" cy="46" r="15" fill="#ffca28"/>
+  </g>
+  <path d="M53 46 L58 51 L67 41 M113 46 L118 51 L127 41" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#6d4c00"><circle cx="173" cy="46" r="2.4"/><circle cx="180" cy="46" r="2.4"/><circle cx="187" cy="46" r="2.4"/></g>
+  <g filter="url(#clay)">
+    <path d="M172 108 Q166 90 158 82 M188 110 Q194 92 202 86" fill="none" stroke="#7cc46a" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="158" cy="82" r="7" fill="#7cc46a"/>
+    <circle cx="202" cy="86" r="7" fill="#7cc46a"/>
+  </g>
+  <g filter="url(#clay)">
+    <path d="M46 194 Q32 194 32 180 Q32 166 52 166 L146 166 Q146 104 172 102 Q202 100 202 134 Q202 160 190 174 Q196 194 174 194 Z" fill="#8fd27c"/>
+  </g>
+  <g filter="url(#clay)">
+    <circle cx="100" cy="124" r="45" fill="#ffad42"/>
+    <path d="M100 124 m-5 0 a5 5 0 1 1 10 0 a13 13 0 1 1 -26 0 a21 21 0 1 1 42 0 a29 29 0 1 1 -58 0" fill="none" stroke="#e8892a" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <ellipse cx="158" cy="148" rx="7" ry="4.5" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="194" cy="148" rx="7" ry="4.5" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="166" cy="132" rx="5.5" ry="6.5" fill="url(#eye)"/>
+  <circle cx="163.5" cy="128.5" r="1.9" fill="#fff"/>
+  <ellipse cx="186" cy="132" rx="5.5" ry="6.5" fill="url(#eye)"/>
+  <circle cx="183.5" cy="128.5" r="1.9" fill="#fff"/>
+  <path d="M170 147 Q176 153 182 147" fill="none" stroke="#4a2a3a" stroke-width="3" stroke-linecap="round"/>
 </svg>

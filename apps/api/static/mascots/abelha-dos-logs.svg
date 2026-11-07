@@ -1,32 +1,80 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
-  <title id="title">Abelha dos Logs: uma abelha amarela voando sobre um cartão com linhas de log</title>
+  <title id="title">Abelha dos Logs: uma abelha amarela de massinha voando sobre um cartão com linhas de log</title>
   <defs>
-    <clipPath id="bee-body">
-      <ellipse cx="112" cy="116" rx="54" ry="42"/>
-    </clipPath>
+    <!-- Efeito massinha: sombra projetada, sombra e brilho internos, brilho especular e granulado. -->
+    <filter id="clay" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="dropBlur"/>
+      <feOffset in="dropBlur" dx="2" dy="6" result="dropOffset"/>
+      <feFlood flood-color="#3b2f4a" flood-opacity="0.25"/>
+      <feComposite in2="dropOffset" operator="in" result="drop"/>
+      <feOffset in="SourceAlpha" dx="-7" dy="-9" result="upLeft"/>
+      <feGaussianBlur in="upLeft" stdDeviation="6" result="upLeftBlur"/>
+      <feComposite in="SourceAlpha" in2="upLeftBlur" operator="arithmetic" k2="1" k3="-1" result="shadowMask"/>
+      <feFlood flood-color="#2a1f35" flood-opacity="0.32"/>
+      <feComposite in2="shadowMask" operator="in" result="innerShadow"/>
+      <feOffset in="SourceAlpha" dx="5" dy="7" result="downRight"/>
+      <feGaussianBlur in="downRight" stdDeviation="4" result="downRightBlur"/>
+      <feComposite in="SourceAlpha" in2="downRightBlur" operator="arithmetic" k2="1" k3="-1" result="lightMask"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.45"/>
+      <feComposite in2="lightMask" operator="in" result="innerLight"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="bump"/>
+      <feSpecularLighting in="bump" surfaceScale="8" specularConstant="0.9" specularExponent="16" lighting-color="#ffffff" result="spec">
+        <feDistantLight azimuth="225" elevation="48"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="shine"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.07 0" result="grain"/>
+      <feComposite in="grain" in2="SourceAlpha" operator="in" result="texture"/>
+      <feMerge>
+        <feMergeNode in="drop"/>
+        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="innerShadow"/>
+        <feMergeNode in="innerLight"/>
+        <feMergeNode in="shine"/>
+        <feMergeNode in="texture"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+    <radialGradient id="eye" cx="35%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#5a4a6b"/>
+      <stop offset="1" stop-color="#1e1626"/>
+    </radialGradient>
+    <radialGradient id="bg" cx="40%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#fffbe8"/>
+      <stop offset="1" stop-color="#fbeab0"/>
+    </radialGradient>
+    <clipPath id="bee-body"><ellipse cx="112" cy="116" rx="55" ry="43"/></clipPath>
   </defs>
-  <circle cx="120" cy="120" r="116" fill="#fff4cc"/>
-  <ellipse cx="96" cy="70" rx="22" ry="30" transform="rotate(-20 96 70)" fill="#fff" opacity="0.9" stroke="#3b2f4a" stroke-width="3"/>
-  <ellipse cx="134" cy="68" rx="22" ry="30" transform="rotate(20 134 68)" fill="#fff" opacity="0.9" stroke="#3b2f4a" stroke-width="3"/>
-  <path d="M82 80 Q74 60 62 56 M98 76 Q100 56 92 46" fill="none" stroke="#3b2f4a" stroke-width="3.5" stroke-linecap="round"/>
-  <circle cx="62" cy="56" r="5" fill="#3b2f4a"/>
-  <circle cx="92" cy="46" r="5" fill="#3b2f4a"/>
-  <path d="M164 116 L182 108 L182 124 Z" fill="#3b2f4a" stroke="#3b2f4a" stroke-width="3" stroke-linejoin="round"/>
-  <ellipse cx="112" cy="116" rx="54" ry="42" fill="#ffd23f"/>
-  <g clip-path="url(#bee-body)" fill="#3b2f4a">
-    <rect x="118" y="60" width="14" height="120"/>
-    <rect x="144" y="60" width="14" height="120"/>
+  <circle cx="120" cy="120" r="116" fill="url(#bg)"/>
+  <g filter="url(#clay)">
+    <ellipse cx="96" cy="70" rx="22" ry="30" transform="rotate(-20 96 70)" fill="#ffffff" opacity="0.85"/>
+    <ellipse cx="134" cy="68" rx="22" ry="30" transform="rotate(20 134 68)" fill="#ffffff" opacity="0.85"/>
   </g>
-  <ellipse cx="112" cy="116" rx="54" ry="42" fill="none" stroke="#3b2f4a" stroke-width="4"/>
-  <ellipse cx="80" cy="110" rx="5.5" ry="6.5" fill="#3b2f4a"/>
-  <ellipse cx="102" cy="110" rx="5.5" ry="6.5" fill="#3b2f4a"/>
-  <circle cx="81.5" cy="107.5" r="1.8" fill="#fff"/>
-  <circle cx="103.5" cy="107.5" r="1.8" fill="#fff"/>
-  <ellipse cx="70" cy="124" rx="6.5" ry="4" fill="#ff9eb5" opacity="0.85"/>
-  <ellipse cx="110" cy="124" rx="6.5" ry="4" fill="#ff9eb5" opacity="0.85"/>
-  <path d="M84 124 Q91 131 98 124" fill="none" stroke="#3b2f4a" stroke-width="3" stroke-linecap="round"/>
-  <rect x="40" y="168" width="160" height="46" rx="10" fill="#fff" stroke="#3b2f4a" stroke-width="3.5"/>
-  <circle cx="58" cy="183" r="4" fill="#4caf50"/>
-  <circle cx="58" cy="199" r="4" fill="#ffb300"/>
-  <path d="M70 183 H160 M70 199 H136" stroke="#b9b0c4" stroke-width="5" stroke-linecap="round"/>
+  <g filter="url(#clay)">
+    <path d="M82 80 Q74 60 62 56 M98 76 Q100 56 92 46" fill="none" stroke="#4a3a5a" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="62" cy="56" r="6" fill="#4a3a5a"/>
+    <circle cx="92" cy="46" r="6" fill="#4a3a5a"/>
+  </g>
+  <g filter="url(#clay)">
+    <path d="M162 116 L182 108 L182 124 Z" fill="#4a3a5a" stroke="#4a3a5a" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+  <g filter="url(#clay)">
+    <ellipse cx="112" cy="116" rx="55" ry="43" fill="#ffd23f"/>
+    <g clip-path="url(#bee-body)" fill="#4a3a5a"><rect x="118" y="60" width="14" height="120"/><rect x="144" y="60" width="14" height="120"/></g>
+  </g>
+  <ellipse cx="70" cy="126" rx="8" ry="5" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="110" cy="126" rx="8" ry="5" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="80" cy="111" rx="6.5" ry="7.5" fill="url(#eye)"/>
+  <circle cx="77.5" cy="107.5" r="2.3" fill="#fff"/>
+  <ellipse cx="102" cy="111" rx="6.5" ry="7.5" fill="url(#eye)"/>
+  <circle cx="99.5" cy="107.5" r="2.3" fill="#fff"/>
+  <path d="M84 125 Q91 132 98 125" fill="none" stroke="#4a2a3a" stroke-width="3" stroke-linecap="round"/>
+  <g filter="url(#clay)">
+    <rect x="40" y="168" width="160" height="46" rx="14" fill="#fffdf7"/>
+    <circle cx="58" cy="183" r="4.5" fill="#43a047"/>
+    <circle cx="58" cy="199" r="4.5" fill="#ffb300"/>
+    <path d="M70 183 H160 M70 199 H136" stroke="#d6cfe0" stroke-width="5" stroke-linecap="round"/>
+  </g>
 </svg>
