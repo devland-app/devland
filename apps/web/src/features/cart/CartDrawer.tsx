@@ -92,9 +92,10 @@ export function CartDrawer({ open, onClose, onCheckout, onPayPending }: CartDraw
         >
           Finalizar compra simulada
         </button>
-        <button className="btn btn--soft btn--block" type="button" onClick={onClose}>
+        {/* Link, e não botão: de qualquer página, leva de volta à vitrine e fecha o carrinho. */}
+        <a className="btn btn--soft btn--block" href="#vitrine" onClick={onClose}>
           Continuar olhando
-        </button>
+        </a>
       </div>
     </Dialog>
   );
