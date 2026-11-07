@@ -197,10 +197,61 @@ const addMascotLessons: Migration = {
   },
 };
 
+// Descrições mais diretas: cada uma diz em uma frase o que o conceito do mascote resolve.
+const PLAIN_DESCRIPTIONS: Record<string, { before: string; after: string }> = {
+  "caranguejo-dos-conteineres": {
+    before: "Carrega todas as dependências na carapaça e roda igualzinho em qualquer praia.",
+    after: "Empacota a aplicação com tudo de que ela precisa para rodar igual em qualquer lugar.",
+  },
+  "lesminha-do-pipeline": {
+    before: "Devagar e sempre: cada etapa só começa quando a anterior fica verde.",
+    after: "Leva cada mudança por etapas automáticas de verificação até a publicação.",
+  },
+  "corujinha-das-branches": {
+    before: "Vigia cada galho da árvore e pia antes que um conflito de merge aconteça.",
+    after: "Guarda o histórico do código e organiza o trabalho em branches paralelas.",
+  },
+  "polvo-orquestrador": {
+    before: "Oito braços para escalar réplicas sem deixar nenhuma cair.",
+    after: "Coordena vários serviços para que subam na ordem certa e funcionem juntos.",
+  },
+  "tartaruga-do-rollback": {
+    before: "Quando algo dá errado, volta com calma para a última versão que funcionava.",
+    after: "Publica versões novas e, se algo der errado, volta para a última versão estável.",
+  },
+  "abelha-dos-logs": {
+    before: "Registra cada voo em JSON estruturado, sem perder nenhum zumbido.",
+    after: "Registra o que acontece no sistema para que os erros possam ser investigados.",
+  },
+  "castor-do-cache": {
+    before: "Guarda as respostas mais pedidas bem perto da porta da toca.",
+    after: "Guarda respostas prontas para que o sistema responda mais rápido.",
+  },
+  "raposa-dos-segredos": {
+    before: "Nunca deixa uma senha no código: esconde tudo no cofre.",
+    after: "Mantém senhas, tokens e chaves fora do código.",
+  },
+};
+
+const rewriteDescriptions: Migration = {
+  name: "catalog_006_rewrite_descriptions",
+  async up(db) {
+    for (const [slug, text] of Object.entries(PLAIN_DESCRIPTIONS)) {
+      await db("products").where({ slug }).update({ description: text.after });
+    }
+  },
+  async down(db) {
+    for (const [slug, text] of Object.entries(PLAIN_DESCRIPTIONS)) {
+      await db("products").where({ slug }).update({ description: text.before });
+    }
+  },
+};
+
 export const catalogMigrations: Migration[] = [
   createProducts,
   insertInitialProducts,
   addProductImages,
   raiseStockForCollections,
   addMascotLessons,
+  rewriteDescriptions,
 ];
