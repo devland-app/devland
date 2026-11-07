@@ -1,6 +1,7 @@
 import Fastify, { type FastifyInstance } from "fastify";
 
 import { registerCatalogModule } from "./modules/catalog/index.js";
+import { registerApiDocs } from "./shared/api-docs.js";
 import type { Database } from "./shared/database.js";
 
 export interface AppOptions {
@@ -10,8 +11,11 @@ export interface AppOptions {
 }
 
 // A construção do app fica separada do listen para que os testes usem app.inject() sem abrir porta.
-export function buildApp(options: AppOptions): FastifyInstance {
+export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   const app = Fastify({ logger: options.logger });
+
+  // Precisa vir antes das rotas: o Swagger só documenta as rotas declaradas depois de carregado.
+  await registerApiDocs(app);
 
   // O healthcheck do Docker chama esta rota: se o banco não responde, a API também não está saudável.
   app.get("/health", async (request, reply) => {
