@@ -4,9 +4,14 @@ import { ThemeToggle } from "../features/theme/ThemeToggle.tsx";
 import { useBannerDismissed } from "./useBannerDismissed.ts";
 import type { Route } from "./useHashRoute.ts";
 
-const TABS: Array<{ route: Route; label: string }> = [
-  { route: "vitrine", label: "Vitrine" },
-  { route: "pedidos", label: "Meus pedidos" },
+const TABS: Array<{ hash: string; label: string; isCurrent: (route: Route) => boolean }> = [
+  { hash: "#vitrine", label: "Vitrine", isCurrent: (route) => route.name === "vitrine" },
+  {
+    hash: "#mascotes",
+    label: "Meus mascotes",
+    // A página de um mascote também pertence à aba da coleção.
+    isCurrent: (route) => route.name === "mascotes" || route.name === "mascote",
+  },
 ];
 
 interface HeaderProps {
@@ -45,9 +50,9 @@ export function Header({ route, actions }: HeaderProps) {
           <nav className="tabs" aria-label="Seções da loja">
             {TABS.map((tab) => (
               <a
-                key={tab.route}
-                href={`#${tab.route}`}
-                aria-current={route === tab.route ? "page" : undefined}
+                key={tab.hash}
+                href={tab.hash}
+                aria-current={tab.isCurrent(route) ? "page" : undefined}
               >
                 {tab.label}
               </a>

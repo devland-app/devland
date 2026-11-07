@@ -1,12 +1,15 @@
 import "./catalog.css";
 
+import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
+import { CollectionProgress } from "../../shared/ui/CollectionProgress.tsx";
+import { useProducts } from "../../shared/useProducts.ts";
 import { ProductCard } from "./ProductCard.tsx";
-import { useProducts } from "./useProducts.ts";
 
 const PLACEHOLDER_CARDS = 8;
 
 export function CatalogPage() {
   const { state, retry } = useProducts();
+  const adoptions = useAdoptions();
 
   return (
     <section aria-labelledby="catalog-title">
@@ -15,10 +18,14 @@ export function CatalogPage() {
           Miniaturas de massinha que <em>entendem de DevOps</em>
         </h1>
         <p>
-          Adote um mascote, encha o carrinho e finalize a compra. O pagamento é de mentirinha: você
-          ganha o pedido, a confirmação e os confetes, e ninguém cobra nada.
+          Adote um de cada, finalize a compra de mentirinha e desbloqueie a página de cada mascote,
+          onde ele explica o conceito de DevOps que representa. Ninguém cobra nada.
         </p>
       </div>
+
+      {state.status === "ready" && (
+        <CollectionProgress adopted={adoptions.adopted.size} total={state.products.length} />
+      )}
 
       {state.status === "error" && (
         <div className="catalog-error clay" role="alert">
