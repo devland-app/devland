@@ -246,3 +246,52 @@ describe("QuizzesService", () => {
     expect(result).toMatchObject({ correct: true, coinsAwarded: 0, alreadyEarned: false });
   });
 });
+
+describe("bordas do banco de perguntas e da divisão", () => {
+  it("recusa conteúdo com pergunta sem opções", () => {
+    const broken: QuizContent[] = [
+      {
+        slug: "vazio",
+        title: "Vazio",
+        concept: "Vazio",
+        questions: [
+          {
+            key: "v1",
+            prompt: "Sem opções?",
+            options: [] as unknown as [string, string, string],
+            explanation: "",
+          },
+        ],
+      },
+    ];
+    expect(() => new InMemoryQuestionBank(broken)).toThrow("sem opções");
+  });
+
+  it("divide zero moedas sem pagar nada e lida com quiz sem perguntas", () => {
+    expect([...splitReward(0, ["a", "b"]).values()]).toEqual([0, 0]);
+    expect(splitReward(100, []).size).toBe(0);
+  });
+
+  it("um quiz com menos de 5 perguntas usa todas", async () => {
+    const short: QuizContent[] = [
+      {
+        slug: "curto",
+        title: "Curto",
+        concept: "Curto",
+        questions: ["s1", "s2", "s3"].map(question),
+      },
+    ];
+    const wallets = new WalletsService(new InMemoryWalletRepository());
+    const service = new QuizzesService(
+      new InMemoryQuestionBank(short),
+      new InMemoryAttemptRepository(),
+      wallets,
+      { listProducts: async () => [{ slug: "curto", priceCoins: 10 }] },
+      runInFakeTransaction,
+    );
+    const [summary] = await service.listQuizzes();
+    expect(summary?.questionCount).toBe(3);
+    const attempt = await service.startAttempt("curto", (await wallets.createWallet()).id);
+    expect(attempt.questions.map((item) => item.coins).sort()).toEqual([3, 3, 4]);
+  });
+});

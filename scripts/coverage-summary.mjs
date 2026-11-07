@@ -29,7 +29,6 @@ for (const [name, file] of apps) {
 }
 lines.push(
   "",
-  "A API tem limite global (linhas 85%, ramos 75%). O site tem limite só nos arquivos com regra ou " +
-    "risco; veja docs/testes.md.",
+  "Limites no CI: API com 90% das linhas e 80% dos ramos; site com 90% e 85%. Veja docs/testes.md.",
 );
 process.stdout.write(`${lines.join("\n")}\n`);

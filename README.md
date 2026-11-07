@@ -103,12 +103,14 @@ npm test                                  # API e site
 npm run test:coverage -w @devland/api     # com relatório de cobertura
 ```
 
-- **API:** testes unitários das regras de negócio e testes de integração com um PostgreSQL de
-  verdade, descartável, criado pelo Testcontainers (precisa do Docker). Cobrem migrations que sobem
-  e descem, os fluxos HTTP, a economia de moedas e a concorrência (pagamentos e respostas
-  simultâneos).
-- **Site:** Vitest com Testing Library para o sanitizador do SVG, o `localStorage`, a carteira e o
-  fluxo do quiz.
+Cada regra é testada no caminho feliz, nos caminhos tristes e nos casos de borda.
+
+- **API (121 testes):** unitários das regras de negócio e de integração com um PostgreSQL de
+  verdade, descartável, criado pelo Testcontainers (precisa do Docker). Cobrem os limites de cada
+  campo, os erros de cada rota, a concorrência no banco e as migrations subindo e descendo, inclusive
+  com dados do formato antigo.
+- **Site (91 testes):** jornadas completas pela interface contra um backend falso com as mesmas
+  regras da API, mais o cliente da API, o sanitizador do SVG, o carrinho, a carteira e o modal.
 
 Estratégia, cobertura e o que ficou de fora de propósito: [`docs/testes.md`](docs/testes.md).
 
