@@ -18,7 +18,11 @@ try {
 }
 
 const db = createDatabase(config.databaseUrl);
-const app = await buildApp({ logger: config.nodeEnv !== "test", db });
+const app = await buildApp({
+  logger: config.nodeEnv !== "test",
+  db,
+  corsOrigins: config.corsOrigins,
+});
 app.addHook("onClose", async () => {
   await db.destroy();
 });
