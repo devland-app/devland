@@ -11,3 +11,10 @@ coverage/
 .idea/
 # Permissões pessoais do Claude Code (o .claude/settings.json compartilhado continua versionado)
 .claude/settings.local.json
+# Deploy: tokens e estado do Terraform nunca entram no git (o estado guarda a senha do banco).
+infra/*.tfvars
+infra/*.tfstate
+infra/*.tfstate.*
+infra/.terraform/
+# Configuração local da CLI da Vercel (vercel pull/build)
+.vercel/
