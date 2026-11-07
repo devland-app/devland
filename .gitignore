@@ -9,3 +9,5 @@ coverage/
 .vscode/*
 !.vscode/extensions.json
 .idea/
+# Permissões pessoais do Claude Code (o .claude/settings.json compartilhado continua versionado)
+.claude/settings.local.json
