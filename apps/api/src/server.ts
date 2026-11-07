@@ -1,9 +1,10 @@
 import { buildApp } from "./app.js";
+import { catalogMigrations } from "./modules/catalog/index.js";
 import { loadConfig, type AppConfig } from "./shared/config.js";
 import { createDatabase, runMigrations, type Migration } from "./shared/database.js";
 
 // Ponto de composição: cada módulo exporta as suas migrations e elas são somadas aqui, em ordem.
-const migrations: Migration[] = [];
+const migrations: Migration[] = [...catalogMigrations];
 
 let config: AppConfig;
 try {
