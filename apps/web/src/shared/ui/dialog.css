@@ -22,18 +22,22 @@
 }
 
 /* Gaveta lateral: ocupa a altura toda e desliza da direita. */
+/* O navegador dá overflow: auto a todo <dialog> modal. Se a animação movesse só o painel, ele sairia
+   da caixa do <dialog> e uma barra de rolagem apareceria embaixo enquanto ele desliza. Por isso
+   quem se move é o próprio <dialog>, e nada dentro dele transborda. */
 .dialog--drawer {
   margin: 0 0 0 auto;
   height: 100%;
   width: min(26rem, 100%);
+  overflow: hidden;
 }
-.dialog--drawer[open] .dialog-panel {
+.dialog--drawer[open] {
   /* Curva que desacelera aos poucos: dá para ver a gaveta deslizar até assentar. Sem mexer na
      opacidade, para a vitrine não aparecer através do painel no caminho. */
   animation: drawer-in 440ms cubic-bezier(0.33, 1, 0.68, 1);
 }
 /* Ao fechar, a gaveta volta para a direita e o fundo clareia; só então o <dialog> fecha. */
-.dialog--drawer.is-closing .dialog-panel {
+.dialog--drawer.is-closing {
   animation: drawer-out 280ms cubic-bezier(0.32, 0, 0.67, 0) forwards;
 }
 .dialog.is-closing::backdrop {
@@ -58,7 +62,7 @@
   overflow-y: auto;
   border-radius: var(--r-xl);
 }
-.dialog--modal[open] .dialog-panel {
+.dialog--modal[open] {
   animation: pop 340ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .dialog--modal .dialog-panel {
