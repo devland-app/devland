@@ -2,6 +2,7 @@ import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
 
 import { createCatalogModule } from "./modules/catalog/index.js";
 import { createOrdersModule } from "./modules/orders/index.js";
+import { createPaymentsModule } from "./modules/payments/index.js";
 import { registerApiDocs } from "./shared/api-docs.js";
 import type { Database } from "./shared/database.js";
 
@@ -69,7 +70,8 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   const catalog = createCatalogModule(options.db);
   catalog.registerRoutes(app);
 
-  const orders = createOrdersModule(options.db, catalog.service);
+  const payments = createPaymentsModule(options.db);
+  const orders = createOrdersModule(options.db, catalog.service, payments.service);
   orders.registerRoutes(app);
 
   return app;

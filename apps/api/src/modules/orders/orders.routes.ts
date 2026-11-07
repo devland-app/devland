@@ -1,11 +1,14 @@
 import type { FastifyInstance } from "fastify";
 
 import { errorResponseSchema } from "../../shared/http.js";
+import { paymentMethodSchema, paymentSchema, type PaymentMethod } from "../payments/index.js";
 import {
   InsufficientStockError,
   MAX_UNITS_PER_PRODUCT,
   OrderNotFoundError,
+  PaymentDeclinedError,
   QuantityLimitError,
+  SoldOutError,
   UnknownProductsError,
   type OrdersService,
 } from "./orders.service.js";
@@ -61,10 +64,25 @@ interface OrderParams {
   Params: { id: string };
 }
 
+interface PayOrderRequest {
+  Params: { id: string };
+  Body: { method: PaymentMethod };
+}
+
+const NOTHING_CHARGED = "Pagamento de mentirinha: nenhum valor foi cobrado.";
+
+const orderIdParamsSchema = {
+  type: "object",
+  required: ["id"],
+  additionalProperties: false,
+  properties: { id: { type: "string", format: "uuid", description: "Código do pedido" } },
+} as const;
+
 // Camada HTTP: valida a entrada, chama o service e traduz erros de negócio em status HTTP.
 export function registerOrderRoutes(app: FastifyInstance, service: OrdersService): void {
   app.addSchema(orderItemSchema);
   app.addSchema(orderSchema);
+  app.addSchema(paymentSchema);
 
   app.post<CreateOrderRequest>(
     "/orders",
@@ -154,12 +172,7 @@ export function registerOrderRoutes(app: FastifyInstance, service: OrdersService
         tags: ["orders"],
         operationId: "getOrder",
         summary: "Consulta um pedido pelo código",
-        params: {
-          type: "object",
-          required: ["id"],
-          additionalProperties: false,
-          properties: { id: { type: "string", format: "uuid", description: "Código do pedido" } },
-        },
+        params: orderIdParamsSchema,
         response: {
           200: { description: "O pedido", $ref: "Order#" },
           400: { description: "Código em formato inválido", ...errorResponseSchema },
@@ -173,6 +186,67 @@ export function registerOrderRoutes(app: FastifyInstance, service: OrdersService
       } catch (error) {
         if (error instanceof OrderNotFoundError) {
           return reply.code(404).send({ message: "Pedido não encontrado." });
+        }
+        throw error;
+      }
+    },
+  );
+
+  app.post<PayOrderRequest>(
+    "/orders/:id/payment",
+    {
+      schema: {
+        tags: ["orders"],
+        operationId: "payOrder",
+        summary: "Paga um pedido de mentirinha",
+        description:
+          "Nenhum valor é cobrado. Baixa de estoque, pagamento e pedido pago acontecem juntos ou não " +
+          "acontecem. Pagar um pedido já pago devolve o mesmo recibo, sem nova cobrança.",
+        params: orderIdParamsSchema,
+        body: {
+          type: "object",
+          additionalProperties: false,
+          required: ["method"],
+          properties: { method: paymentMethodSchema },
+        },
+        response: {
+          200: {
+            description: "Pedido pago (ou já estava pago)",
+            type: "object",
+            additionalProperties: false,
+            required: ["notice", "order", "payment"],
+            properties: {
+              notice: { type: "string", examples: [NOTHING_CHARGED] },
+              order: { $ref: "Order#" },
+              payment: { $ref: "Payment#" },
+            },
+          },
+          400: { description: "Requisição inválida", ...errorResponseSchema },
+          402: { description: "Pagamento recusado (cartão sem saldo)", ...errorResponseSchema },
+          404: { description: "Nenhum pedido com esse código", ...errorResponseSchema },
+          409: { description: "Um mascote do pedido esgotou", ...errorResponseSchema },
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const { order, payment, alreadyPaid } = await service.payOrder(
+          request.params.id,
+          request.body.method,
+        );
+        if (alreadyPaid) {
+          reply.header("Idempotent-Replayed", "true");
+        }
+        return { notice: NOTHING_CHARGED, order, payment };
+      } catch (error) {
+        if (error instanceof OrderNotFoundError) {
+          return reply.code(404).send({ message: "Pedido não encontrado." });
+        }
+        if (error instanceof PaymentDeclinedError) {
+          return reply.code(402).send({ message: error.message });
+        }
+        if (error instanceof SoldOutError) {
+          return reply.code(409).send({ message: error.message });
         }
         throw error;
       }

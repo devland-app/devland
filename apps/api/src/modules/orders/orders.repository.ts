@@ -1,4 +1,4 @@
-import type { Database } from "../../shared/database.js";
+import type { Database, Transaction } from "../../shared/database.js";
 import type { Order, OrderItem, OrderStatus } from "./orders.types.js";
 
 export interface NewOrder {
@@ -20,6 +20,8 @@ export interface OrderRepository {
   findById(id: string): Promise<Order | undefined>;
   findByIdempotencyKey(key: string): Promise<Order | undefined>;
   create(order: NewOrder): Promise<Order>;
+  lockForPayment(id: string, trx: Transaction): Promise<OrderStatus | undefined>;
+  markPaid(id: string, trx: Transaction): Promise<void>;
 }
 
 interface OrderRow {
@@ -107,6 +109,19 @@ export class KnexOrderRepository implements OrderRepository {
       throw new Error(`Pedido ${order.id} não encontrado logo após ser criado`);
     }
     return created;
+  }
+
+  // SELECT ... FOR UPDATE: trava a linha do pedido até o fim da transação. Um segundo pagamento
+  // do mesmo pedido espera aqui e, quando passa, já encontra o status "paid".
+  async lockForPayment(id: string, trx: Transaction): Promise<OrderStatus | undefined> {
+    const row = await trx<OrdersTable>("orders").select("status").where({ id }).forUpdate().first();
+    return row?.status;
+  }
+
+  async markPaid(id: string, trx: Transaction): Promise<void> {
+    await trx<OrdersTable>("orders")
+      .where({ id, status: "awaiting_payment" })
+      .update({ status: "paid", paid_at: trx.fn.now() });
   }
 
   private async withItems(row: OrderRow): Promise<Order> {

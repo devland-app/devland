@@ -124,6 +124,44 @@ components:
             - "null"
             - string
           format: date-time
+    Payment:
+      type: object
+      description: Pagamento de mentirinha aprovado
+      additionalProperties: false
+      required:
+        - id
+        - method
+        - status
+        - amountCents
+        - receiptCode
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum:
+            - pix
+            - toy_card
+            - broke_toy_card
+        status:
+          type: string
+          enum:
+            - approved
+        amountCents:
+          type: integer
+          description: Valor simulado, em centavos
+          examples:
+            - 14470
+        receiptCode:
+          type: string
+          description: Recibo de mentirinha
+          examples:
+            - DZ-3F8C2A1E
+        createdAt:
+          type: string
+          format: date-time
 paths:
   /health:
     get:
@@ -379,6 +417,116 @@ paths:
             application/json:
               schema:
                 description: Nenhum pedido com esse código
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+  /orders/{id}/payment:
+    post:
+      operationId: payOrder
+      summary: Paga um pedido de mentirinha
+      tags:
+        - orders
+      description: Nenhum valor é cobrado. Baixa de estoque, pagamento e pedido pago
+        acontecem juntos ou não acontecem. Pagar um pedido já pago devolve o
+        mesmo recibo, sem nova cobrança.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - method
+              properties:
+                method:
+                  type: string
+                  enum:
+                    - pix
+                    - toy_card
+                    - broke_toy_card
+                  description: "pix: Pix de mentirinha · toy_card: cartão de brinquedo ·
+                    broke_toy_card: cartão sem saldo, sempre recusado (para ver
+                    a tela de recusa)"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: path
+          name: id
+          required: true
+          description: Código do pedido
+      responses:
+        "200":
+          description: Pedido pago (ou já estava pago)
+          content:
+            application/json:
+              schema:
+                description: Pedido pago (ou já estava pago)
+                type: object
+                additionalProperties: false
+                required:
+                  - notice
+                  - order
+                  - payment
+                properties:
+                  notice:
+                    type: string
+                    examples:
+                      - "Pagamento de mentirinha: nenhum valor foi cobrado."
+                  order:
+                    $ref: "#/components/schemas/Order"
+                  payment:
+                    $ref: "#/components/schemas/Payment"
+        "400":
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                description: Requisição inválida
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "402":
+          description: Pagamento recusado (cartão sem saldo)
+          content:
+            application/json:
+              schema:
+                description: Pagamento recusado (cartão sem saldo)
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "404":
+          description: Nenhum pedido com esse código
+          content:
+            application/json:
+              schema:
+                description: Nenhum pedido com esse código
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "409":
+          description: Um mascote do pedido esgotou
+          content:
+            application/json:
+              schema:
+                description: Um mascote do pedido esgotou
                 type: object
                 required:
                   - message
