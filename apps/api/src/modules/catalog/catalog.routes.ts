@@ -92,8 +92,10 @@ export function registerCatalogRoutes(app: FastifyInstance, service: CatalogServ
       },
     },
     async (_request, reply) => {
+      // O cabeçalho vem depois da consulta: uma resposta de erro nunca pode ficar no cache da CDN.
+      const products = await service.listProducts();
       reply.header("Cache-Control", CATALOG_CACHE);
-      return service.listProducts();
+      return products;
     },
   );
 
