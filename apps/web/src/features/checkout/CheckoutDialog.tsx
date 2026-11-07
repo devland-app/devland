@@ -9,6 +9,7 @@ import { useCart } from "../../shared/cart/cartContext.ts";
 import { formatCents } from "../../shared/format.ts";
 import { rememberOrder } from "../../shared/myOrders.ts";
 import { Dialog } from "../../shared/ui/Dialog.tsx";
+import { useProducts } from "../../shared/useProducts.ts";
 
 import { burstConfetti } from "./confetti.ts";
 import { PaymentPreview } from "./PaymentPreview.tsx";
@@ -20,16 +21,20 @@ type Step =
   | { name: "done"; order: Order; payment: Payment };
 
 const METHODS: Array<{ value: PaymentMethod; label: string; note: string }> = [
-  { value: "pix", label: "Pix de mentirinha", note: "Um QR code que não leva a lugar nenhum." },
+  { value: "pix", label: "Pix (simulado)", note: "QR code ilustrativo, sem valor real." },
   {
     value: "toy_card",
-    label: "Cartão de brinquedo",
-    note: "Nada para digitar: ele já vem pronto.",
+    label: "Cartão (simulado)",
+    note: "Cartão ilustrativo, sem nenhum dado para preencher.",
   },
-  { value: "broke_toy_card", label: "Cartão sem saldo", note: "Para ver como fica uma recusa." },
+  {
+    value: "broke_toy_card",
+    label: "Cartão sem saldo (simulado)",
+    note: "Mostra como fica um pagamento recusado.",
+  },
 ];
 
-// A API responde na hora; a espera é só para a "experiência" de pagar.
+// A API responde na hora; a espera curta só torna a etapa de pagamento perceptível.
 const PROCESSING_MS = 1400;
 
 const STEP_LABELS = [
@@ -40,7 +45,7 @@ const STEP_LABELS = [
 
 interface CheckoutDialogProps {
   onClose: () => void;
-  // Pedido que ficou aguardando pagamento ("Meus pedidos"): o checkout começa direto no pagamento.
+  // Pedido que ficou aguardando pagamento: o checkout começa direto no pagamento.
   resumeOrder?: Order;
 }
 
@@ -48,6 +53,7 @@ interface CheckoutDialogProps {
 export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
   const cart = useCart();
   const adoptions = useAdoptions();
+  const products = useProducts();
   const [step, setStep] = useState<Step>(
     resumeOrder ? { name: "pay", order: resumeOrder } : { name: "review", busy: false },
   );
@@ -98,7 +104,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
   return (
     <Dialog open onClose={onClose} labelledBy="checkout-title" variant="modal">
       <div className="panel-head">
-        <h2 id="checkout-title">Checkout de mentirinha</h2>
+        <h2 id="checkout-title">Compra simulada</h2>
         <button
           className="btn btn--soft btn--icon"
           type="button"
@@ -168,10 +174,10 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
       {step.name === "pay" && (
         <div className="step">
           <h3 ref={heading} tabIndex={-1}>
-            Como você quer fingir que paga?
+            Forma de pagamento
           </h3>
           <fieldset className="methods">
-            <legend className="sr-only">Forma de pagamento de mentirinha</legend>
+            <legend className="sr-only">Forma de pagamento simulada</legend>
             {METHODS.map((option) => (
               <label key={option.value} className="method">
                 <input
@@ -193,16 +199,13 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
               {step.error}
             </p>
           )}
-          <p className="fine">
-            Esta loja nunca pede dados de cartão de verdade. Se um site de brincadeira pedir,
-            desconfie.
-          </p>
+          <p className="fine">Esta loja nunca pede dados de cartão reais.</p>
           <div className="step-actions">
             <button className="btn btn--soft" type="button" onClick={onClose}>
               Pagar depois
             </button>
             <button className="btn btn--mint" type="button" onClick={() => pay(step.order)}>
-              Pagar de mentirinha · {formatCents(step.order.totalCents)}
+              Pagar (simulação) · {formatCents(step.order.totalCents)}
             </button>
           </div>
         </div>
@@ -216,27 +219,40 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
             <span />
           </div>
           <h3 ref={heading} tabIndex={-1}>
-            Falando com o banco imaginário…
+            Processando o pagamento…
           </h3>
-          <p className="fine">Isso leva só um instante e não cobra nada.</p>
+          <p className="fine">É uma simulação: nenhum valor é cobrado.</p>
         </div>
       )}
 
       {step.name === "done" && (
         <div className="step result">
-          <img
-            src={apiAssetUrl("/images/mascots/polvo-orquestrador.svg")}
-            alt=""
-            width={130}
-            height={130}
-          />
+          {products.state.status === "ready" && (
+            <div className="adopted-thumbs" aria-hidden="true">
+              {step.order.items.map((item) => {
+                const product =
+                  products.state.status === "ready"
+                    ? products.state.products.find((candidate) => candidate.id === item.productId)
+                    : undefined;
+                return product ? (
+                  <img
+                    key={item.productId}
+                    src={apiAssetUrl(product.imageUrl)}
+                    alt=""
+                    width={72}
+                    height={72}
+                  />
+                ) : null;
+              })}
+            </div>
+          )}
           <h3 ref={heading} tabIndex={-1}>
             Pedido aprovado!
           </h3>
           <span className="badge-free">Nenhum valor foi cobrado</span>
           <p>
-            Seus mascotes já estão em "Meus mascotes", prontos para explicar o que sabem. Total
-            simulado: {formatCents(step.order.totalCents)}.
+            Os mascotes adotados já estão em Meus mascotes, cada um com a explicação do seu
+            conceito. Total simulado: {formatCents(step.order.totalCents)}.
           </p>
           <dl className="receipt">
             <div>

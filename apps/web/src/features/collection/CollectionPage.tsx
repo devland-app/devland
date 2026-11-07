@@ -15,8 +15,8 @@ export function CollectionPage() {
       <div className="intro">
         <h1 id="collection-title">Meus mascotes</h1>
         <p>
-          Cada mascote adotado ganha uma página própria, onde explica o conceito de DevOps dele de
-          um jeito simples. Sem login: sua coleção fica salva neste navegador.
+          Cada mascote adotado tem uma página com o conceito de DevOps que ele representa, explicado
+          de forma simples. A coleção fica salva neste navegador.
         </p>
       </div>
 
@@ -57,7 +57,7 @@ export function CollectionPage() {
                         <img src={apiAssetUrl(product.imageUrl)} alt="" width={150} height={150} />
                         <span aria-hidden="true">?</span>
                       </div>
-                      <strong>Quem será?</strong>
+                      <strong>Ainda não adotado</strong>
                       <span className="chip">{product.concept}</span>
                       <a className="card-link" href="#vitrine">
                         Adotar na vitrine

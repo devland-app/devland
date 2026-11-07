@@ -34,7 +34,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="buy-row">
         <p className="price">
           <strong>{formatCents(product.priceCents)}</strong>
-          <small>de mentirinha</small>
+          <small>preço simulado</small>
         </p>
         <AdoptButton
           product={product}

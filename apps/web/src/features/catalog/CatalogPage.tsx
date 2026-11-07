@@ -15,11 +15,11 @@ export function CatalogPage() {
     <section aria-labelledby="catalog-title">
       <div className="intro">
         <h1 id="catalog-title">
-          Miniaturas de massinha que <em>entendem de DevOps</em>
+          Mascotes de massinha que <em>explicam DevOps</em>
         </h1>
         <p>
-          Adote um de cada, finalize a compra de mentirinha e desbloqueie a página de cada mascote,
-          onde ele explica o conceito de DevOps que representa. Ninguém cobra nada.
+          Adote cada mascote numa compra simulada e desbloqueie a página dele, com o conceito de
+          DevOps que ele representa explicado de forma simples. Nenhum valor é cobrado.
         </p>
       </div>
 

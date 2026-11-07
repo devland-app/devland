@@ -40,8 +40,7 @@ export default function App() {
         </main>
         <footer className="site-footer gutter">
           <div className="wrap">
-            DevZoo · loja de brincadeira com mascotes originais · nenhum produto é vendido de
-            verdade
+            DevZoo · loja simulada com mascotes originais · nenhum produto é vendido
           </div>
         </footer>
         <CartDrawer

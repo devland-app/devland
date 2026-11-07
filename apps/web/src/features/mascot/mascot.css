@@ -109,27 +109,6 @@
   }
 }
 
-.cheer {
-  min-height: 2.4rem;
-  margin: 0;
-}
-.cheer span {
-  display: inline-block;
-  font: 800 1.2rem/1 var(--font-display);
-  color: var(--on-color);
-  background: var(--sun);
-  padding: 0.55em 0.9em;
-  border-radius: var(--r-pill);
-  box-shadow: 0 4px 0 var(--sun-deep);
-  animation: pop-cheer 420ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-@keyframes pop-cheer {
-  from {
-    transform: translateY(8px) scale(0.8);
-    opacity: 0;
-  }
-}
-
 .mascot-text {
   display: grid;
   gap: 1rem;

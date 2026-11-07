@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import type { PaymentMethod } from "../../shared/api/types.ts";
 
 // Prévia visual de cada forma de pagamento. Nada aqui coleta dados: não existe campo para digitar
-// cartão, de propósito. Por hábito, as pessoas digitam o cartão de verdade, e uma loja de brincadeira
-// não deve nem receber esse dado.
+// cartão, de propósito. Por hábito, as pessoas digitam o cartão de verdade, e uma loja simulada não
+// deve nem receber esse dado.
 export function PaymentPreview({ method, orderId }: { method: PaymentMethod; orderId: string }) {
   return method === "pix" ? (
     <FakePix orderId={orderId} />
@@ -16,7 +16,7 @@ export function PaymentPreview({ method, orderId }: { method: PaymentMethod; ord
 function FakePix({ orderId }: { orderId: string }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   // Derivado do pedido: estável entre renderizações e sem nenhum valor de verdade.
-  const code = `DEVZOO-NAO-E-REAL-${orderId.slice(0, 8).toUpperCase()}`;
+  const code = `DEVZOO-SIMULADO-${orderId.slice(0, 8).toUpperCase()}`;
   const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function FakePix({ orderId }: { orderId: string }) {
         width={210}
         height={210}
         role="img"
-        aria-label="QR code de mentirinha, só decorativo"
+        aria-label="QR code ilustrativo, sem valor real"
       />
       <div className="code-row">
         <span className="code">{code}</span>
@@ -59,9 +59,9 @@ function ToyCard({ broke }: { broke: boolean }) {
       <div
         className={`toy-card${broke ? " toy-card--broke" : ""}`}
         role="img"
-        aria-label={broke ? "Cartão de brinquedo sem saldo" : "Cartão de brinquedo"}
+        aria-label={broke ? "Cartão simulado sem saldo" : "Cartão simulado"}
       >
-        <span className="sticker">{broke ? "sem saldo" : "de brinquedo"}</span>
+        <span className="sticker">{broke ? "sem saldo" : "simulado"}</span>
         <span className="toy-chip" />
         <span className="toy-number">0000 0000 0000 0000</span>
         <span className="toy-meta">

@@ -28,14 +28,13 @@ export function Header({ route, actions }: HeaderProps) {
       {!banner.dismissed && (
         <div className="banner gutter" role="note">
           <p>
-            <strong>Loja de brincadeira.</strong> Nada aqui é vendido de verdade e nenhum valor é
-            cobrado.
+            <strong>Loja simulada.</strong> Nenhum produto é vendido e nenhum valor é cobrado.
           </p>
           <button
             className="banner-close"
             type="button"
             onClick={banner.dismiss}
-            aria-label="Fechar aviso de loja de brincadeira"
+            aria-label="Fechar aviso de loja simulada"
           >
             ×
           </button>

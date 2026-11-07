@@ -52,7 +52,6 @@ export function CartDrawer({ open, onClose, onCheckout, onPayPending }: CartDraw
 
         {cart.lines.length === 0 ? (
           <div className="cart-empty">
-            <img src={apiAssetUrl("/images/mascots/lesminha-do-pipeline.svg")} alt="" width={120} />
             <strong>Carrinho vazio</strong>
             <span>Escolha um mascote na vitrine e toque em "Adotar".</span>
           </div>
@@ -84,7 +83,7 @@ export function CartDrawer({ open, onClose, onCheckout, onPayPending }: CartDraw
           <span>Total estimado</span>
           <span>{formatCents(cart.estimatedTotalCents)}</span>
         </div>
-        <p className="fine">Valor de mentirinha: nada será cobrado.</p>
+        <p className="fine">Valor simulado: nada será cobrado.</p>
         <button
           className="btn btn--mint btn--block"
           type="button"

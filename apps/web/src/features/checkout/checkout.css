@@ -154,7 +154,7 @@
   justify-content: center;
 }
 
-/* O cartão de brinquedo tem paleta própria (é um objeto), legível nos dois temas. */
+/* O cartão simulado tem paleta própria (é um objeto), legível nos dois temas. */
 .toy-card {
   position: relative;
   width: min(19rem, 100%);
@@ -271,6 +271,13 @@
   color: var(--muted);
   max-width: 44ch;
 }
+.adopted-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
 .badge-free {
   font: 800 0.95rem/1 var(--font-display);
   color: var(--on-color);

@@ -10,8 +10,8 @@ function wasDismissed(): boolean {
   }
 }
 
-// O aviso de "loja de brincadeira" pode ser fechado; a escolha vale neste navegador. O restante da
-// loja (preços "de mentirinha", checkout, rodapé) continua deixando claro que nada é vendido.
+// O aviso de "loja simulada" pode ser fechado; a escolha vale neste navegador. O restante da loja
+// (preço simulado, checkout, rodapé) continua deixando claro que nada é vendido.
 export function useBannerDismissed(): { dismissed: boolean; dismiss: () => void } {
   const [dismissed, setDismissed] = useState(wasDismissed);
 
