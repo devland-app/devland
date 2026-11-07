@@ -6,6 +6,7 @@ import { PaymentsService } from "./payments.service.js";
 // API pública do módulo de pagamentos: é a única porta de entrada para o resto da aplicação.
 export { paymentsMigrations } from "./payments.migrations.js";
 export { PAYMENT_METHODS } from "./payments.types.js";
+export { paymentMethodSchema, paymentSchema } from "./payments.schemas.js";
 export type { PaymentsService } from "./payments.service.js";
 export type { ChargeRequest, ChargeResult, Payment, PaymentMethod } from "./payments.types.js";
 
