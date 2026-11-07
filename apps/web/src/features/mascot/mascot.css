@@ -47,50 +47,14 @@
   justify-items: center;
 }
 
-/* O SVG entra inline: dá para animar olhos e boca separadamente. O fundo redondo é escondido. */
-.mascot-art {
-  display: block;
+.mascot-button .mascot-art {
   width: min(100%, 300px);
   transform-origin: 50% 88%;
-  animation: breathe 3.2s ease-in-out infinite;
+  animation: mascot-breathe 3.2s ease-in-out infinite;
   transition: rotate 220ms ease;
-}
-.mascot-art svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: visible;
-}
-.mascot-art .backdrop {
-  display: none;
 }
 .mascot-button:hover .mascot-art {
   rotate: -4deg;
-}
-
-.mascot-art .eye,
-.mascot-art .eye-happy,
-.mascot-art .mouth,
-.mascot-art .mouth-happy,
-.mascot-art .cheek {
-  transform-box: fill-box;
-  transform-origin: center;
-  transition:
-    opacity 120ms ease,
-    transform 90ms ease;
-}
-.mascot-art.is-blinking .eye {
-  transform: scaleY(0.12);
-}
-/* Feliz: olhinhos fechados em arco, sorriso aberto e bochechas mais coradas. */
-.mascot-art.is-happy .eye,
-.mascot-art.is-happy .mouth {
-  opacity: 0;
-}
-.mascot-art.is-happy .eye-happy,
-.mascot-art.is-happy .mouth-happy,
-.mascot-art.is-happy .cheek {
-  opacity: 1;
 }
 
 .mascot-art.is-jump {
@@ -120,7 +84,7 @@
   animation: shadow-jump 760ms cubic-bezier(0.3, 0.7, 0.4, 1);
 }
 
-@keyframes breathe {
+@keyframes mascot-breathe {
   50% {
     transform: scale(1.025, 0.985);
   }

@@ -13,9 +13,9 @@
 
 .card--placeholder {
   min-height: 26rem;
-  animation: breathe 1.4s ease-in-out infinite;
+  animation: placeholder-pulse 1.4s ease-in-out infinite;
 }
-@keyframes breathe {
+@keyframes placeholder-pulse {
   50% {
     opacity: 0.55;
   }
