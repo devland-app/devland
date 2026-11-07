@@ -50,6 +50,10 @@
   font: 800 1.15rem/1.15 var(--font-display);
   text-wrap: balance;
 }
+.quiz-tile-reward.is-complete {
+  color: var(--ink);
+  font-weight: 700;
+}
 .quiz-tile-reward {
   display: inline-flex;
   flex-wrap: wrap;
@@ -109,10 +113,24 @@
   border-radius: 6px;
 }
 .quiz-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
   margin: 0;
   color: var(--muted);
   font-weight: 700;
   font-size: 0.9rem;
+}
+.quiz-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--ink);
+}
+.quiz-value.is-earned {
+  color: var(--muted);
 }
 
 .quiz-steps {

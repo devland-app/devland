@@ -3,6 +3,8 @@ import { createContext, useContext } from "react";
 export interface WalletContextValue {
   // "loading" enquanto confere o saldo salvo; "error" se a API não respondeu.
   status: "loading" | "ready" | "error";
+  // null enquanto não existe carteira neste navegador.
+  walletId: string | null;
   balanceCoins: number;
   // Devolve o código da carteira, criando uma na primeira vez que ela é necessária.
   ensureWallet: () => Promise<string>;

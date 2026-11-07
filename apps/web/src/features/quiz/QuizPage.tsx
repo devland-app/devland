@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 
 import { answerQuizQuestion, ApiError, startQuizAttempt } from "../../shared/api/client.ts";
 import type { QuizAnswerResult, QuizAttempt } from "../../shared/api/types.ts";
+import { formatCoins } from "../../shared/format.ts";
 import { useSound } from "../../shared/sound/soundContext.ts";
 import { Coins } from "../../shared/ui/Coins.tsx";
 import { burstConfetti, themeColors } from "../../shared/ui/confetti.ts";
@@ -129,9 +130,7 @@ export function QuizPage({ slug }: { slug: string }) {
           <span className="chip">{attempt?.concept ?? "Quiz"}</span>
           <h1 id="quiz-title">{attempt?.title ?? "Preparando o quiz"}</h1>
           {attempt && (
-            <p className="quiz-reward">
-              Cada acerto vale <Coins value={attempt.coinsPerCorrectAnswer} size="sm" />
-            </p>
+            <QuizRewardLine total={attempt.totalCoins} earned={attempt.earnedCoins + score.coins} />
           )}
         </div>
       </header>
@@ -167,12 +166,13 @@ export function QuizPage({ slug }: { slug: string }) {
               : `Você acertou ${score.marks.filter(Boolean).length} de ${score.marks.length}`}
           </h2>
           <p>
-            Você ganhou <Coins value={score.coins} /> neste quiz. Seu saldo agora é{" "}
+            Você ganhou <Coins value={score.coins} /> nesta rodada. Seu saldo agora é{" "}
             <Coins value={balanceCoins} />.
           </p>
           <p className="fine">
-            Pode jogar de novo quando quiser: as perguntas mudam de ordem e cada acerto vale moedas
-            outra vez.
+            {attempt.earnedCoins + score.coins >= attempt.totalCoins
+              ? "Você já ganhou todas as moedas deste quiz. Jogar de novo serve para treinar."
+              : `Ainda faltam ${formatCoins(attempt.totalCoins - attempt.earnedCoins - score.coins)} neste quiz: as perguntas que você errou continuam valendo.`}
           </p>
           <div className="quiz-actions">
             <button className="btn btn--mint" type="button" onClick={restart}>
@@ -227,6 +227,15 @@ function QuestionCard({ attempt, phase, marks, heading, onAnswer, onNext }: Ques
       </div>
       <p className="quiz-count">
         Pergunta {index + 1} de {total}
+        <span className={`quiz-value${question.alreadyEarned ? " is-earned" : ""}`}>
+          {question.alreadyEarned ? (
+            "Moedas já ganhas"
+          ) : (
+            <>
+              Vale <Coins value={question.coins} size="sm" />
+            </>
+          )}
+        </span>
       </p>
       <h2 ref={answered ? undefined : heading} tabIndex={-1}>
         {question.prompt}
@@ -268,15 +277,25 @@ function QuestionCard({ attempt, phase, marks, heading, onAnswer, onNext }: Ques
       {answered && (
         <div className={`quiz-feedback ${answered.result.correct ? "is-right" : "is-wrong"}`}>
           <h3 ref={heading} tabIndex={-1}>
-            {answered.result.correct ? (
+            {answered.result.coinsAwarded > 0 ? (
               <>
                 Acertou! + <Coins value={answered.result.coinsAwarded} />
               </>
+            ) : answered.result.correct ? (
+              "Acertou!"
             ) : (
               "Não foi dessa vez"
             )}
           </h3>
           <p>{answered.result.explanation}</p>
+          {answered.result.alreadyEarned && (
+            <p className="fine">As moedas desta pergunta você já tinha ganhado antes.</p>
+          )}
+          {!answered.result.correct && !question.alreadyEarned && (
+            <p className="fine">
+              Esta pergunta continua valendo {formatCoins(question.coins)} nos próximos quizzes.
+            </p>
+          )}
           <button className="btn btn--mint" type="button" onClick={() => onNext(index)}>
             {index + 1 < total ? "Próxima pergunta" : "Ver resultado"}
           </button>
@@ -288,4 +307,17 @@ function QuestionCard({ attempt, phase, marks, heading, onAnswer, onNext }: Ques
 
 function messageOf(error: unknown): string {
   return error instanceof ApiError ? error.message : "Algo deu errado. Tente de novo.";
+}
+
+// Quanto o quiz paga e quanto ainda falta, contando o que já foi ganho nesta rodada.
+function QuizRewardLine({ total, earned }: { total: number; earned: number }) {
+  if (earned >= total) {
+    return <p className="quiz-reward">Você já ganhou todas as moedas deste quiz.</p>;
+  }
+  return (
+    <p className="quiz-reward">
+      {earned > 0 ? "Ainda paga" : "Paga até"} <Coins value={total - earned} size="sm" />
+      {earned > 0 && <span>de {total}</span>}
+    </p>
+  );
 }

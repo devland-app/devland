@@ -7,6 +7,7 @@ import type { QuizSummary } from "../../shared/api/types.ts";
 import { Coins } from "../../shared/ui/Coins.tsx";
 import { MascotArt } from "../../shared/ui/MascotArt.tsx";
 import { useProducts } from "../../shared/useProducts.ts";
+import { useWallet } from "../../shared/wallet/walletContext.ts";
 
 type QuizList =
   | { status: "loading" }
@@ -16,9 +17,10 @@ type QuizList =
 export function QuizListPage() {
   const [list, setList] = useState<QuizList>({ status: "loading" });
   const products = useProducts();
+  const { walletId } = useWallet();
 
   const load = useCallback(() => {
-    listQuizzes().then(
+    listQuizzes(walletId).then(
       (quizzes) => setList({ status: "ready", quizzes }),
       (error: unknown) =>
         setList({
@@ -27,7 +29,7 @@ export function QuizListPage() {
             error instanceof ApiError ? error.message : "Não deu para carregar os quizzes agora.",
         }),
     );
-  }, []);
+  }, [walletId]);
 
   useEffect(load, [load]);
 
@@ -38,9 +40,10 @@ export function QuizListPage() {
           Quizzes que <em>valem moedas</em>
         </h1>
         <p>
-          Cada quiz tem 5 perguntas sobre um conceito de DevOps, e cada acerto vale 20 moedas.
-          Depois de cada resposta aparece a explicação. Jogue quantas vezes quiser e use as moedas
-          para adotar os mascotes na vitrine.
+          Cada quiz tem 5 perguntas sobre um conceito de DevOps e paga, no total, o preço do mascote
+          desse conceito. Cada pergunta paga uma vez, no primeiro acerto; as que você errar
+          continuam valendo nos próximos quizzes. Acertando todas, as moedas dão exatamente para
+          adotar todos os mascotes. Depois de cada resposta aparece a explicação.
         </p>
       </div>
 
@@ -75,10 +78,7 @@ export function QuizListPage() {
                   )}
                   <span className="chip">{quiz.concept}</span>
                   <strong>{quiz.title}</strong>
-                  <span className="quiz-tile-reward">
-                    {quiz.questionCount} perguntas · até{" "}
-                    <Coins value={quiz.questionCount * quiz.coinsPerCorrectAnswer} size="sm" />
-                  </span>
+                  <QuizReward quiz={quiz} />
                 </a>
               </li>
             );
@@ -86,5 +86,24 @@ export function QuizListPage() {
         </ul>
       )}
     </section>
+  );
+}
+
+// O que o quiz ainda paga para esta carteira.
+function QuizReward({ quiz }: { quiz: QuizSummary }) {
+  if (quiz.totalCoins > 0 && quiz.earnedCoins >= quiz.totalCoins) {
+    return <span className="quiz-tile-reward is-complete">Todas as moedas ganhas ✓</span>;
+  }
+  if (quiz.earnedCoins > 0) {
+    return (
+      <span className="quiz-tile-reward">
+        Ganhou <Coins value={quiz.earnedCoins} size="sm" /> de {quiz.totalCoins}
+      </span>
+    );
+  }
+  return (
+    <span className="quiz-tile-reward">
+      {quiz.questionCount} perguntas · até <Coins value={quiz.totalCoins} size="sm" />
+    </span>
   );
 }

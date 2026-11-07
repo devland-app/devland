@@ -69,7 +69,9 @@ export interface QuizSummary {
   title: string;
   concept: string;
   questionCount: number;
-  coinsPerCorrectAnswer: number;
+  // Soma do que as perguntas pagam: o preço do mascote do conceito.
+  totalCoins: number;
+  earnedCoins: number;
 }
 
 export interface QuizOption {
@@ -82,6 +84,9 @@ export interface QuizQuestion {
   id: string;
   prompt: string;
   options: QuizOption[];
+  coins: number;
+  // Esta carteira já recebeu as moedas da pergunta: acertar de novo não paga.
+  alreadyEarned: boolean;
 }
 
 export interface QuizAttempt {
@@ -89,7 +94,8 @@ export interface QuizAttempt {
   quizSlug: string;
   title: string;
   concept: string;
-  coinsPerCorrectAnswer: number;
+  totalCoins: number;
+  earnedCoins: number;
   questions: QuizQuestion[];
 }
 
@@ -98,6 +104,7 @@ export interface QuizAnswerResult {
   correctOptionId: string;
   explanation: string;
   coinsAwarded: number;
+  alreadyEarned: boolean;
   balanceCoins: number;
   answeredCount: number;
   questionCount: number;

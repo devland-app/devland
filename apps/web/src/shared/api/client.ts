@@ -75,8 +75,10 @@ export function getWallet(id: string): Promise<Wallet> {
   return request<Wallet>(`/wallets/${encodeURIComponent(id)}`);
 }
 
-export function listQuizzes(): Promise<QuizSummary[]> {
-  return request<QuizSummary[]>("/quizzes");
+// Com a carteira, cada quiz vem com o quanto ela já ganhou nele.
+export function listQuizzes(walletId?: string | null): Promise<QuizSummary[]> {
+  const query = walletId ? `?walletId=${encodeURIComponent(walletId)}` : "";
+  return request<QuizSummary[]>(`/quizzes${query}`);
 }
 
 export function startQuizAttempt(slug: string, walletId: string): Promise<QuizAttempt> {

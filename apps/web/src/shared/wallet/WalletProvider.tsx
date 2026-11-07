@@ -20,6 +20,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     storedId ? "loading" : "ready",
   );
   const [balanceCoins, setBalanceCoins] = useState(0);
+  // Cópia do código em estado, para quem mostra dados da carteira saber quando ela muda.
+  const [currentId, setCurrentId] = useState<string | null>(storedId);
 
   const refresh = useCallback(async () => {
     const id = walletId.current;
@@ -32,6 +34,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (error instanceof ApiError && error.status === 404) {
         // A carteira não existe mais (banco recriado, por exemplo): uma nova nasce no próximo uso.
         walletId.current = null;
+        setCurrentId(null);
         writeStored(STORAGE_KEY, null);
         setBalanceCoins(0);
         setStatus("ready");
@@ -51,6 +54,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     creating.current ??= createWallet()
       .then((wallet) => {
         walletId.current = wallet.id;
+        setCurrentId(wallet.id);
         writeStored(STORAGE_KEY, wallet.id);
         setBalanceCoins(wallet.balanceCoins);
         setStatus("ready");
@@ -63,8 +67,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<WalletContextValue>(
-    () => ({ status, balanceCoins, ensureWallet, updateBalance: setBalanceCoins, refresh }),
-    [status, balanceCoins, ensureWallet, refresh],
+    () => ({
+      status,
+      walletId: currentId,
+      balanceCoins,
+      ensureWallet,
+      updateBalance: setBalanceCoins,
+      refresh,
+    }),
+    [status, currentId, balanceCoins, ensureWallet, refresh],
   );
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;

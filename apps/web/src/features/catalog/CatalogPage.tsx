@@ -18,9 +18,10 @@ export function CatalogPage() {
           Mascotes de massinha que <em>explicam DevOps</em>
         </h1>
         <p>
-          Responda os quizzes, ganhe moedas e adote os mascotes. Cada um desbloqueia uma página com
-          o conceito de DevOps que ele representa, explicado de forma simples. As moedas são
-          virtuais: nada aqui custa dinheiro.
+          Responda os quizzes, ganhe moedas e adote os mascotes: acertando todas as perguntas, as
+          moedas dão exatamente para adotar todos. Cada mascote desbloqueia uma página com o
+          conceito de DevOps que ele representa, explicado de forma simples. As moedas são virtuais:
+          nada aqui custa dinheiro.
         </p>
         <a className="btn btn--lilac" href="#quizzes">
           Ganhar moedas nos quizzes
