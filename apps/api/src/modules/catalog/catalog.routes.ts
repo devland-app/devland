@@ -43,8 +43,10 @@ const productSchema = {
     imageUrl: {
       type: "string",
       format: "uri-reference",
-      description: "Ilustração do mascote (SVG), relativa à URL da API",
-      examples: ["/images/mascots/caranguejo-dos-conteineres.svg"],
+      description:
+        "Ilustração do mascote (SVG), relativa à URL da API. O parâmetro v muda sempre que o " +
+        "desenho muda, para o navegador não usar uma cópia antiga em cache.",
+      examples: ["/images/mascots/caranguejo-dos-conteineres.svg?v=3f8c2a1e"],
     },
     lesson: {
       type: "object",

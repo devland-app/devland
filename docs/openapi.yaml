@@ -53,9 +53,11 @@ components:
         imageUrl:
           type: string
           format: uri-reference
-          description: Ilustração do mascote (SVG), relativa à URL da API
+          description: Ilustração do mascote (SVG), relativa à URL da API. O parâmetro v
+            muda sempre que o desenho muda, para o navegador não usar uma cópia
+            antiga em cache.
           examples:
-            - /images/mascots/caranguejo-dos-conteineres.svg
+            - /images/mascots/caranguejo-dos-conteineres.svg?v=3f8c2a1e
         lesson:
           type: object
           description: O conceito de DevOps que o mascote ensina

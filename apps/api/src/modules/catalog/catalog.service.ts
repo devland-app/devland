@@ -1,4 +1,5 @@
 import type { Transaction } from "../../shared/database.js";
+import { versionedImageUrl } from "./catalog.images.js";
 import type { ProductRepository } from "./catalog.repository.js";
 import type { Product } from "./catalog.types.js";
 
@@ -28,8 +29,8 @@ export class CatalogService {
     this.products = products;
   }
 
-  listProducts(): Promise<Product[]> {
-    return this.products.list();
+  async listProducts(): Promise<Product[]> {
+    return (await this.products.list()).map(withVersionedImage);
   }
 
   async getProduct(id: number): Promise<Product> {
@@ -37,7 +38,7 @@ export class CatalogService {
     if (!product) {
       throw new ProductNotFoundError(id);
     }
-    return product;
+    return withVersionedImage(product);
   }
 
   // Usado por outros módulos (ex.: pedidos) para saber nome, preço e estoque atuais. IDs que não
@@ -64,4 +65,8 @@ export class CatalogService {
       }
     }
   }
+}
+
+function withVersionedImage(product: Product): Product {
+  return { ...product, imageUrl: versionedImageUrl(product.imageUrl) };
 }
