@@ -23,6 +23,7 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
       security: [],
       tags: [
         { name: "catalog", description: "Vitrine de miniaturas" },
+        { name: "wallets", description: "Carteiras de moedas virtuais" },
         { name: "orders", description: "Pedidos simulados (nada é cobrado)" },
         { name: "health", description: "Saúde da API e do banco" },
       ],
