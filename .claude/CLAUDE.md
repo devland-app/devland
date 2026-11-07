@@ -55,6 +55,8 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
   `Idempotent-Replayed: true`), inclusive com dois cliques simultâneos (chave única no banco).
 - O cliente envia só `productId` e `quantity`; nome e preço vêm do catálogo e são copiados para o
   pedido. Estoque é conferido ao criar o pedido e baixado no pagamento.
+- É uma coleção: cada mascote é adotado uma vez (`MAX_UNITS_PER_PRODUCT = 1` por pedido). O
+  front esconde o que já foi adotado ou está aguardando pagamento neste navegador.
 - Erros de negócio e de validação saem como `{ "message": "..." }` (`errorResponseSchema` em
   `src/shared/http.ts`); erros 5xx viram mensagem genérica e o detalhe vai só para o log.
 - O AJV rejeita campos desconhecidos (`removeAdditional: false`): campo extra no body é 400.
