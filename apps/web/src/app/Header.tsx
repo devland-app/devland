@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { SoundToggle } from "../features/sound/SoundToggle.tsx";
 import { ThemeToggle } from "../features/theme/ThemeToggle.tsx";
 import { WalletBadge } from "../features/wallet/WalletBadge.tsx";
-import { useBannerDismissed } from "./useBannerDismissed.ts";
 import type { Route } from "./useHashRoute.ts";
 
 const TABS: Array<{ hash: string; label: string; isCurrent: (route: Route) => boolean }> = [
@@ -28,25 +27,8 @@ interface HeaderProps {
 }
 
 export function Header({ route, actions }: HeaderProps) {
-  const banner = useBannerDismissed();
-
   return (
     <header className="topbar">
-      {!banner.dismissed && (
-        <div className="banner gutter" role="note">
-          <p>
-            <strong>Loja simulada.</strong> Nenhum produto é vendido e nenhum valor é cobrado.
-          </p>
-          <button
-            className="banner-close"
-            type="button"
-            onClick={banner.dismiss}
-            aria-label="Fechar aviso de loja simulada"
-          >
-            ×
-          </button>
-        </div>
-      )}
       <div className="nav-band gutter">
         <div className="wrap nav-row">
           <a className="logo" href="#vitrine" aria-label="DevLand, ir para a vitrine">
