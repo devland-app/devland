@@ -135,8 +135,34 @@ const addProductImages: Migration = {
   },
 };
 
+// Com um mascote de cada por pessoa, um estoque global pequeno impediria outras pessoas de completar
+// a coleção. O estoque continua existindo (e sendo baixado com segurança no pagamento), só maior.
+const INITIAL_STOCK: Record<string, number> = {
+  "caranguejo-dos-conteineres": 25,
+  "lesminha-do-pipeline": 40,
+  "corujinha-das-branches": 30,
+  "polvo-orquestrador": 15,
+  "tartaruga-do-rollback": 50,
+  "abelha-dos-logs": 60,
+  "castor-do-cache": 20,
+  "raposa-dos-segredos": 10,
+};
+
+const raiseStockForCollections: Migration = {
+  name: "catalog_004_raise_stock_for_collections",
+  async up(db) {
+    await db("products").update({ stock: db.raw("greatest(stock, 1000)") });
+  },
+  async down(db) {
+    for (const [slug, stock] of Object.entries(INITIAL_STOCK)) {
+      await db("products").where({ slug }).update({ stock });
+    }
+  },
+};
+
 export const catalogMigrations: Migration[] = [
   createProducts,
   insertInitialProducts,
   addProductImages,
+  raiseStockForCollections,
 ];
