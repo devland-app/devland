@@ -17,15 +17,17 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 
 ## Comandos
 
-| Ação                 | Comando                                                    |
-| -------------------- | ---------------------------------------------------------- |
-| Instalar             | `npm install` (também ativa os hooks do husky)             |
-| Lint e formatação    | `npm run lint` · `npm run format:check` · `npm run format` |
-| Build                | `npm run build` (compila API e web)                        |
-| API em dev           | `npm run dev -w @devzoo/api` (tsx watch, porta 3333)       |
-| Web em dev           | `npm run dev -w @devzoo/web` (Vite, porta 5173)            |
-| Subir tudo no Docker | `docker compose up --build` · web em :8080, API em :3333   |
-| Estado dos serviços  | `docker compose ps` (todos devem ficar `healthy`)          |
+| Ação                 | Comando                                                         |
+| -------------------- | --------------------------------------------------------------- |
+| Instalar             | `npm install` (também ativa os hooks do husky)                  |
+| Lint e formatação    | `npm run lint` · `npm run format:check` · `npm run format`      |
+| Build                | `npm run build` (compila API e web)                             |
+| API em dev           | `npm run dev -w @devzoo/api` (tsx watch, porta 3333)            |
+| Web em dev           | `npm run dev -w @devzoo/web` (Vite, porta 5173)                 |
+| Subir tudo no Docker | `docker compose up --build` · web em :8080, API em :3333        |
+| Estado dos serviços  | `docker compose ps` (todos devem ficar `healthy`)               |
+| Gerar o contrato     | `npm run openapi -w @devzoo/api` (atualiza `docs/openapi.yaml`) |
+| Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)      |
 
 ## Arquitetura da API
 
@@ -37,6 +39,11 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Cada módulo é dono das próprias tabelas. Dependências permitidas: `orders → catalog`,
   `orders → payments`. `catalog` não depende de ninguém, e `src/shared/` não importa módulos.
 - Detalhes e exemplos na skill `modularity`.
+- Contrato OpenAPI 3.1 gerado dos JSON Schemas das rotas: Swagger UI em `/docs`, JSON em
+  `/docs/json`. Toda rota tem `tags`, `operationId`, `summary` e descrição em cada resposta.
+  Modelos reutilizados entram com `app.addSchema` e `$id` (viram components, como `Product`).
+- Mudou rota ou schema? Rode `npm run openapi -w @devzoo/api` e commite o `docs/openapi.yaml`:
+  o CI regenera o arquivo e falha se o versionado estiver diferente.
 
 ## Front
 
