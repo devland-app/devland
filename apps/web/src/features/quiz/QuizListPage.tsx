@@ -35,7 +35,7 @@ export function QuizListPage() {
 
   return (
     <section aria-labelledby="quizzes-title">
-      <div className="intro">
+      <div className="intro intro--center">
         <h1 id="quizzes-title">
           Quizzes que <em>valem moedas</em>
         </h1>
