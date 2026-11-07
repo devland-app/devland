@@ -19,8 +19,8 @@
   font-size: 0.92rem;
 }
 
-/* Uma barrinha de massinha por mascote, numa onda suave. As vazias ficam afundadas; ao adotar,
-   a barrinha estufa com cor e dá um "pop", uma depois da outra. */
+/* Uma barrinha de massinha por mascote. As vazias ficam afundadas; ao adotar, a barrinha estufa
+   com cor e dá um "pop", uma depois da outra. */
 .progress-track {
   display: grid;
   grid-auto-flow: column;
@@ -33,7 +33,6 @@
   border-radius: var(--r-pill);
   background: var(--well);
   box-shadow: inset 0 3px 6px var(--shade);
-  transform: translateY(var(--wave)) rotate(var(--tilt));
 }
 .progress-seg.is-filled {
   background:
@@ -48,7 +47,7 @@
 
 @keyframes segment-pop {
   from {
-    transform: translateY(var(--wave)) rotate(var(--tilt)) scale(0.55);
+    transform: scale(0.55);
   }
 }
 

@@ -25,7 +25,7 @@ export function CollectionProgress({ adopted, total }: CollectionProgressProps) 
             : "Adote um de cada para completar a coleção."}
         </span>
       </div>
-      {/* Uma barrinha por mascote, em onda; para leitor de tela é uma barra de progresso comum. */}
+      {/* Uma barrinha por mascote; para leitor de tela é uma barra de progresso comum. */}
       <div
         className="progress-track"
         role="progressbar"
@@ -39,8 +39,6 @@ export function CollectionProgress({ adopted, total }: CollectionProgressProps) 
           const color = SEGMENT_COLORS[index % SEGMENT_COLORS.length] ?? "--mint";
           const style = {
             "--index": index,
-            "--wave": `${Math.round(Math.sin(index * 0.9) * 4)}px`,
-            "--tilt": `${index % 2 === 0 ? -3 : 3}deg`,
             "--seg-color": `var(${color})`,
             "--seg-deep": `var(${color}-deep, var(${color}))`,
           } as CSSProperties;
