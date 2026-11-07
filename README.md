@@ -84,6 +84,22 @@ npm run dev -w @devland/api      # API com recarga automática, porta 3333
 npm run dev -w @devland/web      # site com Vite, porta 5173
 ```
 
+## Testes
+
+```bash
+npm test                                  # API e site
+npm run test:coverage -w @devland/api     # com relatório de cobertura
+```
+
+- **API:** testes unitários das regras de negócio e testes de integração com um PostgreSQL de
+  verdade, descartável, criado pelo Testcontainers (precisa do Docker). Cobrem migrations que sobem
+  e descem, os fluxos HTTP, a economia de moedas e a concorrência (pagamentos e respostas
+  simultâneos).
+- **Site:** Vitest com Testing Library para o sanitizador do SVG, o `localStorage`, a carteira e o
+  fluxo do quiz.
+
+Estratégia, cobertura e o que ficou de fora de propósito: [`docs/testes.md`](docs/testes.md).
+
 ## Variáveis de ambiente
 
 Ficam no `.env` (fora do git). O `.env.example` traz valores fictícios para uso local.
@@ -114,6 +130,7 @@ valida o contrato com o Redocly.
 Cada pull request passa por:
 
 - lint, formatação e build;
+- testes da API e do site, com limite de cobertura;
 - auditoria de dependências (`npm audit`);
 - conferência e lint do contrato OpenAPI;
 - busca de segredos com o gitleaks;
