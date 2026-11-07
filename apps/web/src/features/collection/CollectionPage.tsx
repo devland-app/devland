@@ -1,9 +1,9 @@
 import "./collection.css";
 
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
-import { apiAssetUrl } from "../../shared/api/client.ts";
 import { formatDateTime } from "../../shared/format.ts";
 import { CollectionProgress } from "../../shared/ui/CollectionProgress.tsx";
+import { MascotArt } from "../../shared/ui/MascotArt.tsx";
 import { useProducts } from "../../shared/useProducts.ts";
 
 export function CollectionPage() {
@@ -46,7 +46,7 @@ export function CollectionPage() {
                 <li key={product.id}>
                   {adoption ? (
                     <a className="collected clay" href={`#mascote-${product.slug}`}>
-                      <img src={apiAssetUrl(product.imageUrl)} alt="" width={150} height={150} />
+                      <MascotArt product={product} size={150} />
                       <strong>{product.name}</strong>
                       <span className="chip">{product.concept}</span>
                       <span className="fine">Adotado em {formatDateTime(adoption.adoptedAt)}</span>
@@ -54,8 +54,10 @@ export function CollectionPage() {
                   ) : (
                     <div className="locked clay">
                       <div className="locked-art">
-                        <img src={apiAssetUrl(product.imageUrl)} alt="" width={150} height={150} />
-                        <span aria-hidden="true">?</span>
+                        <MascotArt product={product} size={150} blink="off" />
+                        <span className="locked-mark" aria-hidden="true">
+                          ?
+                        </span>
                       </div>
                       <strong>Ainda não adotado</strong>
                       <span className="chip">{product.concept}</span>

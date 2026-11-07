@@ -1,9 +1,9 @@
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
-import { apiAssetUrl } from "../../shared/api/client.ts";
 import type { Product } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
 import { formatCents } from "../../shared/format.ts";
 import { useSound } from "../../shared/sound/soundContext.ts";
+import { MascotArt } from "../../shared/ui/MascotArt.tsx";
 
 interface ProductCardProps {
   product: Product;
@@ -20,13 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className={`card clay${adopted ? " card--adopted" : ""}`}>
       <div className="card-art">
-        <img
-          src={apiAssetUrl(product.imageUrl)}
-          alt={`Ilustração de massinha: ${product.name}`}
-          width={210}
-          height={210}
-          loading="lazy"
-        />
+        <MascotArt product={product} size={210} label={`Ilustração de massinha: ${product.name}`} />
       </div>
       <h2>{product.name}</h2>
       <div className="card-body">
