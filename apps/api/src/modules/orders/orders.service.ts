@@ -1,5 +1,8 @@
 import { randomUUID } from "node:crypto";
 
+import type { Transaction, TransactionRunner } from "../../shared/database.js";
+import { OutOfStockError } from "../catalog/index.js";
+import type { ChargeRequest, ChargeResult, Payment, PaymentMethod } from "../payments/index.js";
 import { DuplicateIdempotencyKeyError, type OrderRepository } from "./orders.repository.js";
 import type { Order, OrderItemRequest } from "./orders.types.js";
 
@@ -16,6 +19,17 @@ export interface CatalogProduct {
 
 export interface ProductLookup {
   getProductsByIds(ids: number[]): Promise<CatalogProduct[]>;
+  reserveStock(
+    items: Array<{ productId: number; quantity: number }>,
+    trx: Transaction,
+  ): Promise<void>;
+}
+
+// O que os pedidos usam do módulo de pagamentos (orders → payments, nunca o contrário).
+export interface PaymentProcessor {
+  authorize(request: ChargeRequest): Promise<ChargeResult>;
+  record(request: ChargeRequest, result: ChargeResult, trx?: Transaction): Promise<Payment>;
+  findApprovedPayment(orderId: string): Promise<Payment | undefined>;
 }
 
 export class OrderNotFoundError extends Error {
@@ -49,6 +63,27 @@ export class InsufficientStockError extends Error {
   }
 }
 
+export class SoldOutError extends Error {
+  constructor(productName: string) {
+    super(`Enquanto você escolhia, alguém levou as últimas unidades de ${productName}.`);
+    this.name = "SoldOutError";
+  }
+}
+
+export class PaymentDeclinedError extends Error {
+  constructor(reason: string) {
+    super(reason);
+    this.name = "PaymentDeclinedError";
+  }
+}
+
+export interface PayOrderResult {
+  order: Order;
+  payment: Payment;
+  // true quando o pedido já estava pago: nada foi "cobrado" de novo.
+  alreadyPaid: boolean;
+}
+
 export interface CreateOrderInput {
   idempotencyKey: string;
   items: OrderItemRequest[];
@@ -60,14 +95,24 @@ export interface CreateOrderResult {
   created: boolean;
 }
 
-// Regras de negócio dos pedidos. Não conhece HTTP nem Knex: recebe o repository e o catálogo prontos.
+// Regras de negócio dos pedidos. Não conhece HTTP nem Knex: recebe o repository, o catálogo, os
+// pagamentos e quem abre transações já prontos.
 export class OrdersService {
   private readonly orders: OrderRepository;
   private readonly catalog: ProductLookup;
+  private readonly payments: PaymentProcessor;
+  private readonly runInTransaction: TransactionRunner;
 
-  constructor(orders: OrderRepository, catalog: ProductLookup) {
+  constructor(
+    orders: OrderRepository,
+    catalog: ProductLookup,
+    payments: PaymentProcessor,
+    runInTransaction: TransactionRunner,
+  ) {
     this.orders = orders;
     this.catalog = catalog;
+    this.payments = payments;
+    this.runInTransaction = runInTransaction;
   }
 
   async createOrder(input: CreateOrderInput): Promise<CreateOrderResult> {
@@ -122,6 +167,59 @@ export class OrdersService {
       }
       throw error;
     }
+  }
+
+  // Baixa de estoque, pagamento aprovado e pedido pago acontecem juntos (uma transação) ou não
+  // acontecem. Uma recusa desfaz a baixa de estoque e fica registrada fora da transação.
+  async payOrder(orderId: string, method: PaymentMethod): Promise<PayOrderResult> {
+    const order = await this.getOrder(orderId);
+    if (order.status === "paid") {
+      return this.paidResult(orderId, true);
+    }
+
+    const request: ChargeRequest = { orderId, amountCents: order.totalCents, method };
+    let outcome: "paid" | "already_paid";
+    try {
+      outcome = await this.runInTransaction(async (trx) => {
+        // Dois pagamentos simultâneos do mesmo pedido: o segundo espera a trava e encontra "paid".
+        const status = await this.orders.lockForPayment(orderId, trx);
+        if (status === "paid") {
+          return "already_paid";
+        }
+        await this.catalog.reserveStock(
+          order.items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+          trx,
+        );
+        const result = await this.payments.authorize(request);
+        if (result.status === "declined") {
+          throw new PaymentDeclinedError(result.reason);
+        }
+        await this.payments.record(request, result, trx);
+        await this.orders.markPaid(orderId, trx);
+        return "paid";
+      });
+    } catch (error) {
+      if (error instanceof PaymentDeclinedError) {
+        await this.payments.record(request, { status: "declined", reason: error.message });
+      }
+      if (error instanceof OutOfStockError) {
+        const item = order.items.find((candidate) => candidate.productId === error.productId);
+        throw new SoldOutError(item?.productName ?? "um dos mascotes");
+      }
+      throw error;
+    }
+    return this.paidResult(orderId, outcome === "already_paid");
+  }
+
+  private async paidResult(orderId: string, alreadyPaid: boolean): Promise<PayOrderResult> {
+    const [order, payment] = await Promise.all([
+      this.getOrder(orderId),
+      this.payments.findApprovedPayment(orderId),
+    ]);
+    if (!payment) {
+      throw new Error(`Pedido ${orderId} está pago, mas sem pagamento aprovado registrado`);
+    }
+    return { order, payment, alreadyPaid };
   }
 
   async getOrder(id: string): Promise<Order> {
