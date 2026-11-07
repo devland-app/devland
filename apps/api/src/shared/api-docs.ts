@@ -17,6 +17,16 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
           "API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em DevOps. " +
           "Nenhuma compra é real e nenhum valor é cobrado.",
       },
+      tags: [
+        { name: "catalog", description: "Vitrine de miniaturas" },
+        { name: "health", description: "Saúde da API e do banco" },
+      ],
+    },
+    // Schemas registrados com app.addSchema viram components nomeados pelo $id (ex.: Product),
+    // em vez dos nomes genéricos def-0, def-1.
+    refResolver: {
+      buildLocalReference: (json, _baseUri, _fragment, index) =>
+        typeof json.$id === "string" ? json.$id : `def-${index}`,
     },
   });
   await app.register(swaggerUi, { routePrefix: "/docs" });
