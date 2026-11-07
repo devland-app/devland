@@ -9,6 +9,8 @@ uma página que explica o conceito dele de forma simples.
 
 Projeto final do curso de DevOps e Engenharia de Software do Geração Tech 4.0.
 
+**No ar:** https://devland-app.vercel.app
+
 ## Como funciona
 
 - **Quizzes:** um por conceito, com 5 perguntas. A API corrige: a pergunta chega sem o gabarito, e
@@ -163,13 +165,34 @@ Cada pull request passa por:
 - busca de segredos com o gitleaks;
 - varredura das imagens Docker com o Trivy, que reprova vulnerabilidades altas e críticas.
 
-As imagens rodam sem root e são publicadas no Docker Hub:
+Antes das imagens, o CI sobe o projeto recém-clonado com `docker compose up --build`, sem `.env`,
+em dois processadores (x64 e ARM) e confere que banco, API e site respondem.
+
+As imagens rodam sem root, saem para `linux/amd64` e `linux/arm64` (a mesma tag serve Windows, Linux
+e Mac com Apple Silicon) e são publicadas no Docker Hub:
 [`flaviare1s/devland-api`](https://hub.docker.com/r/flaviare1s/devland-api) e
 [`flaviare1s/devland-web`](https://hub.docker.com/r/flaviare1s/devland-web). Push na `main`
 publica `latest` e `sha-<commit>`; uma tag `vX.Y.Z` publica `X.Y.Z` e `X.Y`.
 
 Localmente, os hooks rodam o gitleaks e o lint-staged antes de cada commit, e o commitlint confere
 a mensagem.
+
+## Ambientes e deploy
+
+| Ambiente        | Onde                                 | Banco                   | Quando                |
+| --------------- | ------------------------------------ | ----------------------- | --------------------- |
+| Desenvolvimento | Docker na máquina (`docker compose`) | PostgreSQL no container | sempre                |
+| Preview         | Vercel, um endereço por pull request | Neon, branch `preview`  | a cada pull request   |
+| Produção        | https://devland-app.vercel.app       | Neon, branch `main`     | a cada push na `main` |
+
+O site sai da CDN da Vercel, que não dorme, e a API roda como função da Vercel em São Paulo, no
+mesmo domínio (`/api`). O CI aplica as migrations no banco do ambiente, publica e só considera o
+deploy pronto se a API, o catálogo e o site responderem. Vercel e Neon são criados com Terraform:
+veja [`infra/README.md`](infra/README.md).
+
+Segredos do deploy, todos no GitHub: `VERCEL_TOKEN` (repositório) e `DATABASE_URL` (um por ambiente,
+`production` e `preview`). Ids públicos em variáveis: `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`,
+`SITE_URL`.
 
 ## Fluxo de contribuição
 

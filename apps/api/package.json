@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:unit": "vitest run test/unit",
     "test:coverage": "vitest run --coverage",
-    "typecheck:test": "tsc -p tsconfig.test.json"
+    "typecheck:test": "tsc -p tsconfig.test.json",
+    "migrate": "tsx src/scripts/migrate.ts"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "^12.2.1",

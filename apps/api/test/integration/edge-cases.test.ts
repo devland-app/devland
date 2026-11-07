@@ -95,9 +95,19 @@ describe("catálogo: entradas inválidas", () => {
     }
   });
 
-  it("serve as ilustrações com cache longo, já que o endereço muda quando o desenho muda", async () => {
+  it("serve as ilustrações com cache de um ano, já que o endereço muda quando o desenho muda", async () => {
     const response = await inject({ url: "/images/mascots/caranguejo-dos-conteineres.svg" });
-    expect(response.headers["cache-control"]).toContain("max-age=86400");
+    expect(response.headers["cache-control"]).toBe("public, max-age=31536000, immutable");
+  });
+
+  it("deixa a CDN guardar o catálogo por pouco tempo, com tolerância", async () => {
+    for (const url of ["/products", `/products/${product("castor-do-cache").id}`]) {
+      const response = await inject({ url });
+      expect(response.headers["cache-control"]).toBe(
+        "public, max-age=0, s-maxage=30, stale-while-revalidate=300",
+      );
+    }
+    expect((await inject({ url: "/products/9999" })).headers["cache-control"]).toBeUndefined();
   });
 });
 

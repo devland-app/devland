@@ -3,6 +3,11 @@ import type { FastifyInstance } from "fastify";
 import { errorResponseSchema } from "../../shared/http.js";
 import { ProductNotFoundError, type CatalogService } from "./catalog.service.js";
 
+// Cache com tolerância para a CDN da Vercel: por 30 s ela responde sem chamar a API (nem acordar o
+// banco); depois, entrega a versão guardada por até 5 min enquanto busca a nova. O navegador sempre
+// confere (max-age=0). O catálogo quase não muda: só o estoque, que é conferido de novo no pedido.
+const CATALOG_CACHE = "public, max-age=0, s-maxage=30, stale-while-revalidate=300";
+
 // Maior valor da coluna "integer" do Postgres: um ID acima disso viraria erro 500 no banco.
 const MAX_PRODUCT_ID = 2_147_483_647;
 
@@ -86,7 +91,10 @@ export function registerCatalogRoutes(app: FastifyInstance, service: CatalogServ
         },
       },
     },
-    async () => service.listProducts(),
+    async (_request, reply) => {
+      reply.header("Cache-Control", CATALOG_CACHE);
+      return service.listProducts();
+    },
   );
 
   app.get<{ Params: ProductParams }>(
@@ -118,7 +126,9 @@ export function registerCatalogRoutes(app: FastifyInstance, service: CatalogServ
     },
     async (request, reply) => {
       try {
-        return await service.getProduct(request.params.id);
+        const product = await service.getProduct(request.params.id);
+        reply.header("Cache-Control", CATALOG_CACHE);
+        return product;
       } catch (error) {
         if (error instanceof ProductNotFoundError) {
           return reply.code(404).send({ message: "Produto não encontrado." });

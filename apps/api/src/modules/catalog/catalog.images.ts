@@ -39,10 +39,13 @@ export function registerMascotImages(app: FastifyInstance): void {
     prefix: MASCOT_IMAGES_PREFIX,
     // O Swagger UI também registra este plugin; sem isso, os dois disputariam o reply.sendFile.
     decorateReply: false,
-    maxAge: "1d",
+    // O endereço muda quando o desenho muda (?v=...): o arquivo de um endereço nunca muda, então
+    // navegador e CDN podem guardá-lo por um ano.
+    cacheControl: false,
     // SVG pode conter script. Os nossos não têm, mas a CSP impede execução mesmo se alguém abrir o
     // arquivo direto no navegador, e o nosniff impede o navegador de tratar o arquivo como outro tipo.
     setHeaders(reply) {
+      reply.header("Cache-Control", "public, max-age=31536000, immutable");
       reply.header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'");
       reply.header("X-Content-Type-Options", "nosniff");
     },
