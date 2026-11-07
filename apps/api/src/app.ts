@@ -1,6 +1,7 @@
 import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
 
 import { createCatalogModule } from "./modules/catalog/index.js";
+import { createOrdersModule } from "./modules/orders/index.js";
 import { registerApiDocs } from "./shared/api-docs.js";
 import type { Database } from "./shared/database.js";
 
@@ -31,7 +32,12 @@ export interface AppOptions {
 
 // A construção do app fica separada do listen para que os testes usem app.inject() sem abrir porta.
 export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
-  const app = Fastify({ logger: options.logger });
+  const app = Fastify({
+    logger: options.logger,
+    // Por padrão o Fastify apaga em silêncio os campos que o schema não conhece. Aqui eles são
+    // rejeitados (400): um cliente que mande, por exemplo, "priceCents" descobre na hora que não pode.
+    ajv: { customOptions: { removeAdditional: false } },
+  });
 
   // Erros inesperados (5xx) viram uma mensagem genérica: detalhes internos, como o nome do host do
   // banco ou o texto de um erro de SQL, ficam só no log. Erros 4xx (ex.: validação) seguem iguais.
@@ -62,6 +68,9 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
 
   const catalog = createCatalogModule(options.db);
   catalog.registerRoutes(app);
+
+  const orders = createOrdersModule(options.db, catalog.service);
+  orders.registerRoutes(app);
 
   return app;
 }
