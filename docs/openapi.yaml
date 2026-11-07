@@ -155,6 +155,7 @@ paths:
                 properties:
                   message:
                     type: string
+                    description: Explicação do erro, pronta para mostrar na tela
 servers:
   - url: http://localhost:3333
     description: Ambiente local (docker compose)
