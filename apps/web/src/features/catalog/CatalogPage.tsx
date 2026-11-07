@@ -15,7 +15,7 @@ export function CatalogPage() {
     <section aria-labelledby="catalog-title">
       <div className="intro">
         <h1 id="catalog-title">
-          Mascotes de massinha que <em>explicam DevOps</em>
+          Mascotes divertidos que <em>explicam DevOps</em>
         </h1>
         <p>
           Responda os quizzes, ganhe moedas e adote os mascotes: acertando todas as perguntas, as
