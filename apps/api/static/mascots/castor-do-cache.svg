@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Castor do Cache: um castor marrom segurando uma caixa azul com um raio</title>
+  <circle cx="120" cy="120" r="116" fill="#f5ece2"/>
+  <ellipse cx="120" cy="204" rx="70" ry="9" fill="#3b2f4a" opacity="0.08"/>
+  <g transform="rotate(-25 178 168)">
+    <ellipse cx="178" cy="168" rx="28" ry="15" fill="#6d4c41" stroke="#3b2f4a" stroke-width="4"/>
+    <path d="M162 162 L194 174 M162 174 L194 162 M170 156 L186 180" stroke="#8d6e63" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <ellipse cx="102" cy="198" rx="15" ry="7" fill="#6d4c41" stroke="#3b2f4a" stroke-width="3"/>
+  <ellipse cx="136" cy="198" rx="15" ry="7" fill="#6d4c41" stroke="#3b2f4a" stroke-width="3"/>
+  <ellipse cx="118" cy="152" rx="48" ry="46" fill="#a1683a" stroke="#3b2f4a" stroke-width="4"/>
+  <circle cx="86" cy="62" r="11" fill="#a1683a" stroke="#3b2f4a" stroke-width="4"/>
+  <circle cx="150" cy="62" r="11" fill="#a1683a" stroke="#3b2f4a" stroke-width="4"/>
+  <circle cx="118" cy="96" r="40" fill="#a1683a" stroke="#3b2f4a" stroke-width="4"/>
+  <ellipse cx="118" cy="112" rx="21" ry="14" fill="#d7b48a"/>
+  <ellipse cx="118" cy="104" rx="6.5" ry="4.5" fill="#3b2f4a"/>
+  <rect x="111" y="115" width="14" height="13" rx="2.5" fill="#fff" stroke="#3b2f4a" stroke-width="2.5"/>
+  <path d="M118 115 V128" stroke="#3b2f4a" stroke-width="2"/>
+  <ellipse cx="102" cy="90" rx="5.5" ry="6.5" fill="#3b2f4a"/>
+  <ellipse cx="134" cy="90" rx="5.5" ry="6.5" fill="#3b2f4a"/>
+  <circle cx="103.5" cy="87.5" r="1.8" fill="#fff"/>
+  <circle cx="135.5" cy="87.5" r="1.8" fill="#fff"/>
+  <ellipse cx="90" cy="106" rx="6.5" ry="4" fill="#ff9eb5" opacity="0.85"/>
+  <ellipse cx="146" cy="106" rx="6.5" ry="4" fill="#ff9eb5" opacity="0.85"/>
+  <rect x="92" y="142" width="52" height="40" rx="6" fill="#4fc3f7" stroke="#3b2f4a" stroke-width="4"/>
+  <path d="M123 147 L108 165 L118 165 L113 178 L130 159 L120 159 Z" fill="#ffeb3b" stroke="#3b2f4a" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="92" cy="160" r="9" fill="#a1683a" stroke="#3b2f4a" stroke-width="3.5"/>
+  <circle cx="144" cy="160" r="9" fill="#a1683a" stroke="#3b2f4a" stroke-width="3.5"/>
+</svg>

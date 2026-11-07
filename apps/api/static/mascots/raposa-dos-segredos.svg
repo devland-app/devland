@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Raposa dos Segredos: uma raposa laranja guardando um cadeado dourado</title>
+  <circle cx="120" cy="120" r="116" fill="#ffece0"/>
+  <ellipse cx="120" cy="206" rx="70" ry="9" fill="#3b2f4a" opacity="0.08"/>
+  <path d="M148 190 Q214 182 204 112 Q196 146 156 160 Z" fill="#ff8c42" stroke="#3b2f4a" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M204 112 Q206 132 196 144 Q192 128 204 112 Z" fill="#fff" stroke="#3b2f4a" stroke-width="3" stroke-linejoin="round"/>
+  <ellipse cx="118" cy="170" rx="42" ry="32" fill="#ff8c42" stroke="#3b2f4a" stroke-width="4"/>
+  <ellipse cx="118" cy="176" rx="24" ry="20" fill="#fff4ea"/>
+  <path d="M74 94 L64 40 L106 72 Z M162 94 L172 40 L130 72 Z" fill="#ff8c42" stroke="#3b2f4a" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M78 82 L72 54 L96 72 Z M158 82 L164 54 L140 72 Z" fill="#ffd1b3"/>
+  <path d="M70 110 Q70 70 118 66 Q166 70 166 110 Q160 140 118 146 Q76 140 70 110 Z" fill="#ff8c42" stroke="#3b2f4a" stroke-width="4" stroke-linejoin="round"/>
+  <ellipse cx="118" cy="126" rx="26" ry="17" fill="#fff4ea"/>
+  <ellipse cx="118" cy="116" rx="6.5" ry="5" fill="#3b2f4a"/>
+  <path d="M110 127 Q118 133 126 127" fill="none" stroke="#3b2f4a" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="98" cy="102" rx="5.5" ry="6.5" fill="#3b2f4a"/>
+  <ellipse cx="138" cy="102" rx="5.5" ry="6.5" fill="#3b2f4a"/>
+  <circle cx="99.5" cy="99.5" r="1.8" fill="#fff"/>
+  <circle cx="139.5" cy="99.5" r="1.8" fill="#fff"/>
+  <ellipse cx="86" cy="118" rx="6.5" ry="4" fill="#ff9eb5" opacity="0.85"/>
+  <ellipse cx="150" cy="118" rx="6.5" ry="4" fill="#ff9eb5" opacity="0.85"/>
+  <path d="M106 168 V158 Q106 146 118 146 Q130 146 130 158 V168" fill="none" stroke="#9e9e9e" stroke-width="6" stroke-linecap="round"/>
+  <rect x="96" y="164" width="44" height="34" rx="6" fill="#ffc107" stroke="#3b2f4a" stroke-width="4"/>
+  <circle cx="118" cy="178" r="5" fill="#3b2f4a"/>
+  <rect x="116" y="179" width="4" height="10" rx="2" fill="#3b2f4a"/>
+  <circle cx="96" cy="182" r="9" fill="#ff8c42" stroke="#3b2f4a" stroke-width="3.5"/>
+  <circle cx="140" cy="182" r="9" fill="#ff8c42" stroke="#3b2f4a" stroke-width="3.5"/>
+</svg>

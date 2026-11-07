@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Polvo Orquestrador: um polvo roxo regendo com uma batuta, cercado de notas musicais</title>
+  <circle cx="120" cy="120" r="116" fill="#ffe6f0"/>
+  <ellipse cx="116" cy="206" rx="74" ry="9" fill="#3b2f4a" opacity="0.08"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M72 118 Q50 150 60 176 Q66 192 50 198 M90 126 Q80 160 92 190 M110 130 Q108 166 100 198 M132 130 Q134 166 142 198 M152 126 Q162 160 150 190 M170 116 Q198 106 202 80" stroke="#3b2f4a" stroke-width="22"/>
+    <path d="M72 118 Q50 150 60 176 Q66 192 50 198 M90 126 Q80 160 92 190 M110 130 Q108 166 100 198 M132 130 Q134 166 142 198 M152 126 Q162 160 150 190 M170 116 Q198 106 202 80" stroke="#9b6bd6" stroke-width="14"/>
+  </g>
+  <path d="M58 118 Q58 50 120 50 Q182 50 182 118 Q182 134 166 134 L74 134 Q58 134 58 118 Z" fill="#9b6bd6" stroke="#3b2f4a" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="88" cy="74" r="6" fill="#b48ee6"/>
+  <circle cx="148" cy="68" r="5" fill="#b48ee6"/>
+  <circle cx="162" cy="90" r="4" fill="#b48ee6"/>
+  <ellipse cx="100" cy="102" rx="6" ry="7" fill="#3b2f4a"/>
+  <ellipse cx="140" cy="102" rx="6" ry="7" fill="#3b2f4a"/>
+  <circle cx="102" cy="99.5" r="2" fill="#fff"/>
+  <circle cx="142" cy="99.5" r="2" fill="#fff"/>
+  <ellipse cx="85" cy="116" rx="8" ry="4.5" fill="#ff9eb5" opacity="0.85"/>
+  <ellipse cx="155" cy="116" rx="8" ry="4.5" fill="#ff9eb5" opacity="0.85"/>
+  <path d="M112 114 Q120 122 128 114" fill="none" stroke="#3b2f4a" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M200 84 L222 48" stroke="#3b2f4a" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="222" cy="48" r="4" fill="#fff" stroke="#3b2f4a" stroke-width="2.5"/>
+  <g fill="#3b2f4a">
+    <ellipse cx="40" cy="78" rx="7" ry="5" transform="rotate(-20 40 78)"/>
+    <ellipse cx="72" cy="50" rx="6" ry="4.5" transform="rotate(-20 72 50)"/>
+  </g>
+  <path d="M46 76 V50 Q56 54 54 64 M77 48 V26 Q86 30 84 38" fill="none" stroke="#3b2f4a" stroke-width="3" stroke-linecap="round"/>
+</svg>
