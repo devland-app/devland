@@ -1,9 +1,12 @@
 import { buildApp } from "./app.js";
+import { catalogMigrations } from "./modules/catalog/index.js";
+import { ordersMigrations } from "./modules/orders/index.js";
+import { paymentsMigrations } from "./modules/payments/index.js";
 import { loadConfig, type AppConfig } from "./shared/config.js";
 import { createDatabase, runMigrations, type Migration } from "./shared/database.js";
 
 // Ponto de composição: cada módulo exporta as suas migrations e elas são somadas aqui, em ordem.
-const migrations: Migration[] = [];
+const migrations: Migration[] = [...catalogMigrations, ...ordersMigrations, ...paymentsMigrations];
 
 let config: AppConfig;
 try {
@@ -15,7 +18,11 @@ try {
 }
 
 const db = createDatabase(config.databaseUrl);
-const app = buildApp({ logger: config.nodeEnv !== "test", db });
+const app = await buildApp({
+  logger: config.nodeEnv !== "test",
+  db,
+  corsOrigins: config.corsOrigins,
+});
 app.addHook("onClose", async () => {
   await db.destroy();
 });

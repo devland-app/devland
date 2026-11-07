@@ -1,0 +1,145 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: var(--banner);
+  color: var(--banner-ink);
+  font: 700 0.9rem/1.35 var(--font-body);
+  padding-block: 0.5rem;
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.08);
+}
+.banner p {
+  margin: 0;
+  text-align: center;
+}
+.banner strong {
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+.banner-close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: var(--banner-ink);
+  background: rgba(0, 0, 0, 0.08);
+  font: 700 1.15rem/1 var(--font-display);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.14);
+  transition: transform 90ms ease;
+}
+.banner-close:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.nav-band {
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* Mais espaço embaixo: os botões têm "espessura" e não podem encostar na borda. */
+  padding-block: 0.8rem 1.05rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--coral);
+  font: 800 1.9rem/1 var(--font-display);
+  letter-spacing: -0.01em;
+  text-shadow:
+    0 3px 0 var(--coral-deep),
+    0 8px 14px var(--shadow);
+  margin-right: auto;
+}
+.logo img {
+  filter: drop-shadow(0 6px 8px var(--shadow));
+}
+
+/* Abas: cada uma é uma peça de massinha; a da página atual fica afundada, como botão apertado. */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+.tabs a {
+  font: 700 0.98rem/1 var(--font-display);
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.65em 1.1em 0.55em;
+  border-radius: var(--r-pill);
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-2);
+  box-shadow:
+    0 4px 0 var(--line),
+    0 8px 12px -10px var(--shadow),
+    inset 0 2px 0 var(--shine);
+  transform: translateY(0);
+  transition:
+    transform 90ms ease,
+    box-shadow 90ms ease,
+    color 150ms ease;
+}
+.tabs a:hover {
+  color: var(--ink);
+}
+.tabs a[aria-current="page"],
+.tabs a:active {
+  color: var(--ink);
+  background: var(--well);
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 var(--line),
+    inset 0 3px 8px var(--shade);
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+main {
+  padding-block: 2rem 4rem;
+}
+
+.site-footer {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding-block: 0 2.5rem;
+}
+
+@media (max-width: 640px) {
+  .nav-row {
+    gap: 0.7rem;
+  }
+  .tabs {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  .logo {
+    font-size: 1.6rem;
+  }
+}

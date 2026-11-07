@@ -7,6 +7,15 @@ import type { Knex } from "knex";
 // as migrations. Os módulos recebem a instância por injeção; nenhum deles cria a própria conexão.
 export type Database = Knex;
 
+// Transação aberta por quem coordena um caso de uso que mexe em várias tabelas (Unit of Work). Os
+// services só a repassam aos repositories, que são os únicos que sabem usá-la.
+export type Transaction = Knex.Transaction;
+export type TransactionRunner = <T>(work: (trx: Transaction) => Promise<T>) => Promise<T>;
+
+export function createTransactionRunner(db: Database): TransactionRunner {
+  return (work) => db.transaction(work);
+}
+
 export function createDatabase(databaseUrl: string): Database {
   return knex({
     client: "pg",

@@ -1,0 +1,289 @@
+/* Conceito: ateliê de massinha. Peças gordinhas sobre uma bancada lilás; todo botão tem
+   profundidade e afunda ao ser apertado. A cor de cada ação vem dos próprios mascotes.
+   Todas as cores são tokens: o tema escuro só redefine os valores. */
+:root {
+  --bg: #f1ecfa;
+  --bg-glow: #fde9df;
+  --surface: #fcfaff;
+  --surface-2: #f3eefb;
+  --well: #ece5f7;
+  --ink: #2a2140;
+  --muted: #675c80;
+  --line: #dcd2ee;
+  --coral: #ff6f4a;
+  --coral-deep: #c9472a;
+  --mint: #5cc77a;
+  --mint-deep: #2f9450;
+  --lilac: #b996ea;
+  --lilac-deep: #7f57b6;
+  --lilac-ink: #5f3d94;
+  --sun: #ffd166;
+  --sun-deep: #d39a1c;
+  --on-color: #241027;
+  --shadow: rgba(58, 38, 92, 0.2);
+  --shine: rgba(255, 255, 255, 0.75);
+  --shade: rgba(58, 38, 92, 0.13);
+  --banner: #ffe28f;
+  --banner-ink: #4a3300;
+  --focus: #2f6fe4;
+  --danger: #b3261e;
+  --scrim: rgba(20, 12, 32, 0.45);
+
+  --font-display: "Baloo 2", "Trebuchet MS", "Avenir Next Rounded", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  --r-xl: 30px;
+  --r-lg: 22px;
+  --r-md: 16px;
+  --r-pill: 999px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17121f;
+    --bg-glow: #2a1a2b;
+    --surface: #241d31;
+    --surface-2: #2c2440;
+    --well: #1c1628;
+    --ink: #f4eeff;
+    --muted: #b9afcf;
+    --line: #3b3252;
+    --coral: #ff8463;
+    --coral-deep: #b2442a;
+    --mint: #6fd48c;
+    --mint-deep: #2e7d46;
+    --lilac: #c4a6f0;
+    --lilac-deep: #6c48a3;
+    --lilac-ink: #d9c6f7;
+    --sun: #ffd166;
+    --sun-deep: #a8770f;
+    --on-color: #1d0f1f;
+    --shadow: rgba(0, 0, 0, 0.55);
+    --shine: rgba(255, 255, 255, 0.16);
+    --shade: rgba(0, 0, 0, 0.38);
+    --banner: #3a2e10;
+    --banner-ink: #ffe28f;
+    --focus: #8fb6ff;
+    --danger: #ff9b94;
+    --scrim: rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #17121f;
+  --bg-glow: #2a1a2b;
+  --surface: #241d31;
+  --surface-2: #2c2440;
+  --well: #1c1628;
+  --ink: #f4eeff;
+  --muted: #b9afcf;
+  --line: #3b3252;
+  --coral: #ff8463;
+  --coral-deep: #b2442a;
+  --mint: #6fd48c;
+  --mint-deep: #2e7d46;
+  --lilac: #c4a6f0;
+  --lilac-deep: #6c48a3;
+  --lilac-ink: #d9c6f7;
+  --sun: #ffd166;
+  --sun-deep: #a8770f;
+  --on-color: #1d0f1f;
+  --shadow: rgba(0, 0, 0, 0.55);
+  --shine: rgba(255, 255, 255, 0.16);
+  --shade: rgba(0, 0, 0, 0.38);
+  --banner: #3a2e10;
+  --banner-ink: #ffe28f;
+  --focus: #8fb6ff;
+  --danger: #ff9b94;
+  --scrim: rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(60rem 30rem at 85% -10%, var(--bg-glow), transparent 60%), var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.55 var(--font-body);
+}
+
+img {
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.wrap {
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Superfície de massinha: borda inferior "grossa", brilho no topo e sombra interna embaixo. */
+.clay {
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  box-shadow:
+    0 18px 30px -18px var(--shadow),
+    0 3px 0 var(--line),
+    inset 0 2px 0 var(--shine),
+    inset 0 -6px 14px var(--shade);
+}
+
+/* Botão de massinha: a sombra sólida embaixo é a "espessura"; ao apertar, o botão desce e ela some. */
+.btn {
+  --face: var(--coral);
+  --depth: var(--coral-deep);
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font: 700 1rem/1 var(--font-display);
+  letter-spacing: 0.01em;
+  color: var(--on-color);
+  text-decoration: none;
+  background:
+    radial-gradient(120% 140% at 30% 0%, rgba(255, 255, 255, 0.4), transparent 55%), var(--face);
+  border-radius: var(--r-pill);
+  padding: 0.85em 1.4em 0.75em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 44px;
+  box-shadow:
+    0 6px 0 var(--depth),
+    0 14px 18px -8px var(--shadow),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.12);
+  transform: translateY(0);
+  transition:
+    transform 90ms ease,
+    box-shadow 90ms ease,
+    filter 150ms ease;
+}
+.btn:hover {
+  filter: brightness(1.05) saturate(1.05);
+}
+.btn:active:not([disabled]) {
+  transform: translateY(5px);
+  box-shadow:
+    0 1px 0 var(--depth),
+    0 4px 8px -6px var(--shadow),
+    inset 0 4px 10px rgba(0, 0, 0, 0.22);
+}
+.btn[disabled] {
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+  opacity: 0.6;
+}
+.btn--mint {
+  --face: var(--mint);
+  --depth: var(--mint-deep);
+}
+.btn--lilac {
+  --face: var(--lilac);
+  --depth: var(--lilac-deep);
+}
+.btn--soft {
+  --face: var(--surface-2);
+  --depth: var(--line);
+  color: var(--ink);
+}
+.btn--block {
+  width: 100%;
+}
+/* Botão de ícone (tema, carrinho): relevo mais baixo que o dos botões de ação. */
+.btn--icon {
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  box-shadow:
+    0 3px 0 var(--depth),
+    0 8px 12px -8px var(--shadow),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.1);
+}
+.btn--icon:active:not([disabled]) {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 0 var(--depth),
+    inset 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+.btn--small {
+  min-height: 36px;
+  padding: 0.6em 1em 0.5em;
+  font-size: 0.9rem;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font: 800 1.35rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.fine {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.error-note {
+  color: var(--danger);
+  font-weight: 700;
+  margin: 0;
+}
+
+.code {
+  font: 500 0.92rem/1.3 var(--font-mono);
+  background: var(--well);
+  padding: 0.45em 0.8em;
+  border-radius: var(--r-md);
+  box-shadow: inset 0 2px 5px var(--shade);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

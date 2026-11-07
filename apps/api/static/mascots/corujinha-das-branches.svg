@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Corujinha das Branches: uma coruja marrom de massinha pousada num galho que se divide em dois</title>
+  <defs>
+    <!-- Efeito massinha: sombra projetada, sombra e brilho internos, brilho especular e granulado. -->
+    <filter id="clay" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="dropBlur"/>
+      <feOffset in="dropBlur" dx="2" dy="6" result="dropOffset"/>
+      <feFlood flood-color="#3b2f4a" flood-opacity="0.25"/>
+      <feComposite in2="dropOffset" operator="in" result="drop"/>
+      <feOffset in="SourceAlpha" dx="-7" dy="-9" result="upLeft"/>
+      <feGaussianBlur in="upLeft" stdDeviation="6" result="upLeftBlur"/>
+      <feComposite in="SourceAlpha" in2="upLeftBlur" operator="arithmetic" k2="1" k3="-1" result="shadowMask"/>
+      <feFlood flood-color="#2a1f35" flood-opacity="0.32"/>
+      <feComposite in2="shadowMask" operator="in" result="innerShadow"/>
+      <feOffset in="SourceAlpha" dx="5" dy="7" result="downRight"/>
+      <feGaussianBlur in="downRight" stdDeviation="4" result="downRightBlur"/>
+      <feComposite in="SourceAlpha" in2="downRightBlur" operator="arithmetic" k2="1" k3="-1" result="lightMask"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.45"/>
+      <feComposite in2="lightMask" operator="in" result="innerLight"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="bump"/>
+      <feSpecularLighting in="bump" surfaceScale="8" specularConstant="0.9" specularExponent="16" lighting-color="#ffffff" result="spec">
+        <feDistantLight azimuth="225" elevation="48"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="shine"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.07 0" result="grain"/>
+      <feComposite in="grain" in2="SourceAlpha" operator="in" result="texture"/>
+      <feMerge>
+        <feMergeNode in="drop"/>
+        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="innerShadow"/>
+        <feMergeNode in="innerLight"/>
+        <feMergeNode in="shine"/>
+        <feMergeNode in="texture"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+    <radialGradient id="eye" cx="35%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#5a4a6b"/>
+      <stop offset="1" stop-color="#1e1626"/>
+    </radialGradient>
+    <radialGradient id="bg" cx="40%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#f7f2ff"/>
+      <stop offset="1" stop-color="#e2d6fb"/>
+    </radialGradient>
+  </defs>
+  <circle cx="120" cy="120" r="116" fill="url(#bg)"/>
+  <g filter="url(#clay)">
+    <path d="M24 188 H214 M150 188 Q172 188 184 166 L198 148" fill="none" stroke="#8d6e63" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="40" cy="188" r="10" fill="#fff3e0"/>
+    <circle cx="198" cy="148" r="10" fill="#fff3e0"/>
+    <circle cx="212" cy="188" r="10" fill="#fff3e0"/>
+  </g>
+  <g filter="url(#clay)">
+    <path d="M70 84 L64 52 L92 72 Z M150 84 L156 52 L128 72 Z" fill="#a1887f" stroke="#a1887f" stroke-width="8" stroke-linejoin="round"/>
+  </g>
+  <g filter="url(#clay)">
+    <path d="M62 118 Q48 152 74 172 Q72 142 62 118 Z M158 118 Q172 152 146 172 Q148 142 158 118 Z" fill="#8d6e63"/>
+  </g>
+  <g filter="url(#clay)">
+    <ellipse cx="110" cy="126" rx="50" ry="58" fill="#a98b7c"/>
+  </g>
+  <g filter="url(#clay)">
+    <ellipse cx="110" cy="146" rx="31" ry="32" fill="#efe3dc"/>
+    <path d="M96 140 l6 6 l6 -6 M112 140 l6 6 l6 -6 M104 156 l6 6 l6 -6" fill="none" stroke="#c9b3a8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g filter="url(#clay)">
+    <circle cx="90" cy="106" r="19" fill="#fffaf2"/>
+    <circle cx="130" cy="106" r="19" fill="#fffaf2"/>
+  </g>
+  <ellipse cx="92" cy="108" rx="9" ry="9.5" fill="url(#eye)"/>
+  <circle cx="89.5" cy="104.5" r="3.1" fill="#fff"/>
+  <ellipse cx="128" cy="108" rx="9" ry="9.5" fill="url(#eye)"/>
+  <circle cx="125.5" cy="104.5" r="3.1" fill="#fff"/>
+  <g filter="url(#clay)">
+    <path d="M103 120 H117 L110 131 Z" fill="#ffb74d" stroke="#ffb74d" stroke-width="5" stroke-linejoin="round"/>
+  </g>
+  <ellipse cx="70" cy="128" rx="8" ry="5" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="150" cy="128" rx="8" ry="5" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <g filter="url(#clay)">
+    <ellipse cx="96" cy="184" rx="10" ry="6" fill="#ffb74d"/>
+    <ellipse cx="124" cy="184" rx="10" ry="6" fill="#ffb74d"/>
+  </g>
+</svg>

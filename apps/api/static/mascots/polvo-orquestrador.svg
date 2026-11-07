@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Polvo Orquestrador: um polvo roxo de massinha regendo com uma batuta, cercado de notas musicais</title>
+  <defs>
+    <!-- Efeito massinha: sombra projetada, sombra e brilho internos, brilho especular e granulado. -->
+    <filter id="clay" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="dropBlur"/>
+      <feOffset in="dropBlur" dx="2" dy="6" result="dropOffset"/>
+      <feFlood flood-color="#3b2f4a" flood-opacity="0.25"/>
+      <feComposite in2="dropOffset" operator="in" result="drop"/>
+      <feOffset in="SourceAlpha" dx="-7" dy="-9" result="upLeft"/>
+      <feGaussianBlur in="upLeft" stdDeviation="6" result="upLeftBlur"/>
+      <feComposite in="SourceAlpha" in2="upLeftBlur" operator="arithmetic" k2="1" k3="-1" result="shadowMask"/>
+      <feFlood flood-color="#2a1f35" flood-opacity="0.32"/>
+      <feComposite in2="shadowMask" operator="in" result="innerShadow"/>
+      <feOffset in="SourceAlpha" dx="5" dy="7" result="downRight"/>
+      <feGaussianBlur in="downRight" stdDeviation="4" result="downRightBlur"/>
+      <feComposite in="SourceAlpha" in2="downRightBlur" operator="arithmetic" k2="1" k3="-1" result="lightMask"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.45"/>
+      <feComposite in2="lightMask" operator="in" result="innerLight"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="bump"/>
+      <feSpecularLighting in="bump" surfaceScale="8" specularConstant="0.9" specularExponent="16" lighting-color="#ffffff" result="spec">
+        <feDistantLight azimuth="225" elevation="48"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="shine"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.07 0" result="grain"/>
+      <feComposite in="grain" in2="SourceAlpha" operator="in" result="texture"/>
+      <feMerge>
+        <feMergeNode in="drop"/>
+        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="innerShadow"/>
+        <feMergeNode in="innerLight"/>
+        <feMergeNode in="shine"/>
+        <feMergeNode in="texture"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+    <radialGradient id="eye" cx="35%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#5a4a6b"/>
+      <stop offset="1" stop-color="#1e1626"/>
+    </radialGradient>
+    <radialGradient id="bg" cx="40%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#fff3f8"/>
+      <stop offset="1" stop-color="#fbd7e6"/>
+    </radialGradient>
+  </defs>
+  <circle cx="120" cy="120" r="116" fill="url(#bg)"/>
+  <ellipse cx="116" cy="206" rx="74" ry="10" fill="#3b2f4a" opacity="0.12" filter="url(#soft)"/>
+  <g filter="url(#clay)">
+    <path d="M72 118 Q50 150 60 176 Q66 192 50 198 M90 126 Q80 160 92 190 M110 130 Q108 166 100 198 M132 130 Q134 166 142 198 M152 126 Q162 160 150 190 M170 116 Q198 106 202 80" fill="none" stroke="#a274da" stroke-width="16" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#clay)">
+    <path d="M58 118 Q58 50 120 50 Q182 50 182 118 Q182 134 166 134 L74 134 Q58 134 58 118 Z" fill="#a274da"/>
+    <circle cx="88" cy="74" r="6" fill="#c3a2ee"/>
+    <circle cx="148" cy="68" r="5" fill="#c3a2ee"/>
+    <circle cx="162" cy="90" r="4" fill="#c3a2ee"/>
+  </g>
+  <ellipse cx="85" cy="116" rx="10" ry="6" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="155" cy="116" rx="10" ry="6" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="100" cy="102" rx="7.5" ry="8.5" fill="url(#eye)"/>
+  <circle cx="97.5" cy="98.5" r="2.6" fill="#fff"/>
+  <ellipse cx="140" cy="102" rx="7.5" ry="8.5" fill="url(#eye)"/>
+  <circle cx="137.5" cy="98.5" r="2.6" fill="#fff"/>
+  <path d="M112 114 Q120 122 128 114" fill="none" stroke="#4a2a3a" stroke-width="3.5" stroke-linecap="round"/>
+  <g filter="url(#clay)">
+    <path d="M200 84 L222 48" stroke="#6d4c41" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="222" cy="48" r="5" fill="#fff8e1"/>
+  </g>
+  <g filter="url(#clay)">
+    <ellipse cx="40" cy="78" rx="7.5" ry="5.5" transform="rotate(-20 40 78)" fill="#6a4c93"/>
+    <ellipse cx="72" cy="50" rx="6.5" ry="5" transform="rotate(-20 72 50)" fill="#6a4c93"/>
+    <path d="M46 76 V50 Q56 54 54 64 M77 48 V26 Q86 30 84 38" fill="none" stroke="#6a4c93" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+</svg>

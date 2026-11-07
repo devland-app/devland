@@ -17,15 +17,17 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 
 ## Comandos
 
-| Ação                 | Comando                                                    |
-| -------------------- | ---------------------------------------------------------- |
-| Instalar             | `npm install` (também ativa os hooks do husky)             |
-| Lint e formatação    | `npm run lint` · `npm run format:check` · `npm run format` |
-| Build                | `npm run build` (compila API e web)                        |
-| API em dev           | `npm run dev -w @devzoo/api` (tsx watch, porta 3333)       |
-| Web em dev           | `npm run dev -w @devzoo/web` (Vite, porta 5173)            |
-| Subir tudo no Docker | `docker compose up --build` · web em :8080, API em :3333   |
-| Estado dos serviços  | `docker compose ps` (todos devem ficar `healthy`)          |
+| Ação                 | Comando                                                         |
+| -------------------- | --------------------------------------------------------------- |
+| Instalar             | `npm install` (também ativa os hooks do husky)                  |
+| Lint e formatação    | `npm run lint` · `npm run format:check` · `npm run format`      |
+| Build                | `npm run build` (compila API e web)                             |
+| API em dev           | `npm run dev -w @devzoo/api` (tsx watch, porta 3333)            |
+| Web em dev           | `npm run dev -w @devzoo/web` (Vite, porta 5173)                 |
+| Subir tudo no Docker | `docker compose up --build` · web em :8080, API em :3333        |
+| Estado dos serviços  | `docker compose ps` (todos devem ficar `healthy`)               |
+| Gerar o contrato     | `npm run openapi -w @devzoo/api` (atualiza `docs/openapi.yaml`) |
+| Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)      |
 
 ## Arquitetura da API
 
@@ -37,13 +39,48 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Cada módulo é dono das próprias tabelas. Dependências permitidas: `orders → catalog`,
   `orders → payments`. `catalog` não depende de ninguém, e `src/shared/` não importa módulos.
 - Detalhes e exemplos na skill `modularity`.
+- Contrato OpenAPI 3.1 gerado dos JSON Schemas das rotas: Swagger UI em `/docs`, JSON em
+  `/docs/json`. Toda rota tem `tags`, `operationId`, `summary` e descrição em cada resposta.
+  Modelos reutilizados entram com `app.addSchema` e `$id` (viram components, como `Product`).
+- Mudou rota ou schema? Rode `npm run openapi -w @devzoo/api` e commite o `docs/openapi.yaml`:
+  o CI regenera o arquivo e falha se o versionado estiver diferente.
+
+## Regras da loja
+
+- É uma loja de brincadeira: nada é vendido nem cobrado, e a interface deixa isso explícito.
+  Nunca peça dados de cartão, nome, e-mail ou endereço.
+- Sem login nem cadastro. Pedidos têm ID UUID (nunca sequencial, para evitar IDOR): quem tem o
+  código vê o pedido. O front guarda os códigos no `localStorage` ("Meus pedidos").
+- `POST /orders` exige o header `Idempotency-Key`. A mesma chave devolve o pedido já criado (200 +
+  `Idempotent-Replayed: true`), inclusive com dois cliques simultâneos (chave única no banco).
+- O cliente envia só `productId` e `quantity`; nome e preço vêm do catálogo e são copiados para o
+  pedido. Estoque é conferido ao criar o pedido e baixado no pagamento.
+- Erros de negócio e de validação saem como `{ "message": "..." }` (`errorResponseSchema` em
+  `src/shared/http.ts`); erros 5xx viram mensagem genérica e o detalhe vai só para o log.
+- O AJV rejeita campos desconhecidos (`removeAdditional: false`): campo extra no body é 400.
+- Pagamento (`POST /orders/{id}/payment`): gateway falso atrás da interface `PaymentGateway`
+  (Strategy). Trava o pedido (`FOR UPDATE`), baixa o estoque, aprova e marca como pago numa
+  transação só; `broke_toy_card` sempre recusa (402) e a tentativa recusada é gravada fora dela.
+  Pagar de novo devolve o mesmo recibo. O banco aceita um único pagamento aprovado por pedido.
 
 ## Front
 
-- `src/features/<funcionalidade>/` agrupa componentes e hooks; `src/shared/api/` é o único lugar
-  que chama `fetch`.
+- Estrutura: `src/app/` (casca: cabeçalho, rotas por hash `#vitrine` / `#pedidos`),
+  `src/features/<funcionalidade>/` (`catalog`, `cart`, `checkout`, `orders`, `theme`, cada uma com
+  o próprio CSS) e `src/shared/` (cliente da API, formatação, `localStorage`, UI genérica).
+  Features não importam umas das outras: o que é comum vai para `shared/`, e a casca liga tudo
+  por props (ex.: `OrdersPage` recebe `onPay`).
+- `src/shared/api/client.ts` é o único lugar que chama `fetch`; os tipos em `shared/api/types.ts`
+  espelham o `docs/openapi.yaml`. Erros chegam como `ApiError` com a mensagem pronta da API.
 - A URL da API vem de `VITE_API_URL` em tempo de build. Tudo que começa com `VITE_` vai para o
   bundle do navegador, então é público.
+- Visual "massinha": tokens de cor em `src/styles/global.css` (tema claro e escuro, com
+  `data-theme` para a escolha manual), `.clay` para superfícies e `.btn` para botões que afundam
+  ao apertar. Cor sempre por token, nunca literal que só funciona num tema.
+- Modais e gaveta usam `<dialog>` nativo com `showModal()` (`shared/ui/Dialog.tsx`): foco preso,
+  Esc fecha e o foco volta para quem abriu.
+- Carrinho e "Meus pedidos" ficam no `localStorage` (`devzoo-cart`, `devzoo-orders`), sempre
+  lidos com validação, porque podem estar vazios, antigos ou indisponíveis.
 - Acessibilidade WCAG 2.2 AA (HTML semântico, foco visível, `lang="pt-BR"`): skill `accessibility`.
 
 ## Convenções

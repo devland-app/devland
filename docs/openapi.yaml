@@ -1,0 +1,547 @@
+openapi: 3.1.0
+info:
+  title: DevZoo API
+  version: 0.2.0
+  description: API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em
+    DevOps. Nenhuma compra é real e nenhum valor é cobrado.
+components:
+  schemas:
+    Product:
+      type: object
+      description: Miniatura colecionável da vitrine
+      additionalProperties: false
+      required:
+        - id
+        - slug
+        - name
+        - concept
+        - description
+        - priceCents
+        - stock
+        - imageUrl
+      properties:
+        id:
+          type: integer
+          examples:
+            - 1
+        slug:
+          type: string
+          examples:
+            - caranguejo-dos-conteineres
+        name:
+          type: string
+          examples:
+            - Caranguejo dos Contêineres
+        concept:
+          type: string
+          description: Conceito de DevOps que inspirou o mascote
+          examples:
+            - Contêineres
+        description:
+          type: string
+        priceCents:
+          type: integer
+          description: "Preço em centavos de real (de mentirinha: nada é cobrado)"
+          examples:
+            - 4990
+        stock:
+          type: integer
+          description: Unidades disponíveis
+          examples:
+            - 25
+        imageUrl:
+          type: string
+          format: uri-reference
+          description: Ilustração do mascote (SVG), relativa à URL da API
+          examples:
+            - /images/mascots/caranguejo-dos-conteineres.svg
+    OrderItem:
+      type: object
+      additionalProperties: false
+      required:
+        - productId
+        - productName
+        - unitPriceCents
+        - quantity
+        - subtotalCents
+      properties:
+        productId:
+          type: integer
+          examples:
+            - 1
+        productName:
+          type: string
+          examples:
+            - Caranguejo dos Contêineres
+        unitPriceCents:
+          type: integer
+          description: Preço unitário no momento da compra, em centavos
+          examples:
+            - 4990
+        quantity:
+          type: integer
+          examples:
+            - 2
+        subtotalCents:
+          type: integer
+          examples:
+            - 9980
+    Order:
+      type: object
+      description: "Pedido de mentirinha: nada é cobrado"
+      additionalProperties: false
+      required:
+        - id
+        - status
+        - items
+        - totalCents
+        - createdAt
+        - paidAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Código do pedido. Sem login, é ele que dá acesso ao pedido.
+        status:
+          type: string
+          enum:
+            - awaiting_payment
+            - paid
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        totalCents:
+          type: integer
+          description: Total em centavos
+          examples:
+            - 14470
+        createdAt:
+          type: string
+          format: date-time
+        paidAt:
+          type:
+            - "null"
+            - string
+          format: date-time
+    Payment:
+      type: object
+      description: Pagamento de mentirinha aprovado
+      additionalProperties: false
+      required:
+        - id
+        - method
+        - status
+        - amountCents
+        - receiptCode
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum:
+            - pix
+            - toy_card
+            - broke_toy_card
+        status:
+          type: string
+          enum:
+            - approved
+        amountCents:
+          type: integer
+          description: Valor simulado, em centavos
+          examples:
+            - 14470
+        receiptCode:
+          type: string
+          description: Recibo de mentirinha
+          examples:
+            - DZ-3F8C2A1E
+        createdAt:
+          type: string
+          format: date-time
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Verifica se a API e o banco estão respondendo
+      tags:
+        - health
+      responses:
+        "200":
+          description: API e banco saudáveis
+          content:
+            application/json:
+              schema:
+                description: API e banco saudáveis
+                type: object
+                required:
+                  - status
+                  - database
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - ok
+                      - error
+                  database:
+                    type: string
+                    enum:
+                      - ok
+                      - unavailable
+        "503":
+          description: Banco de dados indisponível
+          content:
+            application/json:
+              schema:
+                description: Banco de dados indisponível
+                type: object
+                required:
+                  - status
+                  - database
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - ok
+                      - error
+                  database:
+                    type: string
+                    enum:
+                      - ok
+                      - unavailable
+  /products:
+    get:
+      operationId: listProducts
+      summary: Lista as miniaturas da vitrine
+      tags:
+        - catalog
+      responses:
+        "200":
+          description: Todas as miniaturas, ordenadas por ID
+          content:
+            application/json:
+              schema:
+                description: Todas as miniaturas, ordenadas por ID
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+  /products/{id}:
+    get:
+      operationId: getProduct
+      summary: Detalha uma miniatura
+      tags:
+        - catalog
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 2147483647
+          in: path
+          name: id
+          required: true
+          description: ID do produto
+      responses:
+        "200":
+          description: A miniatura encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: ID em formato inválido
+          content:
+            application/json:
+              schema:
+                description: ID em formato inválido
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "404":
+          description: Nenhuma miniatura com esse ID
+          content:
+            application/json:
+              schema:
+                description: Nenhuma miniatura com esse ID
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+  /orders:
+    post:
+      operationId: createOrder
+      summary: Cria um pedido de mentirinha a partir do carrinho
+      tags:
+        - orders
+      description: "Só produto e quantidade vêm do cliente: preços e nomes saem do
+        catálogo. Repetir a mesma Idempotency-Key devolve o pedido já criado
+        (200), sem criar outro."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - items
+              properties:
+                items:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required:
+                      - productId
+                      - quantity
+                    properties:
+                      productId:
+                        type: integer
+                        minimum: 1
+                        maximum: 2147483647
+                      quantity:
+                        type: integer
+                        minimum: 1
+                        maximum: 10
+      parameters:
+        - schema:
+            type: string
+            minLength: 8
+            maxLength: 100
+            pattern: ^[A-Za-z0-9_-]+$
+          in: header
+          name: idempotency-key
+          required: true
+          description: "Chave única por tentativa de compra (ex.: um UUID gerado no
+            navegador)"
+      responses:
+        "200":
+          description: Pedido já existente para esta Idempotency-Key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "201":
+          description: Pedido criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                description: Requisição inválida
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "409":
+          description: Estoque insuficiente
+          content:
+            application/json:
+              schema:
+                description: Estoque insuficiente
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "422":
+          description: Produto inexistente ou acima do limite
+          content:
+            application/json:
+              schema:
+                description: Produto inexistente ou acima do limite
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      summary: Consulta um pedido pelo código
+      tags:
+        - orders
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: path
+          name: id
+          required: true
+          description: Código do pedido
+      responses:
+        "200":
+          description: O pedido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Código em formato inválido
+          content:
+            application/json:
+              schema:
+                description: Código em formato inválido
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "404":
+          description: Nenhum pedido com esse código
+          content:
+            application/json:
+              schema:
+                description: Nenhum pedido com esse código
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+  /orders/{id}/payment:
+    post:
+      operationId: payOrder
+      summary: Paga um pedido de mentirinha
+      tags:
+        - orders
+      description: Nenhum valor é cobrado. Baixa de estoque, pagamento e pedido pago
+        acontecem juntos ou não acontecem. Pagar um pedido já pago devolve o
+        mesmo recibo, sem nova cobrança.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - method
+              properties:
+                method:
+                  type: string
+                  enum:
+                    - pix
+                    - toy_card
+                    - broke_toy_card
+                  description: "pix: Pix de mentirinha · toy_card: cartão de brinquedo ·
+                    broke_toy_card: cartão sem saldo, sempre recusado (para ver
+                    a tela de recusa)"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: path
+          name: id
+          required: true
+          description: Código do pedido
+      responses:
+        "200":
+          description: Pedido pago (ou já estava pago)
+          content:
+            application/json:
+              schema:
+                description: Pedido pago (ou já estava pago)
+                type: object
+                additionalProperties: false
+                required:
+                  - notice
+                  - order
+                  - payment
+                properties:
+                  notice:
+                    type: string
+                    examples:
+                      - "Pagamento de mentirinha: nenhum valor foi cobrado."
+                  order:
+                    $ref: "#/components/schemas/Order"
+                  payment:
+                    $ref: "#/components/schemas/Payment"
+        "400":
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                description: Requisição inválida
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "402":
+          description: Pagamento recusado (cartão sem saldo)
+          content:
+            application/json:
+              schema:
+                description: Pagamento recusado (cartão sem saldo)
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "404":
+          description: Nenhum pedido com esse código
+          content:
+            application/json:
+              schema:
+                description: Nenhum pedido com esse código
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "409":
+          description: Um mascote do pedido esgotou
+          content:
+            application/json:
+              schema:
+                description: Um mascote do pedido esgotou
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+servers:
+  - url: http://localhost:3333
+    description: Ambiente local (docker compose)
+security: []
+tags:
+  - name: catalog
+    description: Vitrine de miniaturas
+  - name: orders
+    description: Pedidos de mentirinha (nada é cobrado)
+  - name: health
+    description: Saúde da API e do banco

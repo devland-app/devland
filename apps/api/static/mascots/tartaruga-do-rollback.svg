@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
+  <title id="title">Tartaruga do Rollback: uma tartaruga verde de massinha com uma seta de desfazer no casco</title>
+  <defs>
+    <!-- Efeito massinha: sombra projetada, sombra e brilho internos, brilho especular e granulado. -->
+    <filter id="clay" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3.5" result="dropBlur"/>
+      <feOffset in="dropBlur" dx="2" dy="6" result="dropOffset"/>
+      <feFlood flood-color="#3b2f4a" flood-opacity="0.25"/>
+      <feComposite in2="dropOffset" operator="in" result="drop"/>
+      <feOffset in="SourceAlpha" dx="-7" dy="-9" result="upLeft"/>
+      <feGaussianBlur in="upLeft" stdDeviation="6" result="upLeftBlur"/>
+      <feComposite in="SourceAlpha" in2="upLeftBlur" operator="arithmetic" k2="1" k3="-1" result="shadowMask"/>
+      <feFlood flood-color="#2a1f35" flood-opacity="0.32"/>
+      <feComposite in2="shadowMask" operator="in" result="innerShadow"/>
+      <feOffset in="SourceAlpha" dx="5" dy="7" result="downRight"/>
+      <feGaussianBlur in="downRight" stdDeviation="4" result="downRightBlur"/>
+      <feComposite in="SourceAlpha" in2="downRightBlur" operator="arithmetic" k2="1" k3="-1" result="lightMask"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.45"/>
+      <feComposite in2="lightMask" operator="in" result="innerLight"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="bump"/>
+      <feSpecularLighting in="bump" surfaceScale="8" specularConstant="0.9" specularExponent="16" lighting-color="#ffffff" result="spec">
+        <feDistantLight azimuth="225" elevation="48"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="shine"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.07 0" result="grain"/>
+      <feComposite in="grain" in2="SourceAlpha" operator="in" result="texture"/>
+      <feMerge>
+        <feMergeNode in="drop"/>
+        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="innerShadow"/>
+        <feMergeNode in="innerLight"/>
+        <feMergeNode in="shine"/>
+        <feMergeNode in="texture"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+    <radialGradient id="eye" cx="35%" cy="30%" r="70%">
+      <stop offset="0" stop-color="#5a4a6b"/>
+      <stop offset="1" stop-color="#1e1626"/>
+    </radialGradient>
+    <radialGradient id="bg" cx="40%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#f0faf5"/>
+      <stop offset="1" stop-color="#cdeedd"/>
+    </radialGradient>
+  </defs>
+  <circle cx="120" cy="120" r="116" fill="url(#bg)"/>
+  <ellipse cx="120" cy="196" rx="84" ry="10" fill="#3b2f4a" opacity="0.12" filter="url(#soft)"/>
+  <g filter="url(#clay)">
+    <ellipse cx="80" cy="180" rx="13" ry="11" fill="#9ccc65"/>
+    <ellipse cx="110" cy="186" rx="13" ry="10" fill="#9ccc65"/>
+    <ellipse cx="142" cy="186" rx="13" ry="10" fill="#9ccc65"/>
+    <ellipse cx="172" cy="180" rx="13" ry="11" fill="#9ccc65"/>
+    <path d="M186 160 L210 166 L188 174 Z" fill="#9ccc65" stroke="#9ccc65" stroke-width="5" stroke-linejoin="round"/>
+  </g>
+  <g filter="url(#clay)">
+    <circle cx="52" cy="140" r="26" fill="#a5d672"/>
+  </g>
+  <g filter="url(#clay)">
+    <path d="M64 170 Q64 92 126 92 Q188 92 188 170 Z" fill="#43a047"/>
+  </g>
+  <g filter="url(#clay)">
+    <rect x="58" y="162" width="136" height="15" rx="7.5" fill="#2e7d32"/>
+  </g>
+  <g filter="url(#clay)">
+    <path d="M104 132 A22 22 0 1 0 126 110" fill="none" stroke="#f1fff0" stroke-width="8" stroke-linecap="round"/>
+    <path d="M132 99 L117 110 L132 121 Z" fill="#f1fff0" stroke="#f1fff0" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+  <ellipse cx="36" cy="152" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="68" cy="152" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse cx="44" cy="137" rx="5" ry="6" fill="url(#eye)"/>
+  <circle cx="41.5" cy="133.5" r="1.8" fill="#fff"/>
+  <ellipse cx="62" cy="137" rx="5" ry="6" fill="url(#eye)"/>
+  <circle cx="59.5" cy="133.5" r="1.8" fill="#fff"/>
+  <path d="M47 150 Q53 156 59 150" fill="none" stroke="#4a2a3a" stroke-width="3" stroke-linecap="round"/>
+</svg>

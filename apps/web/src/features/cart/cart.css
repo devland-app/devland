@@ -1,0 +1,110 @@
+.cart-btn {
+  position: relative;
+}
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--sun);
+  color: var(--on-color);
+  font: 800 0.85rem/26px var(--font-display);
+  text-align: center;
+  box-shadow: 0 3px 0 var(--sun-deep);
+}
+.cart-count[data-empty="true"] {
+  display: none;
+}
+.bump {
+  animation: bump 380ms ease;
+}
+@keyframes bump {
+  30% {
+    transform: scale(1.35);
+  }
+  60% {
+    transform: scale(0.92);
+  }
+}
+
+.cart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.2rem;
+  overflow-y: auto;
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+}
+.cart-item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.7rem;
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+  box-shadow: 0 3px 0 var(--line);
+}
+.cart-item h3 {
+  margin: 0;
+  font: 700 1.02rem/1.15 var(--font-display);
+}
+.cart-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.stepper output {
+  min-width: 1.6em;
+  text-align: center;
+  font: 800 1.05rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.stepper .btn {
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  font-size: 1.1rem;
+  box-shadow:
+    0 4px 0 var(--depth),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.12);
+}
+.stepper .btn:active:not([disabled]) {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 var(--depth),
+    inset 0 3px 6px rgba(0, 0, 0, 0.22);
+}
+
+.subtotal {
+  font: 700 1rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.cart-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 2rem 1rem;
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+  align-content: start;
+}
+
+.cart-foot {
+  display: grid;
+  gap: 0.8rem;
+}
