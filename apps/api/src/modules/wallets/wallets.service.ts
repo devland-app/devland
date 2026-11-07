@@ -21,6 +21,11 @@ export class InsufficientCoinsError extends Error {
   }
 }
 
+export interface CreditResult {
+  credited: boolean;
+  balanceCoins: number;
+}
+
 // Regras das carteiras. As moedas são virtuais: entram por acertos nos quizzes e saem na adoção
 // dos mascotes. Crédito e débito rodam dentro da transação de quem pediu o movimento.
 export class WalletsService {
@@ -42,20 +47,31 @@ export class WalletsService {
     return wallet;
   }
 
-  async credit(movement: WalletMovement, trx: Transaction): Promise<number> {
-    const balance = await this.wallets.applyMovement(movement, movement.amountCoins, trx);
-    if (balance === undefined) {
-      throw new WalletNotFoundError(movement.walletId);
+  // Credita uma vez por referência. Se ela já rendeu moedas antes, nada muda e "credited" é false.
+  async credit(movement: WalletMovement, trx: Transaction): Promise<CreditResult> {
+    // Conferir antes: o extrato aponta para a carteira, e uma carteira inexistente viraria erro de
+    // banco em vez de uma resposta clara.
+    await this.getWallet(movement.walletId, trx);
+    const outcome = await this.wallets.applyMovement(movement, movement.amountCoins, trx);
+    if (outcome.status === "applied") {
+      return { credited: true, balanceCoins: outcome.balanceCoins };
     }
-    return balance;
+    const wallet = await this.getWallet(movement.walletId, trx);
+    return { credited: false, balanceCoins: wallet.balanceCoins };
   }
 
+  // Num débito recusado por saldo, quem chamou precisa desfazer a transação (a linha do extrato
+  // já foi gravada nela).
   async debit(movement: WalletMovement, trx: Transaction): Promise<number> {
-    const balance = await this.wallets.applyMovement(movement, -movement.amountCoins, trx);
-    if (balance === undefined) {
-      const wallet = await this.getWallet(movement.walletId, trx);
-      throw new InsufficientCoinsError(wallet.balanceCoins, movement.amountCoins);
+    await this.getWallet(movement.walletId, trx);
+    const outcome = await this.wallets.applyMovement(movement, -movement.amountCoins, trx);
+    if (outcome.status === "applied") {
+      return outcome.balanceCoins;
     }
-    return balance;
+    if (outcome.status === "duplicate") {
+      throw new Error(`Débito repetido: ${movement.reason} ${movement.reference}`);
+    }
+    const wallet = await this.getWallet(movement.walletId, trx);
+    throw new InsufficientCoinsError(wallet.balanceCoins, movement.amountCoins);
   }
 }

@@ -14,7 +14,7 @@ const quizSummarySchema = {
   $id: "QuizSummary",
   type: "object",
   additionalProperties: false,
-  required: ["slug", "title", "concept", "questionCount", "coinsPerCorrectAnswer"],
+  required: ["slug", "title", "concept", "questionCount", "totalCoins", "earnedCoins"],
   properties: {
     slug: {
       type: "string",
@@ -24,7 +24,16 @@ const quizSummarySchema = {
     title: { type: "string", examples: ["O que são contêineres"] },
     concept: { type: "string", examples: ["Contêineres"] },
     questionCount: { type: "integer", description: "Perguntas por tentativa", examples: [5] },
-    coinsPerCorrectAnswer: { type: "integer", examples: [20] },
+    totalCoins: {
+      type: "integer",
+      description: "Soma do que as perguntas pagam: o preço do mascote do conceito",
+      examples: [120],
+    },
+    earnedCoins: {
+      type: "integer",
+      description: "Quanto a carteira informada já ganhou neste quiz (0 sem carteira)",
+      examples: [72],
+    },
   },
 } as const;
 
@@ -33,19 +42,20 @@ const quizAttemptSchema = {
   type: "object",
   description: "Tentativa de quiz: as perguntas vêm sem a resposta certa.",
   additionalProperties: false,
-  required: ["id", "quizSlug", "title", "concept", "coinsPerCorrectAnswer", "questions"],
+  required: ["id", "quizSlug", "title", "concept", "totalCoins", "earnedCoins", "questions"],
   properties: {
     id: { type: "string", format: "uuid", description: "Código da tentativa" },
     quizSlug: { type: "string" },
     title: { type: "string" },
     concept: { type: "string" },
-    coinsPerCorrectAnswer: { type: "integer", examples: [20] },
+    totalCoins: { type: "integer", examples: [120] },
+    earnedCoins: { type: "integer", examples: [72] },
     questions: {
       type: "array",
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["id", "prompt", "options"],
+        required: ["id", "prompt", "options", "coins", "alreadyEarned"],
         properties: {
           id: { type: "string", examples: ["conteineres-2"] },
           prompt: { type: "string" },
@@ -58,6 +68,11 @@ const quizAttemptSchema = {
               required: ["id", "text"],
               properties: { id: { type: "string" }, text: { type: "string" } },
             },
+          },
+          coins: { type: "integer", description: "Moedas que o acerto paga", examples: [24] },
+          alreadyEarned: {
+            type: "boolean",
+            description: "A carteira já recebeu as moedas desta pergunta: acertar de novo não paga",
           },
         },
       },
@@ -74,6 +89,7 @@ const answerResultSchema = {
     "correctOptionId",
     "explanation",
     "coinsAwarded",
+    "alreadyEarned",
     "balanceCoins",
     "answeredCount",
     "questionCount",
@@ -82,7 +98,11 @@ const answerResultSchema = {
     correct: { type: "boolean" },
     correctOptionId: { type: "string" },
     explanation: { type: "string", description: "Por que a resposta certa é a certa" },
-    coinsAwarded: { type: "integer", examples: [20] },
+    coinsAwarded: { type: "integer", examples: [24] },
+    alreadyEarned: {
+      type: "boolean",
+      description: "Acertou, mas as moedas desta pergunta já tinham sido ganhas antes",
+    },
     balanceCoins: { type: "integer", description: "Saldo da carteira depois da resposta" },
     answeredCount: { type: "integer", examples: [3] },
     questionCount: { type: "integer", examples: [5] },
@@ -90,6 +110,10 @@ const answerResultSchema = {
 } as const;
 
 const slugPattern = { type: "string", pattern: "^[a-z0-9-]+$", maxLength: 60 } as const;
+
+interface ListQuizzesRequest {
+  Querystring: { walletId?: string };
+}
 
 interface StartAttemptRequest {
   Params: { slug: string };
@@ -106,23 +130,34 @@ export function registerQuizRoutes(app: FastifyInstance, service: QuizzesService
   app.addSchema(quizAttemptSchema);
   app.addSchema(answerResultSchema);
 
-  app.get(
+  app.get<ListQuizzesRequest>(
     "/quizzes",
     {
       schema: {
         tags: ["quizzes"],
         operationId: "listQuizzes",
         summary: "Lista os quizzes, um por conceito de DevOps",
+        description:
+          "Cada quiz paga, no total, o preço do mascote do conceito, e cada pergunta paga uma vez " +
+          "por carteira. Com a carteira informada, mostra quanto ela já ganhou em cada quiz.",
+        querystring: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            walletId: { type: "string", format: "uuid", description: "Carteira para o progresso" },
+          },
+        },
         response: {
           200: {
             description: "Quizzes disponíveis",
             type: "array",
             items: { $ref: "QuizSummary#" },
           },
+          400: { description: "Requisição inválida", ...errorResponseSchema },
         },
       },
     },
-    async () => service.listQuizzes(),
+    async (request) => service.listQuizzes(request.query.walletId),
   );
 
   app.post<StartAttemptRequest>(
@@ -133,8 +168,8 @@ export function registerQuizRoutes(app: FastifyInstance, service: QuizzesService
         operationId: "startQuizAttempt",
         summary: "Começa uma tentativa de quiz",
         description:
-          "Sorteia as perguntas e embaralha as opções. Dá para começar quantas tentativas quiser: " +
-          "cada acerto em cada tentativa rende moedas para a carteira informada.",
+          "Sorteia as perguntas e embaralha as opções. Dá para começar quantas tentativas quiser; " +
+          "cada pergunta rende moedas só no primeiro acerto da carteira.",
         params: {
           type: "object",
           required: ["slug"],
@@ -187,8 +222,9 @@ export function registerQuizRoutes(app: FastifyInstance, service: QuizzesService
         operationId: "answerQuizQuestion",
         summary: "Responde uma pergunta da tentativa",
         description:
-          "A API corrige, devolve a resposta certa com a explicação e, se acertou, credita as " +
-          "moedas na carteira. Cada pergunta pode ser respondida uma vez por tentativa.",
+          "A API corrige, devolve a resposta certa com a explicação e, no primeiro acerto da " +
+          "carteira, credita as moedas da pergunta. Cada pergunta pode ser respondida uma vez por " +
+          "tentativa.",
         params: {
           type: "object",
           required: ["id"],

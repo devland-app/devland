@@ -9,7 +9,7 @@ import { WalletsService } from "./wallets.service.js";
 // Não depende de nenhum outro módulo; quizzes (crédito) e pagamentos (débito) dependem dele.
 export { walletsMigrations } from "./wallets.migrations.js";
 export { InsufficientCoinsError, WalletNotFoundError } from "./wallets.service.js";
-export type { WalletsService } from "./wallets.service.js";
+export type { CreditResult, WalletsService } from "./wallets.service.js";
 export type { Wallet, WalletEntryReason, WalletMovement } from "./wallets.types.js";
 
 export interface WalletsModule {

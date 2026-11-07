@@ -19,8 +19,16 @@ export class AlreadyAnsweredError extends Error {
   }
 }
 
+// Uma pergunta que já rendeu moedas para a carteira.
+export interface EarnedAnswer {
+  quizSlug: string;
+  questionId: string;
+  coins: number;
+}
+
 export interface AttemptRepository {
   create(attempt: NewAttempt): Promise<QuizAttempt>;
+  earnedAnswers(walletId: string): Promise<EarnedAnswer[]>;
   findById(id: string): Promise<QuizAttempt | undefined>;
   saveAnswer(answer: NewAnswer, trx: Transaction): Promise<void>;
   countAnswers(attemptId: string, trx: Transaction): Promise<number>;
@@ -58,6 +66,23 @@ export class KnexAttemptRepository implements AttemptRepository {
       throw new Error(`Tentativa ${attempt.id} não foi gravada`);
     }
     return toAttempt(row);
+  }
+
+  async earnedAnswers(walletId: string): Promise<EarnedAnswer[]> {
+    const rows = await this.db("quiz_answers as answer")
+      .join("quiz_attempts as attempt", "attempt.id", "answer.attempt_id")
+      .where("attempt.wallet_id", walletId)
+      .andWhere("answer.coins_awarded", ">", 0)
+      .select<Array<{ quiz_slug: string; question_id: string; coins_awarded: number }>>(
+        "attempt.quiz_slug",
+        "answer.question_id",
+        "answer.coins_awarded",
+      );
+    return rows.map((row) => ({
+      quizSlug: row.quiz_slug,
+      questionId: row.question_id,
+      coins: row.coins_awarded,
+    }));
   }
 
   async findById(id: string): Promise<QuizAttempt | undefined> {

@@ -86,7 +86,7 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   const wallets = createWalletsModule(options.db);
   wallets.registerRoutes(app);
 
-  const quizzes = createQuizzesModule(options.db, wallets.service);
+  const quizzes = createQuizzesModule(options.db, wallets.service, catalog.service);
   quizzes.registerRoutes(app);
 
   const payments = createPaymentsModule(options.db, wallets.service);
