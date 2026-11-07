@@ -28,4 +28,13 @@ export class CatalogService {
     }
     return product;
   }
+
+  // Usado por outros módulos (ex.: pedidos) para saber nome, preço e estoque atuais. IDs que não
+  // existem simplesmente não aparecem no resultado; quem chama decide o que fazer com a ausência.
+  getProductsByIds(ids: number[]): Promise<Product[]> {
+    if (ids.length === 0) {
+      return Promise.resolve([]);
+    }
+    return this.products.findByIds(ids);
+  }
 }

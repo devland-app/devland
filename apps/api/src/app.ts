@@ -1,6 +1,6 @@
 import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
 
-import { registerCatalogModule } from "./modules/catalog/index.js";
+import { createCatalogModule } from "./modules/catalog/index.js";
 import { registerApiDocs } from "./shared/api-docs.js";
 import type { Database } from "./shared/database.js";
 
@@ -60,7 +60,8 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
     }
   });
 
-  registerCatalogModule(app, options.db);
+  const catalog = createCatalogModule(options.db);
+  catalog.registerRoutes(app);
 
   return app;
 }
