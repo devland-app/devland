@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import { errorResponseSchema } from "../../shared/http.js";
-import { paymentMethodSchema, paymentSchema, type PaymentMethod } from "../payments/index.js";
+import { paymentSchema } from "../payments/index.js";
 import {
   InsufficientStockError,
   MAX_UNITS_PER_PRODUCT,
@@ -21,26 +21,26 @@ const orderItemSchema = {
   $id: "OrderItem",
   type: "object",
   additionalProperties: false,
-  required: ["productId", "productName", "unitPriceCents", "quantity", "subtotalCents"],
+  required: ["productId", "productName", "unitPriceCoins", "quantity", "subtotalCoins"],
   properties: {
     productId: { type: "integer", examples: [1] },
     productName: { type: "string", examples: ["Caranguejo dos Contêineres"] },
-    unitPriceCents: {
+    unitPriceCoins: {
       type: "integer",
-      description: "Preço unitário no momento da compra, em centavos",
-      examples: [4990],
+      description: "Preço unitário no momento da adoção, em moedas",
+      examples: [120],
     },
-    quantity: { type: "integer", examples: [2] },
-    subtotalCents: { type: "integer", examples: [9980] },
+    quantity: { type: "integer", examples: [1] },
+    subtotalCoins: { type: "integer", examples: [120] },
   },
 } as const;
 
 const orderSchema = {
   $id: "Order",
   type: "object",
-  description: "Pedido simulado: nada é cobrado",
+  description: "Pedido de adoção, pago com moedas virtuais",
   additionalProperties: false,
-  required: ["id", "status", "items", "totalCents", "createdAt", "paidAt"],
+  required: ["id", "status", "items", "totalCoins", "createdAt", "paidAt"],
   properties: {
     id: {
       type: "string",
@@ -49,7 +49,7 @@ const orderSchema = {
     },
     status: { type: "string", enum: ["awaiting_payment", "paid"] },
     items: { type: "array", items: { $ref: "OrderItem#" } },
-    totalCents: { type: "integer", description: "Total em centavos", examples: [14470] },
+    totalCoins: { type: "integer", description: "Total em moedas", examples: [200] },
     createdAt: { type: "string", format: "date-time" },
     paidAt: { type: ["string", "null"], format: "date-time" },
   },
@@ -66,10 +66,10 @@ interface OrderParams {
 
 interface PayOrderRequest {
   Params: { id: string };
-  Body: { method: PaymentMethod };
+  Body: { walletId: string };
 }
 
-const NOTHING_CHARGED = "Pagamento simulado: nenhum valor foi cobrado.";
+const VIRTUAL_COINS = "Pago com moedas virtuais: nenhum dinheiro foi usado.";
 
 const orderIdParamsSchema = {
   type: "object",
@@ -90,7 +90,7 @@ export function registerOrderRoutes(app: FastifyInstance, service: OrdersService
       schema: {
         tags: ["orders"],
         operationId: "createOrder",
-        summary: "Cria um pedido simulado a partir do carrinho",
+        summary: "Cria um pedido de adoção a partir do carrinho",
         description:
           "Só produto e quantidade vêm do cliente: preços e nomes saem do catálogo. " +
           "Repetir a mesma Idempotency-Key devolve o pedido já criado (200), sem criar outro.",
@@ -198,16 +198,19 @@ export function registerOrderRoutes(app: FastifyInstance, service: OrdersService
       schema: {
         tags: ["orders"],
         operationId: "payOrder",
-        summary: "Paga um pedido simulado",
+        summary: "Paga um pedido com as moedas de uma carteira",
         description:
-          "Nenhum valor é cobrado. Baixa de estoque, pagamento e pedido pago acontecem juntos ou não " +
-          "acontecem. Pagar um pedido já pago devolve o mesmo recibo, sem nova cobrança.",
+          "As moedas são virtuais e não valem dinheiro. Baixa de estoque, débito das moedas e pedido " +
+          "pago acontecem juntos ou não acontecem. Pagar um pedido já pago devolve o mesmo recibo, " +
+          "sem debitar de novo.",
         params: orderIdParamsSchema,
         body: {
           type: "object",
           additionalProperties: false,
-          required: ["method"],
-          properties: { method: paymentMethodSchema },
+          required: ["walletId"],
+          properties: {
+            walletId: { type: "string", format: "uuid", description: "Carteira que paga o pedido" },
+          },
         },
         response: {
           200: {
@@ -216,13 +219,13 @@ export function registerOrderRoutes(app: FastifyInstance, service: OrdersService
             additionalProperties: false,
             required: ["notice", "order", "payment"],
             properties: {
-              notice: { type: "string", examples: [NOTHING_CHARGED] },
+              notice: { type: "string", examples: [VIRTUAL_COINS] },
               order: { $ref: "Order#" },
               payment: { $ref: "Payment#" },
             },
           },
           400: { description: "Requisição inválida", ...errorResponseSchema },
-          402: { description: "Pagamento recusado (cartão sem saldo)", ...errorResponseSchema },
+          402: { description: "Pagamento recusado (saldo insuficiente)", ...errorResponseSchema },
           404: { description: "Nenhum pedido com esse código", ...errorResponseSchema },
           409: { description: "Um mascote do pedido esgotou", ...errorResponseSchema },
         },
@@ -232,12 +235,12 @@ export function registerOrderRoutes(app: FastifyInstance, service: OrdersService
       try {
         const { order, payment, alreadyPaid } = await service.payOrder(
           request.params.id,
-          request.body.method,
+          request.body.walletId,
         );
         if (alreadyPaid) {
           reply.header("Idempotent-Replayed", "true");
         }
-        return { notice: NOTHING_CHARGED, order, payment };
+        return { notice: VIRTUAL_COINS, order, payment };
       } catch (error) {
         if (error instanceof OrderNotFoundError) {
           return reply.code(404).send({ message: "Pedido não encontrado." });

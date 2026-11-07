@@ -280,6 +280,60 @@ const renameToDevLand: Migration = {
   },
 };
 
+// Os mascotes passam a custar moedas virtuais, ganhas nos quizzes, em vez de reais simulados. Um
+// acerto vale 20 moedas: um quiz perfeito (5 perguntas) paga quase um mascote.
+const COIN_PRICES: Record<string, number> = {
+  "caranguejo-dos-conteineres": 120,
+  "lesminha-do-pipeline": 100,
+  "corujinha-das-branches": 80,
+  "polvo-orquestrador": 150,
+  "tartaruga-do-rollback": 100,
+  "abelha-dos-logs": 80,
+  "castor-do-cache": 90,
+  "raposa-dos-segredos": 110,
+};
+
+const priceInCoins: Migration = {
+  name: "catalog_008_price_in_coins",
+  async up(db) {
+    await db.schema.alterTable("products", (table) => {
+      table.integer("price_coins");
+    });
+    // Produto fora da lista (criado depois do catálogo inicial): uma moeda por real, arredondado.
+    await db("products").update({ price_coins: db.raw("greatest(1, round(price_cents / 100.0))") });
+    for (const [slug, price] of Object.entries(COIN_PRICES)) {
+      await db("products").where({ slug }).update({ price_coins: price });
+    }
+    await db.schema.alterTable("products", (table) => {
+      table.integer("price_coins").notNullable().alter();
+      // A restrição de preço positivo em centavos sai junto com a coluna.
+      table.dropColumn("price_cents");
+    });
+    // CHECK em SQL direto: dentro de um alterTable, o table.check do Knex monta a query errada.
+    await db.raw(
+      "alter table products add constraint products_price_coins_positive check (price_coins > 0)",
+    );
+  },
+  async down(db) {
+    await db.schema.alterTable("products", (table) => {
+      table.integer("price_cents");
+    });
+    await db("products").update({ price_cents: db.raw("price_coins * 100") });
+    for (const product of initialProducts) {
+      await db("products")
+        .where({ slug: product.slug })
+        .update({ price_cents: product.price_cents });
+    }
+    await db.schema.alterTable("products", (table) => {
+      table.integer("price_cents").notNullable().alter();
+      table.dropColumn("price_coins");
+    });
+    await db.raw(
+      "alter table products add constraint products_price_cents_positive check (price_cents > 0)",
+    );
+  },
+};
+
 export const catalogMigrations: Migration[] = [
   createProducts,
   insertInitialProducts,
@@ -288,4 +342,5 @@ export const catalogMigrations: Migration[] = [
   addMascotLessons,
   rewriteDescriptions,
   renameToDevLand,
+  priceInCoins,
 ];

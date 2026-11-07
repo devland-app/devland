@@ -11,9 +11,10 @@ export interface PaymentRepository {
 interface PaymentRow {
   id: string;
   order_id: string;
+  wallet_id: string | null;
   method: PaymentMethod;
   status: PaymentStatus;
-  amount_cents: number;
+  amount_coins: number;
   receipt_code: string | null;
   decline_reason: string | null;
   created_at: Date;
@@ -22,9 +23,10 @@ interface PaymentRow {
 const PAYMENT_COLUMNS = [
   "id",
   "order_id",
+  "wallet_id",
   "method",
   "status",
-  "amount_cents",
+  "amount_coins",
   "receipt_code",
   "decline_reason",
   "created_at",
@@ -44,9 +46,10 @@ export class KnexPaymentRepository implements PaymentRepository {
       .insert({
         id: payment.id,
         order_id: payment.orderId,
+        wallet_id: payment.walletId,
         method: payment.method,
         status: payment.status,
-        amount_cents: payment.amountCents,
+        amount_coins: payment.amountCoins,
         receipt_code: payment.receiptCode,
         decline_reason: payment.declineReason,
       })
@@ -70,9 +73,10 @@ function toPayment(row: PaymentRow): Payment {
   return {
     id: row.id,
     orderId: row.order_id,
+    walletId: row.wallet_id,
     method: row.method,
     status: row.status,
-    amountCents: row.amount_cents,
+    amountCoins: row.amount_coins,
     receiptCode: row.receipt_code,
     declineReason: row.decline_reason,
     createdAt: row.created_at.toISOString(),

@@ -19,7 +19,7 @@ const productSchema = {
     "name",
     "concept",
     "description",
-    "priceCents",
+    "priceCoins",
     "stock",
     "imageUrl",
     "lesson",
@@ -34,10 +34,10 @@ const productSchema = {
       examples: ["Contêineres"],
     },
     description: { type: "string" },
-    priceCents: {
+    priceCoins: {
       type: "integer",
-      description: "Preço em centavos de real (simulado: nada é cobrado)",
-      examples: [4990],
+      description: "Preço em moedas virtuais, ganhas nos quizzes. As moedas não valem dinheiro.",
+      examples: [120],
     },
     stock: { type: "integer", description: "Unidades disponíveis", examples: [25] },
     imageUrl: {

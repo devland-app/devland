@@ -17,7 +17,7 @@ interface ProductRow {
   name: string;
   concept: string;
   description: string;
-  price_cents: number;
+  price_coins: number;
   stock: number;
   image_path: string;
   lesson_explanation: string;
@@ -32,7 +32,7 @@ const PRODUCT_COLUMNS = [
   "name",
   "concept",
   "description",
-  "price_cents",
+  "price_coins",
   "stock",
   "image_path",
   "lesson_explanation",
@@ -88,7 +88,7 @@ function toProduct(row: ProductRow): Product {
     name: row.name,
     concept: row.concept,
     description: row.description,
-    priceCents: row.price_cents,
+    priceCoins: row.price_coins,
     stock: row.stock,
     imageUrl: row.image_path,
     lesson: {

@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import type { Transaction, TransactionRunner } from "../../shared/database.js";
 import { OutOfStockError } from "../catalog/index.js";
-import type { ChargeRequest, ChargeResult, Payment, PaymentMethod } from "../payments/index.js";
+import type { ChargeRequest, ChargeResult, Payment } from "../payments/index.js";
 import { DuplicateIdempotencyKeyError, type OrderRepository } from "./orders.repository.js";
 import type { Order, OrderItemRequest } from "./orders.types.js";
 
@@ -15,7 +15,7 @@ export const MAX_UNITS_PER_PRODUCT = 1;
 export interface CatalogProduct {
   id: number;
   name: string;
-  priceCents: number;
+  priceCoins: number;
   stock: number;
 }
 
@@ -29,7 +29,7 @@ export interface ProductLookup {
 
 // O que os pedidos usam do módulo de pagamentos (orders → payments, nunca o contrário).
 export interface PaymentProcessor {
-  authorize(request: ChargeRequest): Promise<ChargeResult>;
+  authorize(request: ChargeRequest, trx: Transaction): Promise<ChargeResult>;
   record(request: ChargeRequest, result: ChargeResult, trx?: Transaction): Promise<Payment>;
   findApprovedPayment(orderId: string): Promise<Payment | undefined>;
 }
@@ -145,17 +145,17 @@ export class OrdersService {
       return {
         productId: product.id,
         productName: product.name,
-        unitPriceCents: product.priceCents,
+        unitPriceCoins: product.priceCoins,
         quantity,
       };
     });
-    const totalCents = items.reduce((sum, item) => sum + item.unitPriceCents * item.quantity, 0);
+    const totalCoins = items.reduce((sum, item) => sum + item.unitPriceCoins * item.quantity, 0);
 
     try {
       const order = await this.orders.create({
         id: randomUUID(),
         idempotencyKey: input.idempotencyKey,
-        totalCents,
+        totalCoins,
         items,
       });
       return { order, created: true };
@@ -171,15 +171,15 @@ export class OrdersService {
     }
   }
 
-  // Baixa de estoque, pagamento aprovado e pedido pago acontecem juntos (uma transação) ou não
-  // acontecem. Uma recusa desfaz a baixa de estoque e fica registrada fora da transação.
-  async payOrder(orderId: string, method: PaymentMethod): Promise<PayOrderResult> {
+  // Baixa de estoque, débito das moedas, pagamento aprovado e pedido pago acontecem juntos (uma
+  // transação) ou não acontecem. Uma recusa desfaz tudo e fica registrada fora da transação.
+  async payOrder(orderId: string, walletId: string): Promise<PayOrderResult> {
     const order = await this.getOrder(orderId);
     if (order.status === "paid") {
       return this.paidResult(orderId, true);
     }
 
-    const request: ChargeRequest = { orderId, amountCents: order.totalCents, method };
+    const request: ChargeRequest = { orderId, walletId, amountCoins: order.totalCoins };
     let outcome: "paid" | "already_paid";
     try {
       outcome = await this.runInTransaction(async (trx) => {
@@ -192,7 +192,7 @@ export class OrdersService {
           order.items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
           trx,
         );
-        const result = await this.payments.authorize(request);
+        const result = await this.payments.authorize(request, trx);
         if (result.status === "declined") {
           throw new PaymentDeclinedError(result.reason);
         }

@@ -36,4 +36,45 @@ const createPayments: Migration = {
   },
 };
 
-export const paymentsMigrations: Migration[] = [createPayments];
+// Pagamentos passam a ser feitos com moedas de uma carteira. As formas simuladas antigas continuam
+// válidas no banco para o histórico; valores em centavos viram moedas (uma moeda por real).
+const payWithCoins: Migration = {
+  name: "payments_002_pay_with_coins",
+  async up(db) {
+    await db.schema.alterTable("payments", (table) => {
+      table.renameColumn("amount_cents", "amount_coins");
+      // Referência à carteira sem foreign key: "wallets" é tabela de outro módulo.
+      table.uuid("wallet_id").index();
+      table.dropChecks(["payments_method_valid", "payments_amount_cents_positive"]);
+    });
+    await db("payments").update({
+      amount_coins: db.raw("greatest(1, round(amount_coins / 100.0))"),
+    });
+    // CHECK em SQL direto: dentro de um alterTable, o table.check do Knex monta a query errada.
+    await db.raw(
+      "alter table payments add constraint payments_method_valid " +
+        "check (method in ('coins', 'pix', 'toy_card', 'broke_toy_card'))",
+    );
+    await db.raw(
+      "alter table payments add constraint payments_amount_coins_positive check (amount_coins > 0)",
+    );
+  },
+  async down(db) {
+    await db("payments").where({ method: "coins" }).delete();
+    await db.schema.alterTable("payments", (table) => {
+      table.dropChecks(["payments_method_valid", "payments_amount_coins_positive"]);
+      table.dropColumn("wallet_id");
+      table.renameColumn("amount_coins", "amount_cents");
+    });
+    await db("payments").update({ amount_cents: db.raw("amount_cents * 100") });
+    await db.raw(
+      "alter table payments add constraint payments_method_valid " +
+        "check (method in ('pix', 'toy_card', 'broke_toy_card'))",
+    );
+    await db.raw(
+      "alter table payments add constraint payments_amount_cents_positive check (amount_cents > 0)",
+    );
+  },
+};
+
+export const paymentsMigrations: Migration[] = [createPayments, payWithCoins];
