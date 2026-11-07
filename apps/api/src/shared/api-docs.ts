@@ -14,7 +14,7 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
         title: "DevZoo API",
         version: readApiVersion(),
         description:
-          "API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em DevOps. " +
+          "API da DevZoo, uma loja simulada de mascotes inspirados em DevOps. " +
           "Nenhuma compra é real e nenhum valor é cobrado.",
       },
       servers: [{ url: "http://localhost:3333", description: "Ambiente local (docker compose)" }],
@@ -23,7 +23,7 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
       security: [],
       tags: [
         { name: "catalog", description: "Vitrine de miniaturas" },
-        { name: "orders", description: "Pedidos de mentirinha (nada é cobrado)" },
+        { name: "orders", description: "Pedidos simulados (nada é cobrado)" },
         { name: "health", description: "Saúde da API e do banco" },
       ],
     },

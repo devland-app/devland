@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import type { ChargeRequest, ChargeResult } from "./payments.types.js";
 
-// Padrão Strategy: o módulo depende só desta interface. A loja usa o gateway de mentirinha; um
+// Padrão Strategy: o módulo depende só desta interface. A loja usa o gateway simulado; um
 // gateway real seria outra implementação com a mesma interface, sem mudar quem a usa.
 export interface PaymentGateway {
   charge(request: ChargeRequest): Promise<ChargeResult>;
@@ -16,7 +16,7 @@ export class FakePaymentGateway implements PaymentGateway {
       return {
         status: "declined",
         reason:
-          "O cartão de brinquedo está sem saldo de mentirinha. Escolha outra forma de pagamento.",
+          "Pagamento recusado: o cartão simulado está sem saldo. Escolha outra forma de pagamento.",
       };
     }
     return { status: "approved", receiptCode: `DZ-${randomUUID().slice(0, 8).toUpperCase()}` };

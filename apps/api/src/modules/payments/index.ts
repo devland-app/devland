@@ -14,7 +14,7 @@ export interface PaymentsModule {
   service: PaymentsService;
 }
 
-// Composição do módulo: o gateway de mentirinha é escolhido aqui. Trocar por um real seria mudar
+// Composição do módulo: o gateway simulado é escolhido aqui. Trocar por um real seria mudar
 // só esta linha (padrão Strategy).
 export function createPaymentsModule(db: Database): PaymentsModule {
   return {

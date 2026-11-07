@@ -12,7 +12,7 @@ const createPayments: Migration = {
       table.string("method", 30).notNullable();
       table.string("status", 20).notNullable();
       table.integer("amount_cents").notNullable();
-      // Recibo de mentirinha mostrado na tela; só pagamentos aprovados têm um.
+      // Recibo simulado mostrado na tela; só pagamentos aprovados têm um.
       table.string("receipt_code", 20);
       table.string("decline_reason", 200);
       table.timestamp("created_at", { useTz: true }).notNullable().defaultTo(db.fn.now());

@@ -1,6 +1,6 @@
 export const PAYMENT_METHODS = ["pix", "toy_card", "broke_toy_card"] as const;
 
-// Pix de mentirinha, cartão de brinquedo e cartão de brinquedo sem saldo (para ver uma recusa).
+// Pix simulado, cartão simulado e cartão simulado sem saldo (para ver uma recusa).
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 export type PaymentStatus = "approved" | "declined";

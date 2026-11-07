@@ -38,7 +38,7 @@ const orderItemSchema = {
 const orderSchema = {
   $id: "Order",
   type: "object",
-  description: "Pedido de mentirinha: nada é cobrado",
+  description: "Pedido simulado: nada é cobrado",
   additionalProperties: false,
   required: ["id", "status", "items", "totalCents", "createdAt", "paidAt"],
   properties: {
@@ -69,7 +69,7 @@ interface PayOrderRequest {
   Body: { method: PaymentMethod };
 }
 
-const NOTHING_CHARGED = "Pagamento de mentirinha: nenhum valor foi cobrado.";
+const NOTHING_CHARGED = "Pagamento simulado: nenhum valor foi cobrado.";
 
 const orderIdParamsSchema = {
   type: "object",
@@ -90,7 +90,7 @@ export function registerOrderRoutes(app: FastifyInstance, service: OrdersService
       schema: {
         tags: ["orders"],
         operationId: "createOrder",
-        summary: "Cria um pedido de mentirinha a partir do carrinho",
+        summary: "Cria um pedido simulado a partir do carrinho",
         description:
           "Só produto e quantidade vêm do cliente: preços e nomes saem do catálogo. " +
           "Repetir a mesma Idempotency-Key devolve o pedido já criado (200), sem criar outro.",
@@ -198,7 +198,7 @@ export function registerOrderRoutes(app: FastifyInstance, service: OrdersService
       schema: {
         tags: ["orders"],
         operationId: "payOrder",
-        summary: "Paga um pedido de mentirinha",
+        summary: "Paga um pedido simulado",
         description:
           "Nenhum valor é cobrado. Baixa de estoque, pagamento e pedido pago acontecem juntos ou não " +
           "acontecem. Pagar um pedido já pago devolve o mesmo recibo, sem nova cobrança.",

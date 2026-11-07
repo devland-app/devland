@@ -36,7 +36,7 @@ const productSchema = {
     description: { type: "string" },
     priceCents: {
       type: "integer",
-      description: "Preço em centavos de real (de mentirinha: nada é cobrado)",
+      description: "Preço em centavos de real (simulado: nada é cobrado)",
       examples: [4990],
     },
     stock: { type: "integer", description: "Unidades disponíveis", examples: [25] },

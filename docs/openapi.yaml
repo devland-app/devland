@@ -2,8 +2,8 @@ openapi: 3.1.0
 info:
   title: DevZoo API
   version: 0.2.0
-  description: API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em
-    DevOps. Nenhuma compra é real e nenhum valor é cobrado.
+  description: API da DevZoo, uma loja simulada de mascotes inspirados em DevOps.
+    Nenhuma compra é real e nenhum valor é cobrado.
 components:
   schemas:
     Product:
@@ -42,7 +42,7 @@ components:
           type: string
         priceCents:
           type: integer
-          description: "Preço em centavos de real (de mentirinha: nada é cobrado)"
+          description: "Preço em centavos de real (simulado: nada é cobrado)"
           examples:
             - 4990
         stock:
@@ -109,7 +109,7 @@ components:
             - 9980
     Order:
       type: object
-      description: "Pedido de mentirinha: nada é cobrado"
+      description: "Pedido simulado: nada é cobrado"
       additionalProperties: false
       required:
         - id
@@ -147,7 +147,7 @@ components:
           format: date-time
     Payment:
       type: object
-      description: Pagamento de mentirinha aprovado
+      description: Pagamento simulado aprovado
       additionalProperties: false
       required:
         - id
@@ -177,7 +177,7 @@ components:
             - 14470
         receiptCode:
           type: string
-          description: Recibo de mentirinha
+          description: Código do recibo simulado
           examples:
             - DZ-3F8C2A1E
         createdAt:
@@ -300,7 +300,7 @@ paths:
   /orders:
     post:
       operationId: createOrder
-      summary: Cria um pedido de mentirinha a partir do carrinho
+      summary: Cria um pedido simulado a partir do carrinho
       tags:
         - orders
       description: "Só produto e quantidade vêm do cliente: preços e nomes saem do
@@ -448,7 +448,7 @@ paths:
   /orders/{id}/payment:
     post:
       operationId: payOrder
-      summary: Paga um pedido de mentirinha
+      summary: Paga um pedido simulado
       tags:
         - orders
       description: Nenhum valor é cobrado. Baixa de estoque, pagamento e pedido pago
@@ -470,9 +470,9 @@ paths:
                     - pix
                     - toy_card
                     - broke_toy_card
-                  description: "pix: Pix de mentirinha · toy_card: cartão de brinquedo ·
-                    broke_toy_card: cartão sem saldo, sempre recusado (para ver
-                    a tela de recusa)"
+                  description: "pix: Pix simulado · toy_card: cartão simulado · broke_toy_card:
+                    cartão simulado sem saldo, sempre recusado (para ver a tela
+                    de recusa)"
       parameters:
         - schema:
             type: string
@@ -498,7 +498,7 @@ paths:
                   notice:
                     type: string
                     examples:
-                      - "Pagamento de mentirinha: nenhum valor foi cobrado."
+                      - "Pagamento simulado: nenhum valor foi cobrado."
                   order:
                     $ref: "#/components/schemas/Order"
                   payment:
@@ -563,6 +563,6 @@ tags:
   - name: catalog
     description: Vitrine de miniaturas
   - name: orders
-    description: Pedidos de mentirinha (nada é cobrado)
+    description: Pedidos simulados (nada é cobrado)
   - name: health
     description: Saúde da API e do banco
