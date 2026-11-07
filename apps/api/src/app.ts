@@ -1,5 +1,6 @@
 import Fastify, { type FastifyInstance } from "fastify";
 
+import { registerCatalogModule } from "./modules/catalog/index.js";
 import type { Database } from "./shared/database.js";
 
 export interface AppOptions {
@@ -22,6 +23,8 @@ export function buildApp(options: AppOptions): FastifyInstance {
       return reply.code(503).send({ status: "error", database: "unavailable" });
     }
   });
+
+  registerCatalogModule(app, options.db);
 
   return app;
 }
