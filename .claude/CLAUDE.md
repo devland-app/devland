@@ -166,6 +166,21 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - O CI depende da variável `DOCKERHUB_USERNAME` (GitHub Variables) e do segredo `DOCKERHUB_TOKEN`
   (GitHub Secrets).
 
+## Deploy
+
+- Vercel (site na CDN e API como função em `gru1`) + Neon (PostgreSQL em `aws-sa-east-1`), criados
+  pelo Terraform em `infra/` (rodado pela imagem `hashicorp/terraform`; estado e `terraform.tfvars`
+  ficam fora do git). Detalhes em `infra/README.md`.
+- `api/index.js` (raiz) reexporta `apps/api/dist/vercel.js`: tira o prefixo `/api` e entrega a
+  requisição ao mesmo `buildApp` do Docker. O `vercel.json` manda `/api/*` para essa função e
+  inclui as ilustrações e os arquivos do Swagger UI.
+- Na Vercel a API não roda migrations ao subir: o job `deploy` do CI roda `npm run migrate` antes de
+  publicar. O Docker continua migrando na subida (`server.ts`).
+- O site é construído com `VITE_API_URL=/api` (`npm run build:vercel`): mesmo domínio, sem CORS.
+- Catálogo com `Cache-Control` de CDN (`s-maxage=30, stale-while-revalidate=300`) e ilustrações
+  `immutable` (o endereço muda quando o desenho muda).
+- O CI testa o `docker compose` em x64 e ARM e publica as imagens para as duas arquiteturas.
+
 ## Segurança
 
 - Nenhum segredo no repositório. Valores reais ficam em `.env` (ignorado) ou no GitHub Secrets.
