@@ -1,20 +1,22 @@
+import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
 import { apiAssetUrl } from "../../shared/api/client.ts";
 import type { Product } from "../../shared/api/types.ts";
+import { useCart } from "../../shared/cart/cartContext.ts";
 import { formatCents } from "../../shared/format.ts";
-import { useCart } from "../cart/cartContext.ts";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { lines, add } = useCart();
-  const inCart = lines.find((line) => line.productId === product.id)?.quantity ?? 0;
-  const soldOut = product.stock === 0;
-  const atLimit = inCart >= Math.min(10, product.stock);
+  const cart = useCart();
+  const adoptions = useAdoptions();
+  const adopted = adoptions.adopted.has(product.id);
+  const pending = adoptions.isPending(product.id);
+  const inCart = cart.has(product.id);
 
   return (
-    <article className="card clay">
+    <article className={`card clay${adopted ? " card--adopted" : ""}`}>
       <div className="card-art">
         <img
           src={apiAssetUrl(product.imageUrl)}
@@ -32,21 +34,68 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="buy-row">
         <p className="price">
           <strong>{formatCents(product.priceCents)}</strong>
-          <small>
-            de mentirinha · {product.stock > 0 ? `${product.stock} em estoque` : "esgotado"}
-          </small>
+          <small>de mentirinha</small>
         </p>
-        <button
-          className="btn"
-          type="button"
-          onClick={() => add(product)}
-          disabled={soldOut || atLimit}
-          aria-label={`Adotar ${product.name}`}
-        >
-          {soldOut ? "Esgotado" : atLimit ? "No limite" : "Adotar"}
-        </button>
+        <AdoptButton
+          product={product}
+          adopted={adopted}
+          pending={pending}
+          inCart={inCart}
+          onToggle={() => cart.toggle(product)}
+        />
       </div>
-      {inCart > 0 && <p className="in-cart">No carrinho: {inCart}</p>}
+      {adopted && (
+        <a className="card-link" href={`#mascote-${product.slug}`}>
+          Conhecer meu mascote →
+        </a>
+      )}
     </article>
+  );
+}
+
+interface AdoptButtonProps {
+  product: Product;
+  adopted: boolean;
+  pending: boolean;
+  inCart: boolean;
+  onToggle: () => void;
+}
+
+// Um de cada: adotado e aguardando pagamento ficam desabilitados; no carrinho, o botão fica
+// "apertado" (aria-pressed) e um novo clique tira o mascote.
+function AdoptButton({ product, adopted, pending, inCart, onToggle }: AdoptButtonProps) {
+  if (adopted) {
+    return (
+      <button className="btn btn--toggle" type="button" disabled>
+        Adotado ✓
+      </button>
+    );
+  }
+  if (pending) {
+    return (
+      <button className="btn btn--toggle" type="button" disabled>
+        Aguardando pagamento
+      </button>
+    );
+  }
+  if (product.stock === 0) {
+    return (
+      <button className="btn btn--toggle" type="button" disabled>
+        Esgotado
+      </button>
+    );
+  }
+  return (
+    <button
+      className="btn btn--toggle"
+      type="button"
+      onClick={onToggle}
+      aria-pressed={inCart}
+      aria-label={
+        inCart ? `${product.name} está no carrinho. Tirar do carrinho` : `Adotar ${product.name}`
+      }
+    >
+      {inCart ? "Incluído ✓" : "Adotar"}
+    </button>
   );
 }

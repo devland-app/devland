@@ -1,0 +1,75 @@
+import "./collection.css";
+
+import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
+import { apiAssetUrl } from "../../shared/api/client.ts";
+import { formatDateTime } from "../../shared/format.ts";
+import { CollectionProgress } from "../../shared/ui/CollectionProgress.tsx";
+import { useProducts } from "../../shared/useProducts.ts";
+
+export function CollectionPage() {
+  const { state, retry } = useProducts();
+  const adoptions = useAdoptions();
+
+  return (
+    <section aria-labelledby="collection-title">
+      <div className="intro">
+        <h1 id="collection-title">Meus mascotes</h1>
+        <p>
+          Cada mascote adotado ganha uma página própria, onde explica o conceito de DevOps dele de
+          um jeito simples. Sem login: sua coleção fica salva neste navegador.
+        </p>
+      </div>
+
+      {state.status === "error" && (
+        <div className="catalog-error clay" role="alert">
+          <p>{state.message}</p>
+          <button className="btn btn--lilac" type="button" onClick={retry}>
+            Tentar de novo
+          </button>
+        </div>
+      )}
+
+      {(state.status === "loading" || adoptions.status === "loading") &&
+        state.status !== "error" && (
+          <p className="fine" role="status">
+            Buscando sua coleção…
+          </p>
+        )}
+
+      {state.status === "ready" && adoptions.status === "ready" && (
+        <>
+          <CollectionProgress adopted={adoptions.adopted.size} total={state.products.length} />
+          <ul className="collection">
+            {state.products.map((product) => {
+              const adoption = adoptions.adopted.get(product.id);
+              return (
+                <li key={product.id}>
+                  {adoption ? (
+                    <a className="collected clay" href={`#mascote-${product.slug}`}>
+                      <img src={apiAssetUrl(product.imageUrl)} alt="" width={150} height={150} />
+                      <strong>{product.name}</strong>
+                      <span className="chip">{product.concept}</span>
+                      <span className="fine">Adotado em {formatDateTime(adoption.adoptedAt)}</span>
+                    </a>
+                  ) : (
+                    <div className="locked clay">
+                      <div className="locked-art">
+                        <img src={apiAssetUrl(product.imageUrl)} alt="" width={150} height={150} />
+                        <span aria-hidden="true">?</span>
+                      </div>
+                      <strong>Quem será?</strong>
+                      <span className="chip">{product.concept}</span>
+                      <a className="card-link" href="#vitrine">
+                        Adotar na vitrine
+                      </a>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}

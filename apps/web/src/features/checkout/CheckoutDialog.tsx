@@ -2,12 +2,14 @@ import "./checkout.css";
 
 import { useEffect, useRef, useState } from "react";
 
+import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
 import { ApiError, apiAssetUrl, createOrder, payOrder } from "../../shared/api/client.ts";
 import type { Order, Payment, PaymentMethod } from "../../shared/api/types.ts";
+import { useCart } from "../../shared/cart/cartContext.ts";
 import { formatCents } from "../../shared/format.ts";
 import { rememberOrder } from "../../shared/myOrders.ts";
 import { Dialog } from "../../shared/ui/Dialog.tsx";
-import { useCart } from "../cart/cartContext.ts";
+
 import { burstConfetti } from "./confetti.ts";
 import { PaymentPreview } from "./PaymentPreview.tsx";
 
@@ -45,6 +47,7 @@ interface CheckoutDialogProps {
 // Montado só quando aberto: cada abertura começa do zero, com uma Idempotency-Key nova.
 export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
   const cart = useCart();
+  const adoptions = useAdoptions();
   const [step, setStep] = useState<Step>(
     resumeOrder ? { name: "pay", order: resumeOrder } : { name: "review", busy: false },
   );
@@ -62,10 +65,12 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
     setStep({ name: "review", busy: true });
     try {
       const order = await createOrder(
-        cart.lines.map((line) => ({ productId: line.productId, quantity: line.quantity })),
+        cart.lines.map((line) => ({ productId: line.productId, quantity: 1 })),
         idempotencyKey.current,
       );
       rememberOrder(order.id);
+      // A partir daqui os mascotes ficam "Aguardando pagamento" (e saem do carrinho) até o pagamento.
+      adoptions.recordOrder(order);
       setStep({ name: "pay", order });
     } catch (error) {
       setStep({ name: "review", busy: false, error: messageOf(error) });
@@ -83,8 +88,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
       setStep({ name: "pay", order, error: messageOf(outcome.error) });
       return;
     }
-    // Retomar um pedido antigo não mexe no carrinho atual, que pode ter outros mascotes.
-    if (!resumeOrder) cart.clear();
+    adoptions.recordOrder(outcome.value.order);
     setStep({ name: "done", order: outcome.value.order, payment: outcome.value.payment });
     burstConfetti(themeColors());
   }
@@ -128,10 +132,8 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
           <ul className="summary">
             {cart.lines.map((line) => (
               <li key={line.productId}>
-                <span>
-                  {line.quantity} × {line.name}
-                </span>
-                <span>{formatCents(line.priceCents * line.quantity)}</span>
+                <span>{line.name}</span>
+                <span>{formatCents(line.priceCents)}</span>
               </li>
             ))}
           </ul>
@@ -233,8 +235,8 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
           </h3>
           <span className="badge-free">Nenhum valor foi cobrado</span>
           <p>
-            Seus mascotes de mentirinha estão a caminho da sua imaginação. Total simulado:{" "}
-            {formatCents(step.order.totalCents)}.
+            Seus mascotes já estão em "Meus mascotes", prontos para explicar o que sabem. Total
+            simulado: {formatCents(step.order.totalCents)}.
           </p>
           <dl className="receipt">
             <div>
@@ -247,14 +249,14 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
             </div>
           </dl>
           <p className="fine">
-            Sem login, é o código que mostra o pedido. Ele também fica salvo neste navegador.
+            Sem login, é o código que mostra o pedido. Sua coleção fica salva neste navegador.
           </p>
           <div className="step-actions">
             <button className="btn btn--soft" type="button" onClick={onClose}>
               Voltar à vitrine
             </button>
-            <a className="btn btn--lilac" href="#pedidos" onClick={onClose}>
-              Ver meus pedidos
+            <a className="btn btn--lilac" href="#mascotes" onClick={onClose}>
+              Ver meus mascotes
             </a>
           </div>
         </div>

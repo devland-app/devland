@@ -1,0 +1,188 @@
+.mascot {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.back-link {
+  justify-self: start;
+  font: 700 1rem/1 var(--font-display);
+  color: var(--lilac-ink);
+  text-decoration: none;
+}
+
+.mascot-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .mascot-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mascot-stage {
+  position: sticky;
+  top: 8rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  padding: 1.4rem 1rem 1.2rem;
+  text-align: center;
+}
+@media (max-width: 760px) {
+  .mascot-stage {
+    position: static;
+  }
+}
+
+.mascot-button {
+  position: relative;
+  border: 0;
+  padding: 0 0 1.2rem;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--r-xl);
+  display: grid;
+  justify-items: center;
+}
+.mascot-button img {
+  width: min(100%, 280px);
+  height: auto;
+  transform-origin: 50% 90%;
+  animation: breathe 3.2s ease-in-out infinite;
+  transition: rotate 220ms ease;
+}
+.mascot-button:hover img {
+  rotate: -4deg;
+}
+
+/* Pulo de massinha: amassa para pegar impulso, estica no ar, amassa ao cair e assenta. */
+.mascot-button img.is-jumping {
+  animation:
+    jump 720ms cubic-bezier(0.3, 0.7, 0.4, 1),
+    breathe 3.2s ease-in-out 720ms infinite;
+}
+.mascot-shadow {
+  position: absolute;
+  bottom: 0.4rem;
+  width: 55%;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--shade);
+  filter: blur(4px);
+}
+.mascot-button img.is-jumping + .mascot-shadow {
+  animation: shadow-jump 720ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+@keyframes breathe {
+  50% {
+    transform: scale(1.025, 0.985);
+  }
+}
+@keyframes jump {
+  0% {
+    transform: scale(1, 1);
+  }
+  14% {
+    transform: scale(1.14, 0.84);
+  }
+  42% {
+    transform: translateY(-46px) scale(0.9, 1.12);
+  }
+  66% {
+    transform: translateY(0) scale(1.12, 0.88);
+  }
+  82% {
+    transform: scale(0.97, 1.04);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+@keyframes shadow-jump {
+  42% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+}
+
+.cheer {
+  min-height: 2.4rem;
+  margin: 0;
+}
+.cheer span {
+  display: inline-block;
+  font: 800 1.2rem/1 var(--font-display);
+  color: var(--on-color);
+  background: var(--sun);
+  padding: 0.55em 0.9em;
+  border-radius: var(--r-pill);
+  box-shadow: 0 4px 0 var(--sun-deep);
+  animation: pop-cheer 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes pop-cheer {
+  from {
+    transform: translateY(8px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.mascot-text {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.mascot-text h1 {
+  font: 800 clamp(2rem, 4.5vw, 3rem) / 1.05 var(--font-display);
+  margin: 0;
+  text-wrap: balance;
+}
+.mascot-tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 60ch;
+}
+
+.lesson {
+  padding: 1.1rem 1.3rem 1.2rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.lesson h2 {
+  font: 800 1.2rem/1.15 var(--font-display);
+  margin: 0;
+}
+.lesson p {
+  margin: 0;
+  max-width: 65ch;
+  line-height: 1.65;
+}
+.lesson--devzoo {
+  background: color-mix(in srgb, var(--mint) 18%, var(--surface));
+}
+
+.mascot-missing {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: 2rem 1.4rem;
+  text-align: center;
+}
+.mascot-missing h1 {
+  font: 800 1.6rem/1.1 var(--font-display);
+  margin: 0;
+  text-wrap: balance;
+}
+.mascot-missing p {
+  margin: 0;
+  color: var(--muted);
+  max-width: 50ch;
+}
+.mascot-missing .dim {
+  filter: grayscale(1) brightness(0);
+  opacity: 0.16;
+}

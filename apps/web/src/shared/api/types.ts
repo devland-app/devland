@@ -9,6 +9,12 @@ export interface Product {
   priceCents: number;
   stock: number;
   imageUrl: string;
+  // O conceito de DevOps que o mascote ensina.
+  lesson: {
+    explanation: string;
+    realWorld: string;
+    inDevZoo: string;
+  };
 }
 
 export interface OrderItem {
