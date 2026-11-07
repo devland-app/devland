@@ -12,7 +12,7 @@ const productSchema = {
   type: "object",
   description: "Miniatura colecionável da vitrine",
   additionalProperties: false,
-  required: ["id", "slug", "name", "concept", "description", "priceCents", "stock"],
+  required: ["id", "slug", "name", "concept", "description", "priceCents", "stock", "imageUrl"],
   properties: {
     id: { type: "integer", examples: [1] },
     slug: { type: "string", examples: ["caranguejo-dos-conteineres"] },
@@ -29,6 +29,12 @@ const productSchema = {
       examples: [4990],
     },
     stock: { type: "integer", description: "Unidades disponíveis", examples: [25] },
+    imageUrl: {
+      type: "string",
+      format: "uri-reference",
+      description: "Ilustração do mascote (SVG), relativa à URL da API",
+      examples: ["/images/mascots/caranguejo-dos-conteineres.svg"],
+    },
   },
 } as const;
 

@@ -7,4 +7,6 @@ export interface Product {
   description: string;
   priceCents: number;
   stock: number;
+  // Caminho da ilustração, relativo à URL da API (ex.: /images/mascots/<slug>.svg).
+  imageUrl: string;
 }

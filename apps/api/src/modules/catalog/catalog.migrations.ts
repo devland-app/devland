@@ -111,4 +111,32 @@ const insertInitialProducts: Migration = {
   },
 };
 
-export const catalogMigrations: Migration[] = [createProducts, insertInitialProducts];
+const addProductImages: Migration = {
+  name: "catalog_003_add_product_images",
+  async up(db) {
+    // Coluna criada aceitando nulo, preenchida e só então marcada como obrigatória: assim a
+    // migration funciona também num banco que já tem produtos.
+    await db.schema.alterTable("products", (table) => {
+      table.string("image_path", 160);
+    });
+    // O prefixo fica escrito aqui, e não importado de catalog.images.ts: uma migration já aplicada
+    // não pode mudar de comportamento se a constante mudar no futuro.
+    await db("products").update({
+      image_path: db.raw("? || slug || ?", ["/images/mascots/", ".svg"]),
+    });
+    await db.schema.alterTable("products", (table) => {
+      table.string("image_path", 160).notNullable().alter();
+    });
+  },
+  async down(db) {
+    await db.schema.alterTable("products", (table) => {
+      table.dropColumn("image_path");
+    });
+  },
+};
+
+export const catalogMigrations: Migration[] = [
+  createProducts,
+  insertInitialProducts,
+  addProductImages,
+];
