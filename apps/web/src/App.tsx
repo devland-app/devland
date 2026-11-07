@@ -9,11 +9,22 @@ import { CartDrawer } from "./features/cart/CartDrawer.tsx";
 import { CartProvider } from "./features/cart/CartProvider.tsx";
 import { CatalogPage } from "./features/catalog/CatalogPage.tsx";
 import { CheckoutDialog } from "./features/checkout/CheckoutDialog.tsx";
+import { OrdersPage } from "./features/orders/OrdersPage.tsx";
+import type { Order } from "./shared/api/types.ts";
+
+type Checkout = { open: false } | { open: true; resumeOrder?: Order };
 
 export default function App() {
   const route = useHashRoute();
   const [cartOpen, setCartOpen] = useState(false);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkout, setCheckout] = useState<Checkout>({ open: false });
+  // Muda a cada checkout fechado: a lista de pedidos é recarregada e mostra o status novo.
+  const [ordersVersion, setOrdersVersion] = useState(0);
+
+  function closeCheckout() {
+    setCheckout({ open: false });
+    setOrdersVersion((version) => version + 1);
+  }
 
   return (
     <CartProvider>
@@ -23,7 +34,10 @@ export default function App() {
           {route === "vitrine" ? (
             <CatalogPage />
           ) : (
-            <p className="fine">Seus pedidos aparecem aqui em breve.</p>
+            <OrdersPage
+              key={ordersVersion}
+              onPay={(order) => setCheckout({ open: true, resumeOrder: order })}
+            />
           )}
         </div>
       </main>
@@ -37,10 +51,12 @@ export default function App() {
         onClose={() => setCartOpen(false)}
         onCheckout={() => {
           setCartOpen(false);
-          setCheckoutOpen(true);
+          setCheckout({ open: true });
         }}
       />
-      {checkoutOpen && <CheckoutDialog onClose={() => setCheckoutOpen(false)} />}
+      {checkout.open && (
+        <CheckoutDialog onClose={closeCheckout} resumeOrder={checkout.resumeOrder} />
+      )}
     </CartProvider>
   );
 }

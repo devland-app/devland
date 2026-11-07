@@ -38,12 +38,16 @@ const STEP_LABELS = [
 
 interface CheckoutDialogProps {
   onClose: () => void;
+  // Pedido que ficou aguardando pagamento ("Meus pedidos"): o checkout começa direto no pagamento.
+  resumeOrder?: Order;
 }
 
 // Montado só quando aberto: cada abertura começa do zero, com uma Idempotency-Key nova.
-export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
+export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
   const cart = useCart();
-  const [step, setStep] = useState<Step>({ name: "review", busy: false });
+  const [step, setStep] = useState<Step>(
+    resumeOrder ? { name: "pay", order: resumeOrder } : { name: "review", busy: false },
+  );
   const [method, setMethod] = useState<PaymentMethod>("pix");
   // Gerada uma vez por tentativa de compra: clicar de novo devolve o mesmo pedido, sem duplicar.
   const idempotencyKey = useRef(crypto.randomUUID());
@@ -79,7 +83,8 @@ export function CheckoutDialog({ onClose }: CheckoutDialogProps) {
       setStep({ name: "pay", order, error: messageOf(outcome.error) });
       return;
     }
-    cart.clear();
+    // Retomar um pedido antigo não mexe no carrinho atual, que pode ter outros mascotes.
+    if (!resumeOrder) cart.clear();
     setStep({ name: "done", order: outcome.value.order, payment: outcome.value.payment });
     burstConfetti(themeColors());
   }
