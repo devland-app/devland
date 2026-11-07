@@ -1,4 +1,5 @@
 import type { Migration } from "../../shared/database.js";
+import { MASCOT_LESSONS } from "./catalog.lessons.js";
 
 // O módulo de catálogo é dono da tabela "products": nenhum outro módulo lê ou escreve nela direto.
 // Os nomes levam o prefixo do módulo para não colidir com as migrations de orders e payments.
@@ -160,9 +161,46 @@ const raiseStockForCollections: Migration = {
   },
 };
 
+// Os textos vêm de catalog.lessons.ts. Esta migration grava a versão atual deles; para mudar um
+// texto depois de aplicada, crie uma migration nova (uma migration já aplicada não roda de novo).
+const addMascotLessons: Migration = {
+  name: "catalog_005_add_mascot_lessons",
+  async up(db) {
+    await db.schema.alterTable("products", (table) => {
+      table.text("lesson_explanation");
+      table.text("lesson_real_world");
+      table.text("lesson_in_devzoo");
+    });
+    for (const [slug, lesson] of Object.entries(MASCOT_LESSONS)) {
+      await db("products").where({ slug }).update({
+        lesson_explanation: lesson.explanation,
+        lesson_real_world: lesson.realWorld,
+        lesson_in_devzoo: lesson.inDevZoo,
+      });
+    }
+    // Produto sem texto (criado fora do catálogo inicial) recebe um aviso em vez de ficar nulo.
+    await db("products").whereNull("lesson_explanation").update({
+      lesson_explanation: "Este mascote ainda está preparando a aula dele.",
+      lesson_real_world: "Em breve.",
+      lesson_in_devzoo: "Em breve.",
+    });
+    await db.schema.alterTable("products", (table) => {
+      table.text("lesson_explanation").notNullable().alter();
+      table.text("lesson_real_world").notNullable().alter();
+      table.text("lesson_in_devzoo").notNullable().alter();
+    });
+  },
+  async down(db) {
+    await db.schema.alterTable("products", (table) => {
+      table.dropColumns("lesson_explanation", "lesson_real_world", "lesson_in_devzoo");
+    });
+  },
+};
+
 export const catalogMigrations: Migration[] = [
   createProducts,
   insertInitialProducts,
   addProductImages,
   raiseStockForCollections,
+  addMascotLessons,
 ];
