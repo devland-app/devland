@@ -1,20 +1,7 @@
 import { buildApp } from "./app.js";
-import { catalogMigrations } from "./modules/catalog/index.js";
-import { ordersMigrations } from "./modules/orders/index.js";
-import { paymentsMigrations } from "./modules/payments/index.js";
-import { quizzesMigrations } from "./modules/quizzes/index.js";
-import { walletsMigrations } from "./modules/wallets/index.js";
+import { migrations } from "./migrations.js";
 import { loadConfig, type AppConfig } from "./shared/config.js";
-import { createDatabase, runMigrations, type Migration } from "./shared/database.js";
-
-// Ponto de composição: cada módulo exporta as suas migrations e elas são somadas aqui, em ordem.
-const migrations: Migration[] = [
-  ...catalogMigrations,
-  ...ordersMigrations,
-  ...paymentsMigrations,
-  ...walletsMigrations,
-  ...quizzesMigrations,
-];
+import { createDatabase, runMigrations } from "./shared/database.js";
 
 let config: AppConfig;
 try {
