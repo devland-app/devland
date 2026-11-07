@@ -61,9 +61,11 @@ Pré-requisitos: Docker com Docker Compose. Para desenvolver fora do Docker, tam
 ### Tudo no Docker
 
 ```bash
-cp .env.example .env      # valores de exemplo, prontos para uso local
 docker compose up --build
 ```
+
+O compose tem valores padrão para tudo, então o `.env` é opcional. Para mudar portas ou senhas
+locais, copie o `.env.example` para `.env` e edite.
 
 | Serviço | Endereço                         |
 | ------- | -------------------------------- |
@@ -113,6 +115,17 @@ Cada regra é testada no caminho feliz, nos caminhos tristes e nos casos de bord
   regras da API, mais o cliente da API, o sanitizador do SVG, o carrinho, a carteira e o modal.
 
 Estratégia, cobertura e o que ficou de fora de propósito: [`docs/testes.md`](docs/testes.md).
+
+### No Windows
+
+Os mesmos comandos funcionam no PowerShell, com o [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+usando o WSL 2. O repositório força quebra de linha LF (`.gitattributes`), então lint, Prettier e
+hooks funcionam igual ao macOS e ao Linux.
+
+- Para a recarga automática ficar rápida, clone dentro do WSL (por exemplo, em
+  `\\wsl$\Ubuntu\home\voce`). Fora dele também funciona: o `compose.dev.yaml` observa os
+  arquivos por polling justamente para isso, só que com um pouco mais de uso de CPU.
+- Para copiar o `.env.example`, use `Copy-Item .env.example .env` no PowerShell.
 
 ## Variáveis de ambiente
 
