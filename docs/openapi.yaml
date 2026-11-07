@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: DevZoo API
-  version: 0.1.0
+  version: 0.2.0
   description: API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em
     DevOps. Nenhuma compra é real e nenhum valor é cobrado.
 components:
