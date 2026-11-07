@@ -1,4 +1,4 @@
-import type { Database } from "../../shared/database.js";
+import type { Database, Transaction } from "../../shared/database.js";
 import type { Product } from "./catalog.types.js";
 
 // O service depende só desta interface (padrão Repository). Assim, o acesso a dados pode mudar,
@@ -7,6 +7,7 @@ export interface ProductRepository {
   list(): Promise<Product[]>;
   findById(id: number): Promise<Product | undefined>;
   findByIds(ids: number[]): Promise<Product[]>;
+  decrementStock(productId: number, quantity: number, trx: Transaction): Promise<boolean>;
 }
 
 // Formato da linha no banco (snake_case). Fica restrito a este arquivo: o resto do módulo só vê Product.
@@ -61,6 +62,16 @@ export class KnexProductRepository implements ProductRepository {
       .whereIn("id", ids)
       .orderBy("id");
     return rows.map(toProduct);
+  }
+
+  // Atualização condicional: o próprio banco confere "stock >= quantity" na linha que vai mudar,
+  // então duas compras simultâneas da última unidade não deixam o estoque negativo.
+  async decrementStock(productId: number, quantity: number, trx: Transaction): Promise<boolean> {
+    const updated = await trx<ProductRow>("products")
+      .where({ id: productId })
+      .andWhere("stock", ">=", quantity)
+      .decrement("stock", quantity);
+    return updated === 1;
   }
 }
 
