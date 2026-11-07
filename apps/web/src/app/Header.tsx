@@ -9,6 +9,11 @@ import type { Route } from "./useHashRoute.ts";
 const TABS: Array<{ hash: string; label: string; isCurrent: (route: Route) => boolean }> = [
   { hash: "#vitrine", label: "Vitrine", isCurrent: (route) => route.name === "vitrine" },
   {
+    hash: "#quizzes",
+    label: "Quizzes",
+    isCurrent: (route) => route.name === "quizzes" || route.name === "quiz",
+  },
+  {
     hash: "#mascotes",
     label: "Meus mascotes",
     // A página de um mascote também pertence à aba da coleção.

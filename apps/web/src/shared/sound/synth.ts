@@ -1,7 +1,7 @@
 // Efeitos sonoros sintetizados na hora com a Web Audio API: sem arquivos de áudio para baixar ou
 // licenciar. Cada som é a soma de notas curtas com subida/descida de volume suave (sem estalo).
 
-export type SoundName = "pop" | "unpop" | "jump" | "wiggle" | "spin" | "giggle" | "chime";
+export type SoundName = "pop" | "unpop" | "jump" | "wiggle" | "spin" | "giggle" | "chime" | "coin";
 
 let context: AudioContext | null = null;
 
@@ -68,6 +68,11 @@ const SOUNDS: Record<SoundName, Note[]> = {
     delay,
     volume: 0.12,
   })),
+  // Duas notas agudas e rápidas, a segunda mais longa: o "plim" de pegar uma moeda.
+  coin: [
+    { frequency: 987.77, duration: 0.08, type: "square", volume: 0.06 },
+    { frequency: 1318.51, duration: 0.28, delay: 0.07, type: "square", volume: 0.06 },
+  ],
   // Dó, mi, sol e dó: um acorde maior em arpejo para a compra aprovada.
   chime: [523.25, 659.25, 783.99, 1046.5].map((frequency, index) => ({
     frequency,
