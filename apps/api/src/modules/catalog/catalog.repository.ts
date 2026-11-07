@@ -6,6 +6,7 @@ import type { Product } from "./catalog.types.js";
 export interface ProductRepository {
   list(): Promise<Product[]>;
   findById(id: number): Promise<Product | undefined>;
+  findByIds(ids: number[]): Promise<Product[]>;
 }
 
 // Formato da linha no banco (snake_case). Fica restrito a este arquivo: o resto do módulo só vê Product.
@@ -52,6 +53,14 @@ export class KnexProductRepository implements ProductRepository {
       .where({ id })
       .first();
     return row ? toProduct(row) : undefined;
+  }
+
+  async findByIds(ids: number[]): Promise<Product[]> {
+    const rows = await this.db<ProductRow>("products")
+      .select(...PRODUCT_COLUMNS)
+      .whereIn("id", ids)
+      .orderBy("id");
+    return rows.map(toProduct);
   }
 }
 

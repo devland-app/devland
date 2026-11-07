@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
+import { errorResponseSchema } from "../../shared/http.js";
 import { ProductNotFoundError, type CatalogService } from "./catalog.service.js";
 
 // Maior valor da coluna "integer" do Postgres: um ID acima disso viraria erro 500 no banco.
@@ -35,14 +36,6 @@ const productSchema = {
       description: "Ilustração do mascote (SVG), relativa à URL da API",
       examples: ["/images/mascots/caranguejo-dos-conteineres.svg"],
     },
-  },
-} as const;
-
-const errorSchema = {
-  type: "object",
-  required: ["message"],
-  properties: {
-    message: { type: "string" },
   },
 } as const;
 
@@ -95,7 +88,8 @@ export function registerCatalogRoutes(app: FastifyInstance, service: CatalogServ
         },
         response: {
           200: { description: "A miniatura encontrada", $ref: "Product#" },
-          404: { description: "Nenhuma miniatura com esse ID", ...errorSchema },
+          400: { description: "ID em formato inválido", ...errorResponseSchema },
+          404: { description: "Nenhuma miniatura com esse ID", ...errorResponseSchema },
         },
       },
     },

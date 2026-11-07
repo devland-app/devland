@@ -45,6 +45,20 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Mudou rota ou schema? Rode `npm run openapi -w @devzoo/api` e commite o `docs/openapi.yaml`:
   o CI regenera o arquivo e falha se o versionado estiver diferente.
 
+## Regras da loja
+
+- É uma loja de brincadeira: nada é vendido nem cobrado, e a interface deixa isso explícito.
+  Nunca peça dados de cartão, nome, e-mail ou endereço.
+- Sem login nem cadastro. Pedidos têm ID UUID (nunca sequencial, para evitar IDOR): quem tem o
+  código vê o pedido. O front guarda os códigos no `localStorage` ("Meus pedidos").
+- `POST /orders` exige o header `Idempotency-Key`. A mesma chave devolve o pedido já criado (200 +
+  `Idempotent-Replayed: true`), inclusive com dois cliques simultâneos (chave única no banco).
+- O cliente envia só `productId` e `quantity`; nome e preço vêm do catálogo e são copiados para o
+  pedido. Estoque é conferido ao criar o pedido e baixado no pagamento.
+- Erros de negócio e de validação saem como `{ "message": "..." }` (`errorResponseSchema` em
+  `src/shared/http.ts`); erros 5xx viram mensagem genérica e o detalhe vai só para o log.
+- O AJV rejeita campos desconhecidos (`removeAdditional: false`): campo extra no body é 400.
+
 ## Front
 
 - `src/features/<funcionalidade>/` agrupa componentes e hooks; `src/shared/api/` é o único lugar
