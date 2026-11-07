@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import { SoundToggle } from "../features/sound/SoundToggle.tsx";
 import { ThemeToggle } from "../features/theme/ThemeToggle.tsx";
+import { WalletBadge } from "../features/wallet/WalletBadge.tsx";
 import { useBannerDismissed } from "./useBannerDismissed.ts";
 import type { Route } from "./useHashRoute.ts";
 
@@ -45,7 +46,7 @@ export function Header({ route, actions }: HeaderProps) {
         <div className="wrap nav-row">
           <a className="logo" href="#vitrine" aria-label="DevLand, ir para a vitrine">
             <img src="/favicon.svg" alt="" width={46} height={46} />
-            DevLand
+            <span className="logo-text">DevLand</span>
           </a>
           <nav className="tabs" aria-label="Seções da loja">
             {TABS.map((tab) => (
@@ -59,6 +60,7 @@ export function Header({ route, actions }: HeaderProps) {
             ))}
           </nav>
           <div className="actions">
+            <WalletBadge />
             <SoundToggle />
             <ThemeToggle />
             {actions}

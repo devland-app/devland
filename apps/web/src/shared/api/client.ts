@@ -1,4 +1,13 @@
-import type { CartItemRequest, Order, PaymentMethod, PayOrderResponse, Product } from "./types.ts";
+import type {
+  CartItemRequest,
+  Order,
+  PayOrderResponse,
+  Product,
+  QuizAnswerResult,
+  QuizAttempt,
+  QuizSummary,
+  Wallet,
+} from "./types.ts";
 
 // Único lugar do front que chama fetch. A URL da API entra no build (VITE_API_URL) e vai para o
 // JavaScript do navegador, então é pública: nunca coloque segredo numa variável VITE_.
@@ -51,10 +60,40 @@ export function getOrder(id: string): Promise<Order> {
   return request<Order>(`/orders/${encodeURIComponent(id)}`);
 }
 
-export function payOrder(id: string, method: PaymentMethod): Promise<PayOrderResponse> {
+export function payOrder(id: string, walletId: string): Promise<PayOrderResponse> {
   return request<PayOrderResponse>(`/orders/${encodeURIComponent(id)}/payment`, {
     method: "POST",
-    body: JSON.stringify({ method }),
+    body: JSON.stringify({ walletId }),
+  });
+}
+
+export function createWallet(): Promise<Wallet> {
+  return request<Wallet>("/wallets", { method: "POST" });
+}
+
+export function getWallet(id: string): Promise<Wallet> {
+  return request<Wallet>(`/wallets/${encodeURIComponent(id)}`);
+}
+
+export function listQuizzes(): Promise<QuizSummary[]> {
+  return request<QuizSummary[]>("/quizzes");
+}
+
+export function startQuizAttempt(slug: string, walletId: string): Promise<QuizAttempt> {
+  return request<QuizAttempt>(`/quizzes/${encodeURIComponent(slug)}/attempts`, {
+    method: "POST",
+    body: JSON.stringify({ walletId }),
+  });
+}
+
+export function answerQuizQuestion(
+  attemptId: string,
+  questionId: string,
+  optionId: string,
+): Promise<QuizAnswerResult> {
+  return request<QuizAnswerResult>(`/quiz-attempts/${encodeURIComponent(attemptId)}/answers`, {
+    method: "POST",
+    body: JSON.stringify({ questionId, optionId }),
   });
 }
 

@@ -14,6 +14,7 @@ import { AdoptionsProvider } from "./shared/adoptions/AdoptionsProvider.tsx";
 import type { Order } from "./shared/api/types.ts";
 import { CartProvider } from "./shared/cart/CartProvider.tsx";
 import { SoundProvider } from "./shared/sound/SoundProvider.tsx";
+import { WalletProvider } from "./shared/wallet/WalletProvider.tsx";
 
 type Checkout = { open: false } | { open: true; resumeOrder?: Order };
 
@@ -30,35 +31,37 @@ export default function App() {
   return (
     // Adoções por fora: o carrinho esconde o que já foi adotado ou está aguardando pagamento.
     <SoundProvider>
-      <AdoptionsProvider>
-        <CartProvider>
-          <Header route={route} actions={<CartButton onOpen={() => setCartOpen(true)} />} />
-          <main className="gutter">
-            <div className="wrap">
-              {route.name === "vitrine" && <CatalogPage />}
-              {route.name === "mascotes" && <CollectionPage />}
-              {route.name === "mascote" && <MascotPage key={route.slug} slug={route.slug} />}
-            </div>
-          </main>
-          <footer className="site-footer gutter">
-            <div className="wrap">
-              DevLand · loja simulada com mascotes originais · nenhum produto é vendido
-            </div>
-          </footer>
-          <CartDrawer
-            open={cartOpen}
-            onClose={() => setCartOpen(false)}
-            onCheckout={() => openCheckout()}
-            onPayPending={(order) => openCheckout(order)}
-          />
-          {checkout.open && (
-            <CheckoutDialog
-              onClose={() => setCheckout({ open: false })}
-              resumeOrder={checkout.resumeOrder}
+      <WalletProvider>
+        <AdoptionsProvider>
+          <CartProvider>
+            <Header route={route} actions={<CartButton onOpen={() => setCartOpen(true)} />} />
+            <main className="gutter">
+              <div className="wrap">
+                {route.name === "vitrine" && <CatalogPage />}
+                {route.name === "mascotes" && <CollectionPage />}
+                {route.name === "mascote" && <MascotPage key={route.slug} slug={route.slug} />}
+              </div>
+            </main>
+            <footer className="site-footer gutter">
+              <div className="wrap">
+                DevLand · loja simulada com mascotes originais · nenhum produto é vendido
+              </div>
+            </footer>
+            <CartDrawer
+              open={cartOpen}
+              onClose={() => setCartOpen(false)}
+              onCheckout={() => openCheckout()}
+              onPayPending={(order) => openCheckout(order)}
             />
-          )}
-        </CartProvider>
-      </AdoptionsProvider>
+            {checkout.open && (
+              <CheckoutDialog
+                onClose={() => setCheckout({ open: false })}
+                resumeOrder={checkout.resumeOrder}
+              />
+            )}
+          </CartProvider>
+        </AdoptionsProvider>
+      </WalletProvider>
     </SoundProvider>
   );
 }

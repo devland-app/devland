@@ -100,3 +100,8 @@
     inset 0 0 0 3px color-mix(in srgb, var(--mint) 60%, transparent),
     inset 0 2px 0 var(--shine);
 }
+
+/* Chamada para os quizzes logo abaixo do texto: do tamanho do conteúdo, não da largura toda. */
+.intro > .btn {
+  justify-self: start;
+}

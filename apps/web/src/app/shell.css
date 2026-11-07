@@ -143,3 +143,10 @@ main {
     font-size: 1.6rem;
   }
 }
+/* Celular estreito: o saldo divide a linha com o logo, então o nome vira só o caranguejo (o link
+   continua com o nome completo para leitor de tela). */
+@media (max-width: 440px) {
+  .logo-text {
+    display: none;
+  }
+}

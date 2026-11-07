@@ -1,8 +1,8 @@
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
 import type { Product } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
-import { formatCents } from "../../shared/format.ts";
 import { useSound } from "../../shared/sound/soundContext.ts";
+import { Coins } from "../../shared/ui/Coins.tsx";
 import { MascotArt } from "../../shared/ui/MascotArt.tsx";
 
 interface ProductCardProps {
@@ -29,8 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="buy-row">
         <p className="price">
-          <strong>{formatCents(product.priceCents)}</strong>
-          <small>preço simulado</small>
+          <Coins value={product.priceCoins} size="lg" />
         </p>
         <AdoptButton
           product={product}

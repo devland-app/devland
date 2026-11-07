@@ -15,7 +15,7 @@ function isCartLine(value: unknown): value is CartLine {
   return (
     typeof line.productId === "number" &&
     typeof line.name === "string" &&
-    typeof line.priceCents === "number" &&
+    typeof line.priceCoins === "number" &&
     typeof line.imageUrl === "string"
   );
 }
@@ -44,7 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return {
       lines,
       count: lines.length,
-      estimatedTotalCents: lines.reduce((sum, line) => sum + line.priceCents, 0),
+      estimatedTotalCoins: lines.reduce((sum, line) => sum + line.priceCoins, 0),
       has,
       toggle(product) {
         if (has(product.id)) {
@@ -57,7 +57,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           {
             productId: product.id,
             name: product.name,
-            priceCents: product.priceCents,
+            priceCoins: product.priceCoins,
             imageUrl: product.imageUrl,
           },
         ]);

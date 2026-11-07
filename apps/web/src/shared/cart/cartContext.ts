@@ -7,14 +7,14 @@ import type { Product } from "../api/types.ts";
 export interface CartLine {
   productId: number;
   name: string;
-  priceCents: number;
+  priceCoins: number;
   imageUrl: string;
 }
 
 export interface CartContextValue {
   lines: CartLine[];
   count: number;
-  estimatedTotalCents: number;
+  estimatedTotalCoins: number;
   has: (productId: number) => boolean;
   // Um de cada: adotar de novo tira o mascote do carrinho.
   toggle: (product: Product) => void;
