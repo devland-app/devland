@@ -1,3 +1,4 @@
+import cors from "@fastify/cors";
 import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
 
 import { createCatalogModule } from "./modules/catalog/index.js";
@@ -29,6 +30,8 @@ export interface AppOptions {
   // Nos testes o logger fica desligado para não poluir a saída.
   logger: boolean;
   db: Database;
+  // Origens do front autorizadas a chamar a API pelo navegador.
+  corsOrigins: string[];
 }
 
 // A construção do app fica separada do listen para que os testes usem app.inject() sem abrir porta.
@@ -51,6 +54,13 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
         .send({ message: "Erro interno. Tente novamente em instantes." });
     }
     return reply.send(error);
+  });
+
+  // Só o front conhecido pode chamar a API pelo navegador. O header exposto permite ao front saber
+  // quando uma resposta foi repetida por idempotência.
+  await app.register(cors, {
+    origin: options.corsOrigins,
+    exposedHeaders: ["Idempotent-Replayed"],
   });
 
   // Precisa vir antes das rotas: o Swagger só documenta as rotas declaradas depois de carregado.

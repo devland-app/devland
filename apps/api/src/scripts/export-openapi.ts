@@ -10,7 +10,7 @@ import { createDatabase } from "../shared/database.js";
 const OUTPUT = fileURLToPath(new URL("../../../../docs/openapi.yaml", import.meta.url));
 
 const db = createDatabase("postgres://openapi:openapi@localhost:5432/openapi");
-const app = await buildApp({ logger: false, db });
+const app = await buildApp({ logger: false, db, corsOrigins: [] });
 try {
   await app.ready();
   writeFileSync(OUTPUT, app.swagger({ yaml: true }));
