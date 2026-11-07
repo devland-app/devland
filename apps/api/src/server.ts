@@ -2,6 +2,7 @@ import { buildApp } from "./app.js";
 import { catalogMigrations } from "./modules/catalog/index.js";
 import { ordersMigrations } from "./modules/orders/index.js";
 import { paymentsMigrations } from "./modules/payments/index.js";
+import { quizzesMigrations } from "./modules/quizzes/index.js";
 import { walletsMigrations } from "./modules/wallets/index.js";
 import { loadConfig, type AppConfig } from "./shared/config.js";
 import { createDatabase, runMigrations, type Migration } from "./shared/database.js";
@@ -12,6 +13,7 @@ const migrations: Migration[] = [
   ...ordersMigrations,
   ...paymentsMigrations,
   ...walletsMigrations,
+  ...quizzesMigrations,
 ];
 
 let config: AppConfig;
