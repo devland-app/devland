@@ -1,15 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <radialGradient id="g" cx="35%" cy="30%" r="75%">
-      <stop offset="0" stop-color="#ffb199"/>
-      <stop offset="1" stop-color="#e2502c"/>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cdb0f7" />
+      <stop offset="1" stop-color="#9467d6" />
+    </linearGradient>
+    <radialGradient id="water" cx="50%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#c9ecff" />
+      <stop offset="1" stop-color="#58a9e6" />
+    </radialGradient>
+    <radialGradient id="sand" cx="40%" cy="20%" r="90%">
+      <stop offset="0" stop-color="#fff1c9" />
+      <stop offset="0.6" stop-color="#f5cf7e" />
+      <stop offset="1" stop-color="#d9a24f" />
+    </radialGradient>
+    <linearGradient id="trunk" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c08a55" />
+      <stop offset="1" stop-color="#8a5a32" />
+    </linearGradient>
+    <radialGradient id="leaf" cx="50%" cy="20%" r="90%">
+      <stop offset="0" stop-color="#b9f29b" />
+      <stop offset="0.6" stop-color="#55b863" />
+      <stop offset="1" stop-color="#2c8248" />
     </radialGradient>
   </defs>
-  <circle cx="32" cy="34" r="27" fill="#c9472a"/>
-  <circle cx="32" cy="30" r="27" fill="url(#g)"/>
-  <ellipse cx="24" cy="28" rx="4" ry="5" fill="#2a2140"/>
-  <ellipse cx="40" cy="28" rx="4" ry="5" fill="#2a2140"/>
-  <circle cx="22.5" cy="26" r="1.5" fill="#fff"/>
-  <circle cx="38.5" cy="26" r="1.5" fill="#fff"/>
-  <path d="M26 38 Q32 44 38 38" fill="none" stroke="#2a2140" stroke-width="3" stroke-linecap="round"/>
+  <!-- Peça de massinha: a borda escura embaixo dá a espessura, como nos botões da loja. -->
+  <rect x="3" y="6" width="58" height="56" rx="18" fill="#6c48a3" />
+  <rect x="3" y="2" width="58" height="56" rx="18" fill="url(#tile)" />
+  <rect x="10" y="6" width="44" height="7" rx="3.5" fill="#fff" opacity="0.28" />
+  <!-- A "land": uma ilhota com palmeira, onde os mascotes moram soltos. -->
+  <ellipse cx="32" cy="47" rx="24" ry="7.5" fill="url(#water)" />
+  <path d="M12 47c3-7.5 11-11 20-11s17 3.5 20 11c-5.5 2.6-12.5 3.8-20 3.8s-14.5-1.2-20-3.8z" fill="url(#sand)" />
+  <ellipse cx="23" cy="41.5" rx="5" ry="1.8" fill="#fff" opacity="0.45" transform="rotate(-12 23 41.5)" />
+  <path d="M29.5 41c0-9 2-17.5 6.5-24.5" stroke="url(#trunk)" stroke-width="5" stroke-linecap="round" fill="none" />
+  <g fill="url(#leaf)">
+    <path d="M36 17C28 10.5 18 12 13.5 19.5 22 16 29 16.5 36 17z" />
+    <path d="M36 17C31.5 8.5 25 5 18.5 6 25.5 8.5 31 12 36 17z" />
+    <path d="M36 17C40 8 47 5 53 8 46 9 40.5 12 36 17z" />
+    <path d="M36 17C44.5 12.5 53 15.5 56 23 49 18.5 42.5 17.5 36 17z" />
+  </g>
+  <circle cx="33.6" cy="19.6" r="2.4" fill="#7a4f2c" />
+  <circle cx="38.4" cy="19.8" r="2.4" fill="#6a4426" />
 </svg>
