@@ -18,19 +18,20 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 
 ## Comandos
 
-| Ação                 | Comando                                                            |
-| -------------------- | ------------------------------------------------------------------ |
-| Instalar             | `npm install` (também ativa os hooks do husky)                     |
-| Lint e formatação    | `npm run lint` · `npm run format:check` · `npm run format`         |
-| Build                | `npm run build` (compila API e web)                                |
-| API em dev           | `npm run dev -w @devland/api` (tsx watch, porta 3333)              |
-| Web em dev           | `npm run dev -w @devland/web` (Vite, porta 5173)                   |
-| Subir tudo no Docker | `docker compose up --build` · web em :8080, API em :3333           |
-| Estado dos serviços  | `docker compose ps` (todos devem ficar `healthy`)                  |
-| Testes               | `npm test` (API precisa do Docker: Testcontainers sobe o Postgres) |
-| Cobertura            | `npm run test:coverage -w @devland/api` (e `-w @devland/web`)      |
-| Gerar o contrato     | `npm run openapi -w @devland/api` (atualiza `docs/openapi.yaml`)   |
-| Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)         |
+| Ação                 | Comando                                                                                |
+| -------------------- | -------------------------------------------------------------------------------------- |
+| Instalar             | `npm install` (também ativa os hooks do husky)                                         |
+| Lint e formatação    | `npm run lint` · `npm run format:check` · `npm run format`                             |
+| Build                | `npm run build` (compila API e web)                                                    |
+| API em dev           | `npm run dev -w @devland/api` (tsx watch, porta 3333)                                  |
+| Web em dev           | `npm run dev -w @devland/web` (Vite, porta 5173)                                       |
+| Dev com recarga      | `npm run dev:docker` (`compose.dev.yaml`: código montado, API em :3333, Vite em :5173) |
+| Subir tudo no Docker | `docker compose up --build` · web em :8080, API em :3333                               |
+| Estado dos serviços  | `docker compose ps` (todos devem ficar `healthy`)                                      |
+| Testes               | `npm test` (API precisa do Docker: Testcontainers sobe o Postgres)                     |
+| Cobertura            | `npm run test:coverage -w @devland/api` (e `-w @devland/web`)                          |
+| Gerar o contrato     | `npm run openapi -w @devland/api` (atualiza `docs/openapi.yaml`)                       |
+| Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)                             |
 
 ## Arquitetura da API
 
