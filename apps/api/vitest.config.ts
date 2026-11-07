@@ -12,7 +12,7 @@ export default defineConfig({
       // Pontos de entrada sem regra de negócio: subir o processo e exportar o contrato.
       exclude: ["src/server.ts", "src/scripts/**"],
       reporter: ["text", "json-summary", "html"],
-      thresholds: { lines: 85, statements: 85, functions: 85, branches: 75 },
+      thresholds: { lines: 90, statements: 90, functions: 90, branches: 80 },
     },
   },
 });
