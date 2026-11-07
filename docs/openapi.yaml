@@ -313,7 +313,7 @@ paths:
                       quantity:
                         type: integer
                         minimum: 1
-                        maximum: 10
+                        maximum: 1
       parameters:
         - schema:
             type: string
