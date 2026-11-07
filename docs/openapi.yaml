@@ -19,6 +19,7 @@ components:
         - priceCents
         - stock
         - imageUrl
+        - lesson
       properties:
         id:
           type: integer
@@ -55,6 +56,24 @@ components:
           description: Ilustração do mascote (SVG), relativa à URL da API
           examples:
             - /images/mascots/caranguejo-dos-conteineres.svg
+        lesson:
+          type: object
+          description: O conceito de DevOps que o mascote ensina
+          additionalProperties: false
+          required:
+            - explanation
+            - realWorld
+            - inDevZoo
+          properties:
+            explanation:
+              type: string
+              description: O conceito em linguagem simples
+            realWorld:
+              type: string
+              description: Um exemplo do dia a dia
+            inDevZoo:
+              type: string
+              description: Onde a própria DevZoo aplica o conceito
     OrderItem:
       type: object
       additionalProperties: false

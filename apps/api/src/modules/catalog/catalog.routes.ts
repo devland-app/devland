@@ -13,7 +13,17 @@ const productSchema = {
   type: "object",
   description: "Miniatura colecionável da vitrine",
   additionalProperties: false,
-  required: ["id", "slug", "name", "concept", "description", "priceCents", "stock", "imageUrl"],
+  required: [
+    "id",
+    "slug",
+    "name",
+    "concept",
+    "description",
+    "priceCents",
+    "stock",
+    "imageUrl",
+    "lesson",
+  ],
   properties: {
     id: { type: "integer", examples: [1] },
     slug: { type: "string", examples: ["caranguejo-dos-conteineres"] },
@@ -35,6 +45,17 @@ const productSchema = {
       format: "uri-reference",
       description: "Ilustração do mascote (SVG), relativa à URL da API",
       examples: ["/images/mascots/caranguejo-dos-conteineres.svg"],
+    },
+    lesson: {
+      type: "object",
+      description: "O conceito de DevOps que o mascote ensina",
+      additionalProperties: false,
+      required: ["explanation", "realWorld", "inDevZoo"],
+      properties: {
+        explanation: { type: "string", description: "O conceito em linguagem simples" },
+        realWorld: { type: "string", description: "Um exemplo do dia a dia" },
+        inDevZoo: { type: "string", description: "Onde a própria DevZoo aplica o conceito" },
+      },
     },
   },
 } as const;
