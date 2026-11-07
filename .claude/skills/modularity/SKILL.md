@@ -1,6 +1,6 @@
 ---
 name: modularity
-description: Como organizar o monólito modular da API do DevLand (catalog, orders, payments) e o front, com fronteiras explícitas, SOLID e dependências apontando para dentro. Use ao criar módulos, arquivos, endpoints ou ao decidir onde um código deve morar.
+description: Como organizar o monólito modular da API do DevLand (catalog, quizzes, wallets, orders, payments) e o front, com fronteiras explícitas, SOLID e dependências apontando para dentro. Use ao criar módulos, arquivos, endpoints ou ao decidir onde um código deve morar.
 ---
 
 # Modularidade no DevLand
@@ -22,6 +22,8 @@ apps/api/src/
       catalog.service.ts regra de negócio
       catalog.repository.ts acesso a dados (interface + implementação)
       catalog.types.ts
+    quizzes/
+    wallets/
     orders/
     payments/
 ```
@@ -31,8 +33,8 @@ apps/api/src/
 1. **Um módulo só importa outro pelo `index.ts`.** Nada de `../catalog/catalog.repository`.
 2. **Cada módulo é dono das suas tabelas.** `orders` não faz JOIN nem escreve nas tabelas de
    `catalog`; pede ao `catalog` pela interface pública (ex.: `getProductPrices(ids)`).
-3. **Sem dependência circular.** Fluxo permitido: `orders → catalog`, `orders → payments`.
-   `catalog` não conhece ninguém.
+3. **Sem dependência circular.** Fluxo permitido: `orders → catalog`, `orders → payments`,
+   `payments → wallets`, `quizzes → wallets`. `catalog` e `wallets` não conhecem ninguém.
 4. **Comunicação assíncrona por eventos/fila** quando um módulo só precisa reagir (ex.: pagamento
    aprovado atualiza o pedido via job do BullMQ), com handlers idempotentes.
 5. `shared/` não importa nada de `modules/`.
@@ -53,7 +55,7 @@ para que a fronteira não dependa só de disciplina.
 
 ```
 apps/web/src/
-  features/catalog, features/cart, features/checkout   componentes + hooks por funcionalidade
+  features/catalog, features/quiz, features/checkout   componentes + hooks por funcionalidade
   shared/ui        componentes visuais reutilizáveis (Button, Card)
   shared/api       cliente HTTP (único lugar que chama fetch)
 ```

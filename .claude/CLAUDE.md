@@ -1,17 +1,18 @@
 # DevLand
 
-Marketplace de miniaturas colecionáveis com mascotes originais inspirados em conceitos de DevOps
-(o caranguejo dos contêineres, a lesminha do pipeline, a corujinha das branches). Os mascotes são
-criações próprias: não use nomes, logos ou personagens de marcas registradas.
+Site educativo de DevOps: quizzes rendem moedas virtuais, e as moedas adotam mascotes de massinha
+que explicam cada conceito (o caranguejo dos contêineres, a lesminha do pipeline, a corujinha das
+branches). Os mascotes são criações próprias: não use nomes, logos ou personagens de marcas
+registradas.
 
 ## Visão geral
 
-| Pasta      | O que é                                                                         |
-| ---------- | ------------------------------------------------------------------------------- |
-| `apps/api` | API em Fastify + TypeScript, monólito modular (`catalog`, `orders`, `payments`) |
-| `apps/web` | Vitrine em React + Vite + TypeScript; em produção é servida por nginx           |
-| `docs/`    | ADRs, C4, OpenAPI, relatório de desempenho e registro de uso de IA (`ia.md`)    |
-| `.github/` | Pipeline de CI: qualidade, varredura de segredos, imagens Docker                |
+| Pasta      | O que é                                                                                               |
+| ---------- | ----------------------------------------------------------------------------------------------------- |
+| `apps/api` | API em Fastify + TypeScript, monólito modular (`catalog`, `quizzes`, `wallets`, `orders`, `payments`) |
+| `apps/web` | Vitrine e quizzes em React + Vite + TypeScript; em produção é servida por nginx                       |
+| `docs/`    | ADRs, C4, OpenAPI, relatório de desempenho e registro de uso de IA (`ia.md`)                          |
+| `.github/` | Pipeline de CI: qualidade, varredura de segredos, imagens Docker                                      |
 
 Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "module"`).
 
@@ -37,7 +38,11 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Camadas dentro do módulo: `routes` (HTTP e schema) → `service` (regra de negócio) →
   `repository` (interface + implementação). O service depende da interface, não do banco.
 - Cada módulo é dono das próprias tabelas. Dependências permitidas: `orders → catalog`,
-  `orders → payments`. `catalog` não depende de ninguém, e `src/shared/` não importa módulos.
+  `orders → payments`, `payments → wallets`, `quizzes → wallets`. `catalog` e `wallets` não
+  dependem de ninguém, e `src/shared/` não importa módulos. O módulo que depende recebe o outro
+  como interface na composição (`app.ts`), nunca a classe concreta.
+- `CHECK` em migration que altera tabela vai em SQL direto (`db.raw`): dentro de `alterTable`, o
+  `table.check` do Knex monta a query errada. Em `createTable` ele funciona.
 - Detalhes e exemplos na skill `modularity`.
 - Contrato OpenAPI 3.1 gerado dos JSON Schemas das rotas: Swagger UI em `/docs`, JSON em
   `/docs/json`. Toda rota tem `tags`, `operationId`, `summary` e descrição em cada resposta.
@@ -47,34 +52,49 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 
 ## Regras da loja
 
-- É uma loja simulada: nada é vendido nem cobrado, e a interface deixa isso explícito em linguagem
-  simples (sem "de mentirinha" ou "de brincadeira").
-  Nunca peça dados de cartão, nome, e-mail ou endereço.
-- Sem login nem cadastro. Pedidos têm ID UUID (nunca sequencial, para evitar IDOR): quem tem o
-  código vê o pedido. O front guarda os códigos no `localStorage` ("Meus pedidos").
+- Nada é vendido nem cobrado: os mascotes são adotados com moedas virtuais, ganhas nos quizzes, e a
+  interface diz em linguagem simples que as moedas não valem dinheiro (sem "de mentirinha" ou "de
+  brincadeira"). Nunca peça dados de cartão, nome, e-mail ou endereço.
+- Moedas: cada carteira (`wallets`) tem saldo e extrato (`wallet_entries`). Crédito e débito são um
+  `UPDATE` condicional do saldo (nunca fica negativo) mais uma linha no extrato, cuja referência é
+  única por motivo: a mesma resposta de quiz ou o mesmo pedido não movimenta a carteira duas vezes.
+- Quizzes: um por conceito, com o mesmo slug do mascote. As perguntas ficam no código
+  (`quizzes.content.ts`, a primeira opção é a certa); cada tentativa sorteia 5 e embaralha as
+  opções, cujos ids são um hash do texto (não revelam a posição). A API corrige: a pergunta sai sem
+  gabarito, a resposta volta com a certa e a explicação, e cada acerto credita 20 moedas na mesma
+  transação que grava a resposta. Uma resposta por pergunta em cada tentativa (409 na segunda);
+  refazer o quiz em outra tentativa rende moedas de novo.
+- Sem login nem cadastro. Pedidos e carteiras têm ID UUID (nunca sequencial, para evitar IDOR):
+  quem tem o código vê o pedido ou usa a carteira. O front guarda os códigos no `localStorage`.
 - `POST /orders` exige o header `Idempotency-Key`. A mesma chave devolve o pedido já criado (200 +
   `Idempotent-Replayed: true`), inclusive com dois cliques simultâneos (chave única no banco).
-- O cliente envia só `productId` e `quantity`; nome e preço vêm do catálogo e são copiados para o
-  pedido. Estoque é conferido ao criar o pedido e baixado no pagamento.
+- O cliente envia só `productId` e `quantity`; nome e preço (em moedas) vêm do catálogo e são
+  copiados para o pedido. Estoque é conferido ao criar o pedido e baixado no pagamento.
 - É uma coleção: cada mascote é adotado uma vez (`MAX_UNITS_PER_PRODUCT = 1` por pedido). O
   front esconde o que já foi adotado ou está aguardando pagamento neste navegador.
 - Erros de negócio e de validação saem como `{ "message": "..." }` (`errorResponseSchema` em
   `src/shared/http.ts`); erros 5xx viram mensagem genérica e o detalhe vai só para o log.
 - O AJV rejeita campos desconhecidos (`removeAdditional: false`): campo extra no body é 400.
-- Pagamento (`POST /orders/{id}/payment`): gateway falso atrás da interface `PaymentGateway`
-  (Strategy). Trava o pedido (`FOR UPDATE`), baixa o estoque, aprova e marca como pago numa
-  transação só; `broke_toy_card` sempre recusa (402) e a tentativa recusada é gravada fora dela.
-  Pagar de novo devolve o mesmo recibo. O banco aceita um único pagamento aprovado por pedido.
+- Pagamento (`POST /orders/{id}/payment`, body `{ walletId }`): `CoinsPaymentGateway` atrás da
+  interface `PaymentGateway` (Strategy). Trava o pedido (`FOR UPDATE`), baixa o estoque, debita as
+  moedas e marca como pago numa transação só. Saldo insuficiente recusa (402, "faltam N moedas") e
+  a tentativa recusada é gravada fora dela. Pagar de novo devolve o mesmo recibo, sem novo débito.
+  O banco aceita um único pagamento aprovado por pedido. Pix e cartão simulados (`pix`,
+  `toy_card`, `broke_toy_card`) só existem no histórico de pedidos antigos.
 
 ## Front
 
-- Estrutura: `src/app/` (casca: cabeçalho e rotas por hash `#vitrine`, `#mascotes` e
-  `#mascote-<slug>`), `src/features/<funcionalidade>/` (`catalog`, `cart`, `checkout`,
-  `collection`, `mascot`, `theme`, cada uma com o próprio CSS) e `src/shared/` (cliente da API,
-  estado compartilhado, formatação, `localStorage`, UI genérica).
+- Estrutura: `src/app/` (casca: cabeçalho e rotas por hash `#vitrine`, `#quizzes`, `#quiz-<slug>`,
+  `#mascotes` e `#mascote-<slug>`), `src/features/<funcionalidade>/` (`catalog`, `quiz`, `cart`,
+  `checkout`, `collection`, `mascot`, `wallet`, `sound`, `theme`, cada uma com o próprio CSS) e
+  `src/shared/` (cliente da API, estado compartilhado, formatação, `localStorage`, UI genérica).
 - Features não importam umas das outras. Estado usado por várias telas mora em `shared/`:
-  `shared/cart` (carrinho, um de cada) e `shared/adoptions` (mascotes adotados e pedidos pendentes,
-  derivados dos pedidos salvos neste navegador). A casca liga tudo por props (ex.: `onPayPending`).
+  `shared/cart` (carrinho, um de cada), `shared/adoptions` (mascotes adotados e pedidos pendentes,
+  derivados dos pedidos salvos neste navegador) e `shared/wallet` (saldo; a carteira só é criada no
+  primeiro uso, por `ensureWallet`). A casca liga tudo por props (ex.: `onPayPending`).
+- Mascote desenhado sempre por `shared/ui/MascotArt.tsx`: o SVG entra inline (sanitizado por
+  `prepareSvg.ts`), sem o fundo redondo, e cada mascote pisca no seu tempo, revezando com os outros.
+  Valores em moedas por `shared/ui/Coins.tsx`.
 - `src/shared/api/client.ts` é o único lugar que chama `fetch`; os tipos em `shared/api/types.ts`
   espelham o `docs/openapi.yaml`. Erros chegam como `ApiError` com a mensagem pronta da API.
 - A URL da API vem de `VITE_API_URL` em tempo de build. Tudo que começa com `VITE_` vai para o
@@ -85,8 +105,8 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Modais e gaveta usam `<dialog>` nativo com `showModal()` (`shared/ui/Dialog.tsx`): foco preso,
   Esc fecha e o foco volta para quem abriu.
 - No `localStorage`: `devland-cart` (carrinho), `devland-orders` (códigos dos pedidos, a base da
-  coleção), `devland-theme` e `devland-banner-dismissed`. Tudo lido com validação, porque pode estar
-  vazio, antigo ou indisponível.
+  coleção), `devland-wallet` (código da carteira), `devland-theme` e `devland-sound`. Tudo lido com
+  validação, porque pode estar vazio, antigo ou indisponível.
 - Coleção: cada mascote é adotado uma vez. O botão "Adotar" é liga/desliga (`aria-pressed`,
   "Incluído"); adotado ou aguardando pagamento fica desabilitado. A página de cada mascote mostra a
   `lesson` da API e anima o mascote só com CSS (respeitando `prefers-reduced-motion`).
@@ -97,7 +117,7 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Código, arquivos, pastas, branches e mensagens de commit em inglês. Textos de interface e
   comentários em português.
 - TypeScript estrito, sem `any`. Nada de `console.log` na API: use `app.log` / `request.log` (pino).
-- Dinheiro em centavos (inteiro). O preço de um pedido sempre vem do banco, nunca do cliente.
+- Valores em moedas (inteiro). O preço de um pedido sempre vem do banco, nunca do cliente.
 - Comentários explicam o porquê, não o quê.
 
 ## Git
