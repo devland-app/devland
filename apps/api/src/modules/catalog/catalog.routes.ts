@@ -88,6 +88,7 @@ export function registerCatalogRoutes(app: FastifyInstance, service: CatalogServ
         },
         response: {
           200: { description: "A miniatura encontrada", $ref: "Product#" },
+          400: { description: "ID em formato inválido", ...errorResponseSchema },
           404: { description: "Nenhuma miniatura com esse ID", ...errorResponseSchema },
         },
       },

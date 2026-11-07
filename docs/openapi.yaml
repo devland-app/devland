@@ -212,6 +212,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Product"
+        "400":
+          description: ID em formato inválido
+          content:
+            application/json:
+              schema:
+                description: ID em formato inválido
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
         "404":
           description: Nenhuma miniatura com esse ID
           content:
