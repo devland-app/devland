@@ -1,0 +1,7 @@
+# Quebra de linha LF em qualquer sistema. Sem isto, um clone no Windows troca tudo para CRLF: o
+# Prettier reprova os arquivos e os hooks do husky quebram ("sh\r: not found").
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
