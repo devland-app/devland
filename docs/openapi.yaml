@@ -107,7 +107,8 @@ components:
         - title
         - concept
         - questionCount
-        - coinsPerCorrectAnswer
+        - totalCoins
+        - earnedCoins
       properties:
         slug:
           type: string
@@ -127,10 +128,16 @@ components:
           description: Perguntas por tentativa
           examples:
             - 5
-        coinsPerCorrectAnswer:
+        totalCoins:
           type: integer
+          description: "Soma do que as perguntas pagam: o preço do mascote do conceito"
           examples:
-            - 20
+            - 120
+        earnedCoins:
+          type: integer
+          description: Quanto a carteira informada já ganhou neste quiz (0 sem carteira)
+          examples:
+            - 72
     QuizAttempt:
       type: object
       description: "Tentativa de quiz: as perguntas vêm sem a resposta certa."
@@ -140,7 +147,8 @@ components:
         - quizSlug
         - title
         - concept
-        - coinsPerCorrectAnswer
+        - totalCoins
+        - earnedCoins
         - questions
       properties:
         id:
@@ -153,10 +161,14 @@ components:
           type: string
         concept:
           type: string
-        coinsPerCorrectAnswer:
+        totalCoins:
           type: integer
           examples:
-            - 20
+            - 120
+        earnedCoins:
+          type: integer
+          examples:
+            - 72
         questions:
           type: array
           items:
@@ -166,6 +178,8 @@ components:
               - id
               - prompt
               - options
+              - coins
+              - alreadyEarned
             properties:
               id:
                 type: string
@@ -187,6 +201,15 @@ components:
                       type: string
                     text:
                       type: string
+              coins:
+                type: integer
+                description: Moedas que o acerto paga
+                examples:
+                  - 24
+              alreadyEarned:
+                type: boolean
+                description: "A carteira já recebeu as moedas desta pergunta: acertar de novo
+                  não paga"
     QuizAnswerResult:
       type: object
       additionalProperties: false
@@ -195,6 +218,7 @@ components:
         - correctOptionId
         - explanation
         - coinsAwarded
+        - alreadyEarned
         - balanceCoins
         - answeredCount
         - questionCount
@@ -209,7 +233,10 @@ components:
         coinsAwarded:
           type: integer
           examples:
-            - 20
+            - 24
+        alreadyEarned:
+          type: boolean
+          description: Acertou, mas as moedas desta pergunta já tinham sido ganhas antes
         balanceCoins:
           type: integer
           description: Saldo da carteira depois da resposta
@@ -514,6 +541,17 @@ paths:
       summary: Lista os quizzes, um por conceito de DevOps
       tags:
         - quizzes
+      description: Cada quiz paga, no total, o preço do mascote do conceito, e cada
+        pergunta paga uma vez por carteira. Com a carteira informada, mostra
+        quanto ela já ganhou em cada quiz.
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: walletId
+          required: false
+          description: Carteira para o progresso
       responses:
         "200":
           description: Quizzes disponíveis
@@ -524,15 +562,28 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/QuizSummary"
+        "400":
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                description: Requisição inválida
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
   /quizzes/{slug}/attempts:
     post:
       operationId: startQuizAttempt
       summary: Começa uma tentativa de quiz
       tags:
         - quizzes
-      description: "Sorteia as perguntas e embaralha as opções. Dá para começar
-        quantas tentativas quiser: cada acerto em cada tentativa rende moedas
-        para a carteira informada."
+      description: Sorteia as perguntas e embaralha as opções. Dá para começar quantas
+        tentativas quiser; cada pergunta rende moedas só no primeiro acerto da
+        carteira.
       requestBody:
         required: true
         content:
@@ -607,9 +658,9 @@ paths:
       summary: Responde uma pergunta da tentativa
       tags:
         - quizzes
-      description: A API corrige, devolve a resposta certa com a explicação e, se
-        acertou, credita as moedas na carteira. Cada pergunta pode ser
-        respondida uma vez por tentativa.
+      description: A API corrige, devolve a resposta certa com a explicação e, no
+        primeiro acerto da carteira, credita as moedas da pergunta. Cada
+        pergunta pode ser respondida uma vez por tentativa.
       requestBody:
         required: true
         content:

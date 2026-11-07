@@ -38,7 +38,7 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Camadas dentro do módulo: `routes` (HTTP e schema) → `service` (regra de negócio) →
   `repository` (interface + implementação). O service depende da interface, não do banco.
 - Cada módulo é dono das próprias tabelas. Dependências permitidas: `orders → catalog`,
-  `orders → payments`, `payments → wallets`, `quizzes → wallets`. `catalog` e `wallets` não
+  `orders → payments`, `payments → wallets`, `quizzes → wallets`, `quizzes → catalog`. `catalog` e `wallets` não
   dependem de ninguém, e `src/shared/` não importa módulos. O módulo que depende recebe o outro
   como interface na composição (`app.ts`), nunca a classe concreta.
 - `CHECK` em migration que altera tabela vai em SQL direto (`db.raw`): dentro de `alterTable`, o
@@ -61,9 +61,12 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Quizzes: um por conceito, com o mesmo slug do mascote. As perguntas ficam no código
   (`quizzes.content.ts`, a primeira opção é a certa); cada tentativa sorteia 5 e embaralha as
   opções, cujos ids são um hash do texto (não revelam a posição). A API corrige: a pergunta sai sem
-  gabarito, a resposta volta com a certa e a explicação, e cada acerto credita 20 moedas na mesma
-  transação que grava a resposta. Uma resposta por pergunta em cada tentativa (409 na segunda);
-  refazer o quiz em outra tentativa rende moedas de novo.
+  gabarito, e a resposta volta com a certa e a explicação.
+- Economia fechada: cada quiz paga, somando as perguntas, o preço do mascote dele (`splitReward`
+  divide o preço entre as perguntas). Cada pergunta paga uma vez por carteira, no primeiro acerto
+  (referência `carteira:pergunta` única no extrato); errou, ela continua valendo. Acertar tudo dá
+  exatamente a soma dos preços: adotando todos, o saldo termina em zero. Mudou preço ou pergunta?
+  A soma continua fechando sozinha.
 - Sem login nem cadastro. Pedidos e carteiras têm ID UUID (nunca sequencial, para evitar IDOR):
   quem tem o código vê o pedido ou usa a carteira. O front guarda os códigos no `localStorage`.
 - `POST /orders` exige o header `Idempotency-Key`. A mesma chave devolve o pedido já criado (200 +
