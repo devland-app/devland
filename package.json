@@ -14,6 +14,7 @@
     "test": "npm run test --workspaces --if-present",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:openapi": "npx --yes @redocly/cli@2.76.0 lint docs/openapi.yaml",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"

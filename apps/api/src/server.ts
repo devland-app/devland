@@ -16,7 +16,7 @@ try {
 }
 
 const db = createDatabase(config.databaseUrl);
-const app = buildApp({ logger: config.nodeEnv !== "test", db });
+const app = await buildApp({ logger: config.nodeEnv !== "test", db });
 app.addHook("onClose", async () => {
   await db.destroy();
 });

@@ -6,19 +6,29 @@ import { ProductNotFoundError, type CatalogService } from "./catalog.service.js"
 const MAX_PRODUCT_ID = 2_147_483_647;
 
 // O schema de resposta também controla a serialização: campo que não está aqui nunca sai na
-// resposta, mesmo que a tabela ganhe colunas novas.
+// resposta, mesmo que a tabela ganhe colunas novas. O $id faz dele um component "Product" no OpenAPI.
 const productSchema = {
+  $id: "Product",
   type: "object",
+  description: "Miniatura colecionável da vitrine",
   additionalProperties: false,
   required: ["id", "slug", "name", "concept", "description", "priceCents", "stock"],
   properties: {
-    id: { type: "integer" },
-    slug: { type: "string" },
-    name: { type: "string" },
-    concept: { type: "string" },
+    id: { type: "integer", examples: [1] },
+    slug: { type: "string", examples: ["caranguejo-dos-conteineres"] },
+    name: { type: "string", examples: ["Caranguejo dos Contêineres"] },
+    concept: {
+      type: "string",
+      description: "Conceito de DevOps que inspirou o mascote",
+      examples: ["Contêineres"],
+    },
     description: { type: "string" },
-    priceCents: { type: "integer" },
-    stock: { type: "integer" },
+    priceCents: {
+      type: "integer",
+      description: "Preço em centavos de real (de mentirinha: nada é cobrado)",
+      examples: [4990],
+    },
+    stock: { type: "integer", description: "Unidades disponíveis", examples: [25] },
   },
 } as const;
 
@@ -36,9 +46,24 @@ interface ProductParams {
 
 // Camada HTTP: valida a entrada, chama o service e traduz erros de negócio em status HTTP.
 export function registerCatalogRoutes(app: FastifyInstance, service: CatalogService): void {
+  app.addSchema(productSchema);
+
   app.get(
     "/products",
-    { schema: { response: { 200: { type: "array", items: productSchema } } } },
+    {
+      schema: {
+        tags: ["catalog"],
+        operationId: "listProducts",
+        summary: "Lista as miniaturas da vitrine",
+        response: {
+          200: {
+            description: "Todas as miniaturas, ordenadas por ID",
+            type: "array",
+            items: { $ref: "Product#" },
+          },
+        },
+      },
+    },
     async () => service.listProducts(),
   );
 
@@ -46,13 +71,26 @@ export function registerCatalogRoutes(app: FastifyInstance, service: CatalogServ
     "/products/:id",
     {
       schema: {
+        tags: ["catalog"],
+        operationId: "getProduct",
+        summary: "Detalha uma miniatura",
         params: {
           type: "object",
           required: ["id"],
           additionalProperties: false,
-          properties: { id: { type: "integer", minimum: 1, maximum: MAX_PRODUCT_ID } },
+          properties: {
+            id: {
+              type: "integer",
+              minimum: 1,
+              maximum: MAX_PRODUCT_ID,
+              description: "ID do produto",
+            },
+          },
         },
-        response: { 200: productSchema, 404: errorSchema },
+        response: {
+          200: { description: "A miniatura encontrada", $ref: "Product#" },
+          404: { description: "Nenhuma miniatura com esse ID", ...errorSchema },
+        },
       },
     },
     async (request, reply) => {

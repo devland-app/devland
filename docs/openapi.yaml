@@ -1,0 +1,159 @@
+openapi: 3.1.0
+info:
+  title: DevZoo API
+  version: 0.1.0
+  description: API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em
+    DevOps. Nenhuma compra é real e nenhum valor é cobrado.
+components:
+  schemas:
+    Product:
+      type: object
+      description: Miniatura colecionável da vitrine
+      additionalProperties: false
+      required:
+        - id
+        - slug
+        - name
+        - concept
+        - description
+        - priceCents
+        - stock
+      properties:
+        id:
+          type: integer
+          examples:
+            - 1
+        slug:
+          type: string
+          examples:
+            - caranguejo-dos-conteineres
+        name:
+          type: string
+          examples:
+            - Caranguejo dos Contêineres
+        concept:
+          type: string
+          description: Conceito de DevOps que inspirou o mascote
+          examples:
+            - Contêineres
+        description:
+          type: string
+        priceCents:
+          type: integer
+          description: "Preço em centavos de real (de mentirinha: nada é cobrado)"
+          examples:
+            - 4990
+        stock:
+          type: integer
+          description: Unidades disponíveis
+          examples:
+            - 25
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Verifica se a API e o banco estão respondendo
+      tags:
+        - health
+      responses:
+        "200":
+          description: API e banco saudáveis
+          content:
+            application/json:
+              schema:
+                description: API e banco saudáveis
+                type: object
+                required:
+                  - status
+                  - database
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - ok
+                      - error
+                  database:
+                    type: string
+                    enum:
+                      - ok
+                      - unavailable
+        "503":
+          description: Banco de dados indisponível
+          content:
+            application/json:
+              schema:
+                description: Banco de dados indisponível
+                type: object
+                required:
+                  - status
+                  - database
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - ok
+                      - error
+                  database:
+                    type: string
+                    enum:
+                      - ok
+                      - unavailable
+  /products:
+    get:
+      operationId: listProducts
+      summary: Lista as miniaturas da vitrine
+      tags:
+        - catalog
+      responses:
+        "200":
+          description: Todas as miniaturas, ordenadas por ID
+          content:
+            application/json:
+              schema:
+                description: Todas as miniaturas, ordenadas por ID
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+  /products/{id}:
+    get:
+      operationId: getProduct
+      summary: Detalha uma miniatura
+      tags:
+        - catalog
+      parameters:
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 2147483647
+          in: path
+          name: id
+          required: true
+          description: ID do produto
+      responses:
+        "200":
+          description: A miniatura encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Nenhuma miniatura com esse ID
+          content:
+            application/json:
+              schema:
+                description: Nenhuma miniatura com esse ID
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+servers:
+  - url: http://localhost:3333
+    description: Ambiente local (docker compose)
+security: []
+tags:
+  - name: catalog
+    description: Vitrine de miniaturas
+  - name: health
+    description: Saúde da API e do banco
