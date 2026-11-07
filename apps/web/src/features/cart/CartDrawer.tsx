@@ -19,7 +19,7 @@ export function CartDrawer({ open, onClose, onCheckout }: CartDrawerProps) {
       <div className="panel-head">
         <h2 id="cart-title">Seu carrinho</h2>
         <button
-          className="btn btn--soft btn--round"
+          className="btn btn--soft btn--icon"
           type="button"
           onClick={onClose}
           aria-label="Fechar carrinho"

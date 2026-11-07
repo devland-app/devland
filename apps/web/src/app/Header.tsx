@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { ThemeToggle } from "../features/theme/ThemeToggle.tsx";
+import { useBannerDismissed } from "./useBannerDismissed.ts";
 import type { Route } from "./useHashRoute.ts";
 
 const TABS: Array<{ route: Route; label: string }> = [
@@ -15,13 +16,26 @@ interface HeaderProps {
 }
 
 export function Header({ route, actions }: HeaderProps) {
+  const banner = useBannerDismissed();
+
   return (
     <header className="topbar">
-      {/* A faixa fica sempre visível: ninguém pode achar que a loja vende de verdade. */}
-      <div className="banner gutter" role="note">
-        <strong>Loja de brincadeira.</strong> Nada aqui é vendido de verdade e nenhum valor é
-        cobrado.
-      </div>
+      {!banner.dismissed && (
+        <div className="banner gutter" role="note">
+          <p>
+            <strong>Loja de brincadeira.</strong> Nada aqui é vendido de verdade e nenhum valor é
+            cobrado.
+          </p>
+          <button
+            className="banner-close"
+            type="button"
+            onClick={banner.dismiss}
+            aria-label="Fechar aviso de loja de brincadeira"
+          >
+            ×
+          </button>
+        </div>
+      )}
       <div className="nav-band gutter">
         <div className="wrap nav-row">
           <a className="logo" href="#vitrine" aria-label="DevZoo, ir para a vitrine">

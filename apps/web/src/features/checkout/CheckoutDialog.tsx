@@ -96,7 +96,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
       <div className="panel-head">
         <h2 id="checkout-title">Checkout de mentirinha</h2>
         <button
-          className="btn btn--soft btn--round"
+          className="btn btn--soft btn--icon"
           type="button"
           onClick={onClose}
           aria-label="Fechar checkout"
