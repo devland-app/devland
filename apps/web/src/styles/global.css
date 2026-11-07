@@ -313,6 +313,23 @@ img {
   max-width: 60ch;
   font-size: 1.08rem;
 }
+/* Vitrine e quizzes: título, texto (na largura toda) e chamada no centro da página. No celular, a
+   chamada também ocupa a largura toda, mais fácil de tocar. */
+.intro--center {
+  justify-items: center;
+  text-align: center;
+}
+.intro--center p {
+  max-width: none;
+}
+.intro--center > .btn {
+  margin-top: 0.4rem;
+}
+@media (max-width: 640px) {
+  .intro--center > .btn {
+    justify-self: stretch;
+  }
+}
 
 .chip {
   justify-self: start;
