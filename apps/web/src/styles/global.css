@@ -236,6 +236,15 @@ img {
   font-size: 0.9rem;
 }
 
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font: 800 1.35rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
 .fine {
   color: var(--muted);
   font-size: 0.85rem;

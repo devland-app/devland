@@ -8,10 +8,11 @@ import { useCart } from "./cartContext.ts";
 interface CartDrawerProps {
   open: boolean;
   onClose: () => void;
+  onCheckout: () => void;
 }
 
-export function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { lines, estimatedTotalCents, maxUnitsFor, setQuantity } = useCart();
+export function CartDrawer({ open, onClose, onCheckout }: CartDrawerProps) {
+  const { lines, units, estimatedTotalCents, maxUnitsFor, setQuantity } = useCart();
 
   return (
     <Dialog open={open} onClose={onClose} labelledBy="cart-title" variant="drawer">
@@ -75,6 +76,14 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           <span>{formatCents(estimatedTotalCents)}</span>
         </div>
         <p className="fine">Valor de mentirinha: nada será cobrado.</p>
+        <button
+          className="btn btn--mint btn--block"
+          type="button"
+          onClick={onCheckout}
+          disabled={units === 0}
+        >
+          Finalizar compra simulada
+        </button>
         <button className="btn btn--soft btn--block" type="button" onClick={onClose}>
           Continuar olhando
         </button>

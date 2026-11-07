@@ -8,10 +8,12 @@ import { CartButton } from "./features/cart/CartButton.tsx";
 import { CartDrawer } from "./features/cart/CartDrawer.tsx";
 import { CartProvider } from "./features/cart/CartProvider.tsx";
 import { CatalogPage } from "./features/catalog/CatalogPage.tsx";
+import { CheckoutDialog } from "./features/checkout/CheckoutDialog.tsx";
 
 export default function App() {
   const route = useHashRoute();
   const [cartOpen, setCartOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   return (
     <CartProvider>
@@ -30,7 +32,15 @@ export default function App() {
           DevZoo · loja de brincadeira com mascotes originais · nenhum produto é vendido de verdade
         </div>
       </footer>
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartDrawer
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        onCheckout={() => {
+          setCartOpen(false);
+          setCheckoutOpen(true);
+        }}
+      />
+      {checkoutOpen && <CheckoutDialog onClose={() => setCheckoutOpen(false)} />}
     </CartProvider>
   );
 }
