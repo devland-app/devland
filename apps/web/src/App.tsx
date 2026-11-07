@@ -8,6 +8,8 @@ import { CartButton } from "./features/cart/CartButton.tsx";
 import { CartDrawer } from "./features/cart/CartDrawer.tsx";
 import { CatalogPage } from "./features/catalog/CatalogPage.tsx";
 import { CheckoutDialog } from "./features/checkout/CheckoutDialog.tsx";
+import { CollectionPage } from "./features/collection/CollectionPage.tsx";
+import { MascotPage } from "./features/mascot/MascotPage.tsx";
 import { AdoptionsProvider } from "./shared/adoptions/AdoptionsProvider.tsx";
 import type { Order } from "./shared/api/types.ts";
 import { CartProvider } from "./shared/cart/CartProvider.tsx";
@@ -32,7 +34,8 @@ export default function App() {
         <main className="gutter">
           <div className="wrap">
             {route.name === "vitrine" && <CatalogPage />}
-            {route.name !== "vitrine" && <p className="fine">Sua coleção aparece aqui em breve.</p>}
+            {route.name === "mascotes" && <CollectionPage />}
+            {route.name === "mascote" && <MascotPage key={route.slug} slug={route.slug} />}
           </div>
         </main>
         <footer className="site-footer gutter">
