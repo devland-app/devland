@@ -47,10 +47,10 @@ export function Header({ route, actions }: HeaderProps) {
             ))}
           </nav>
           <div className="actions">
-            <WalletBalance />
             <SoundToggle />
             <ThemeToggle />
             {actions}
+            <WalletBalance />
           </div>
         </div>
       </div>
