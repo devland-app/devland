@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import type { Database } from "../../shared/database.js";
+import { registerMascotImages } from "./catalog.images.js";
 import { KnexProductRepository } from "./catalog.repository.js";
 import { registerCatalogRoutes } from "./catalog.routes.js";
 import { CatalogService } from "./catalog.service.js";
@@ -13,4 +14,5 @@ export { catalogMigrations } from "./catalog.migrations.js";
 export function registerCatalogModule(app: FastifyInstance, db: Database): void {
   const service = new CatalogService(new KnexProductRepository(db));
   registerCatalogRoutes(app, service);
+  registerMascotImages(app);
 }
