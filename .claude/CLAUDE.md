@@ -65,10 +65,22 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 
 ## Front
 
-- `src/features/<funcionalidade>/` agrupa componentes e hooks; `src/shared/api/` é o único lugar
-  que chama `fetch`.
+- Estrutura: `src/app/` (casca: cabeçalho, rotas por hash `#vitrine` / `#pedidos`),
+  `src/features/<funcionalidade>/` (`catalog`, `cart`, `checkout`, `orders`, `theme`, cada uma com
+  o próprio CSS) e `src/shared/` (cliente da API, formatação, `localStorage`, UI genérica).
+  Features não importam umas das outras: o que é comum vai para `shared/`, e a casca liga tudo
+  por props (ex.: `OrdersPage` recebe `onPay`).
+- `src/shared/api/client.ts` é o único lugar que chama `fetch`; os tipos em `shared/api/types.ts`
+  espelham o `docs/openapi.yaml`. Erros chegam como `ApiError` com a mensagem pronta da API.
 - A URL da API vem de `VITE_API_URL` em tempo de build. Tudo que começa com `VITE_` vai para o
   bundle do navegador, então é público.
+- Visual "massinha": tokens de cor em `src/styles/global.css` (tema claro e escuro, com
+  `data-theme` para a escolha manual), `.clay` para superfícies e `.btn` para botões que afundam
+  ao apertar. Cor sempre por token, nunca literal que só funciona num tema.
+- Modais e gaveta usam `<dialog>` nativo com `showModal()` (`shared/ui/Dialog.tsx`): foco preso,
+  Esc fecha e o foco volta para quem abriu.
+- Carrinho e "Meus pedidos" ficam no `localStorage` (`devzoo-cart`, `devzoo-orders`), sempre
+  lidos com validação, porque podem estar vazios, antigos ou indisponíveis.
 - Acessibilidade WCAG 2.2 AA (HTML semântico, foco visível, `lang="pt-BR"`): skill `accessibility`.
 
 ## Convenções
