@@ -6,6 +6,7 @@ import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
 import { ApiError, apiAssetUrl, createOrder, payOrder } from "../../shared/api/client.ts";
 import type { Order, Payment, PaymentMethod } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
+import { useSound } from "../../shared/sound/soundContext.ts";
 import { formatCents } from "../../shared/format.ts";
 import { rememberOrder } from "../../shared/myOrders.ts";
 import { Dialog } from "../../shared/ui/Dialog.tsx";
@@ -54,6 +55,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
   const cart = useCart();
   const adoptions = useAdoptions();
   const products = useProducts();
+  const sound = useSound();
   const [step, setStep] = useState<Step>(
     resumeOrder ? { name: "pay", order: resumeOrder } : { name: "review", busy: false },
   );
@@ -97,6 +99,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
     adoptions.recordOrder(outcome.value.order);
     setStep({ name: "done", order: outcome.value.order, payment: outcome.value.payment });
     burstConfetti(themeColors());
+    sound.play("chime");
   }
 
   const currentKey = step.name === "processing" ? "pay" : step.name;

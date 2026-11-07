@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { SoundToggle } from "../features/sound/SoundToggle.tsx";
 import { ThemeToggle } from "../features/theme/ThemeToggle.tsx";
 import { useBannerDismissed } from "./useBannerDismissed.ts";
 import type { Route } from "./useHashRoute.ts";
@@ -58,6 +59,7 @@ export function Header({ route, actions }: HeaderProps) {
             ))}
           </nav>
           <div className="actions">
+            <SoundToggle />
             <ThemeToggle />
             {actions}
           </div>

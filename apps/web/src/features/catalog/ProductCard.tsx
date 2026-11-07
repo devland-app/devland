@@ -3,6 +3,7 @@ import { apiAssetUrl } from "../../shared/api/client.ts";
 import type { Product } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
 import { formatCents } from "../../shared/format.ts";
+import { useSound } from "../../shared/sound/soundContext.ts";
 
 interface ProductCardProps {
   product: Product;
@@ -11,6 +12,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const cart = useCart();
   const adoptions = useAdoptions();
+  const sound = useSound();
   const adopted = adoptions.adopted.has(product.id);
   const pending = adoptions.isPending(product.id);
   const inCart = cart.has(product.id);
@@ -41,7 +43,10 @@ export function ProductCard({ product }: ProductCardProps) {
           adopted={adopted}
           pending={pending}
           inCart={inCart}
-          onToggle={() => cart.toggle(product)}
+          onToggle={() => {
+            sound.play(inCart ? "unpop" : "pop");
+            cart.toggle(product);
+          }}
         />
       </div>
       {adopted && (
