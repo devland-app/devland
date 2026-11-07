@@ -27,4 +27,88 @@ const createProducts: Migration = {
   },
 };
 
-export const catalogMigrations: Migration[] = [createProducts];
+// O catálogo inicial é dado de referência, não dado de teste: entra por migration para existir em
+// todo ambiente (Docker local, Neon) sem um passo manual de seed.
+const initialProducts = [
+  {
+    slug: "caranguejo-dos-conteineres",
+    name: "Caranguejo dos Contêineres",
+    concept: "Contêineres",
+    description: "Carrega todas as dependências na carapaça e roda igualzinho em qualquer praia.",
+    price_cents: 4990,
+    stock: 25,
+  },
+  {
+    slug: "lesminha-do-pipeline",
+    name: "Lesminha do Pipeline",
+    concept: "CI/CD",
+    description: "Devagar e sempre: cada etapa só começa quando a anterior fica verde.",
+    price_cents: 3990,
+    stock: 40,
+  },
+  {
+    slug: "corujinha-das-branches",
+    name: "Corujinha das Branches",
+    concept: "Controle de versão",
+    description: "Vigia cada galho da árvore e pia antes que um conflito de merge aconteça.",
+    price_cents: 4490,
+    stock: 30,
+  },
+  {
+    slug: "polvo-orquestrador",
+    name: "Polvo Orquestrador",
+    concept: "Orquestração",
+    description: "Oito braços para escalar réplicas sem deixar nenhuma cair.",
+    price_cents: 6990,
+    stock: 15,
+  },
+  {
+    slug: "tartaruga-do-rollback",
+    name: "Tartaruga do Rollback",
+    concept: "Deploy",
+    description: "Quando algo dá errado, volta com calma para a última versão que funcionava.",
+    price_cents: 3490,
+    stock: 50,
+  },
+  {
+    slug: "abelha-dos-logs",
+    name: "Abelha dos Logs",
+    concept: "Observabilidade",
+    description: "Registra cada voo em JSON estruturado, sem perder nenhum zumbido.",
+    price_cents: 2990,
+    stock: 60,
+  },
+  {
+    slug: "castor-do-cache",
+    name: "Castor do Cache",
+    concept: "Desempenho",
+    description: "Guarda as respostas mais pedidas bem perto da porta da toca.",
+    price_cents: 4290,
+    stock: 20,
+  },
+  {
+    slug: "raposa-dos-segredos",
+    name: "Raposa dos Segredos",
+    concept: "Segurança",
+    description: "Nunca deixa uma senha no código: esconde tudo no cofre.",
+    price_cents: 5490,
+    stock: 10,
+  },
+];
+
+const insertInitialProducts: Migration = {
+  name: "catalog_002_insert_initial_products",
+  async up(db) {
+    await db("products").insert(initialProducts);
+  },
+  async down(db) {
+    await db("products")
+      .whereIn(
+        "slug",
+        initialProducts.map((product) => product.slug),
+      )
+      .delete();
+  },
+};
+
+export const catalogMigrations: Migration[] = [createProducts, insertInitialProducts];
