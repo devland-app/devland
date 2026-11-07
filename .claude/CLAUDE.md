@@ -47,7 +47,8 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 
 ## Regras da loja
 
-- É uma loja de brincadeira: nada é vendido nem cobrado, e a interface deixa isso explícito.
+- É uma loja simulada: nada é vendido nem cobrado, e a interface deixa isso explícito em linguagem
+  simples (sem "de mentirinha" ou "de brincadeira").
   Nunca peça dados de cartão, nome, e-mail ou endereço.
 - Sem login nem cadastro. Pedidos têm ID UUID (nunca sequencial, para evitar IDOR): quem tem o
   código vê o pedido. O front guarda os códigos no `localStorage` ("Meus pedidos").
