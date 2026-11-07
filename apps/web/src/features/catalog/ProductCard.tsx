@@ -1,8 +1,9 @@
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
-import { apiAssetUrl } from "../../shared/api/client.ts";
 import type { Product } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
-import { formatCents } from "../../shared/format.ts";
+import { useSound } from "../../shared/sound/soundContext.ts";
+import { Coins } from "../../shared/ui/Coins.tsx";
+import { MascotArt } from "../../shared/ui/MascotArt.tsx";
 
 interface ProductCardProps {
   product: Product;
@@ -11,6 +12,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const cart = useCart();
   const adoptions = useAdoptions();
+  const sound = useSound();
   const adopted = adoptions.adopted.has(product.id);
   const pending = adoptions.isPending(product.id);
   const inCart = cart.has(product.id);
@@ -18,13 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className={`card clay${adopted ? " card--adopted" : ""}`}>
       <div className="card-art">
-        <img
-          src={apiAssetUrl(product.imageUrl)}
-          alt={`Ilustração de massinha: ${product.name}`}
-          width={210}
-          height={210}
-          loading="lazy"
-        />
+        <MascotArt product={product} size={210} label={`Ilustração de massinha: ${product.name}`} />
       </div>
       <h2>{product.name}</h2>
       <div className="card-body">
@@ -33,15 +29,17 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <div className="buy-row">
         <p className="price">
-          <strong>{formatCents(product.priceCents)}</strong>
-          <small>de mentirinha</small>
+          <Coins value={product.priceCoins} size="lg" />
         </p>
         <AdoptButton
           product={product}
           adopted={adopted}
           pending={pending}
           inCart={inCart}
-          onToggle={() => cart.toggle(product)}
+          onToggle={() => {
+            sound.play(inCart ? "unpop" : "pop");
+            cart.toggle(product);
+          }}
         />
       </div>
       {adopted && (

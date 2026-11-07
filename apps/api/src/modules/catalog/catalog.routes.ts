@@ -19,7 +19,7 @@ const productSchema = {
     "name",
     "concept",
     "description",
-    "priceCents",
+    "priceCoins",
     "stock",
     "imageUrl",
     "lesson",
@@ -34,27 +34,29 @@ const productSchema = {
       examples: ["Contêineres"],
     },
     description: { type: "string" },
-    priceCents: {
+    priceCoins: {
       type: "integer",
-      description: "Preço em centavos de real (de mentirinha: nada é cobrado)",
-      examples: [4990],
+      description: "Preço em moedas virtuais, ganhas nos quizzes. As moedas não valem dinheiro.",
+      examples: [120],
     },
     stock: { type: "integer", description: "Unidades disponíveis", examples: [25] },
     imageUrl: {
       type: "string",
       format: "uri-reference",
-      description: "Ilustração do mascote (SVG), relativa à URL da API",
-      examples: ["/images/mascots/caranguejo-dos-conteineres.svg"],
+      description:
+        "Ilustração do mascote (SVG), relativa à URL da API. O parâmetro v muda sempre que o " +
+        "desenho muda, para o navegador não usar uma cópia antiga em cache.",
+      examples: ["/images/mascots/caranguejo-dos-conteineres.svg?v=3f8c2a1e"],
     },
     lesson: {
       type: "object",
       description: "O conceito de DevOps que o mascote ensina",
       additionalProperties: false,
-      required: ["explanation", "realWorld", "inDevZoo"],
+      required: ["explanation", "realWorld", "inProject"],
       properties: {
         explanation: { type: "string", description: "O conceito em linguagem simples" },
         realWorld: { type: "string", description: "Um exemplo do dia a dia" },
-        inDevZoo: { type: "string", description: "Onde a própria DevZoo aplica o conceito" },
+        inProject: { type: "string", description: "Onde a própria DevLand aplica o conceito" },
       },
     },
   },

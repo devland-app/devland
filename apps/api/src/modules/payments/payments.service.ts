@@ -16,8 +16,8 @@ export class PaymentsService {
     this.payments = payments;
   }
 
-  authorize(request: ChargeRequest): Promise<ChargeResult> {
-    return this.gateway.charge(request);
+  authorize(request: ChargeRequest, trx: Transaction): Promise<ChargeResult> {
+    return this.gateway.charge(request, trx);
   }
 
   record(request: ChargeRequest, result: ChargeResult, trx?: Transaction): Promise<Payment> {
@@ -25,9 +25,10 @@ export class PaymentsService {
       {
         id: randomUUID(),
         orderId: request.orderId,
-        method: request.method,
+        walletId: request.walletId,
+        method: "coins",
         status: result.status,
-        amountCents: request.amountCents,
+        amountCoins: request.amountCoins,
         receiptCode: result.status === "approved" ? result.receiptCode : null,
         declineReason: result.status === "declined" ? result.reason : null,
       },

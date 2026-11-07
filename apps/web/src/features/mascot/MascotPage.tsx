@@ -1,14 +1,11 @@
 import "./mascot.css";
 
-import { useState } from "react";
-
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
 import { apiAssetUrl } from "../../shared/api/client.ts";
 import type { Product } from "../../shared/api/types.ts";
 import { formatDateTime } from "../../shared/format.ts";
 import { useProducts } from "../../shared/useProducts.ts";
-
-const CHEERS = ["Oba!", "Boing!", "Hihi!", "De novo!", "Uhuul!", "Que pulo!"];
+import { InteractiveMascot } from "./InteractiveMascot.tsx";
 
 interface MascotPageProps {
   slug: string;
@@ -71,12 +68,12 @@ export function MascotPage({ slug }: MascotPageProps) {
             <p>{product.lesson.explanation}</p>
           </section>
           <section className="lesson clay" aria-labelledby="lesson-real">
-            <h2 id="lesson-real">Na vida real</h2>
+            <h2 id="lesson-real">No dia a dia</h2>
             <p>{product.lesson.realWorld}</p>
           </section>
-          <section className="lesson lesson--devzoo clay" aria-labelledby="lesson-devzoo">
-            <h2 id="lesson-devzoo">Onde a DevZoo usa isso</h2>
-            <p>{product.lesson.inDevZoo}</p>
+          <section className="lesson lesson--project clay" aria-labelledby="lesson-project">
+            <h2 id="lesson-project">Onde a DevLand usa isso</h2>
+            <p>{product.lesson.inProject}</p>
           </section>
 
           <p className="fine">
@@ -89,40 +86,11 @@ export function MascotPage({ slug }: MascotPageProps) {
   );
 }
 
-// O mascote é um botão: clicar (ou apertar Enter/Espaço) faz ele pular e falar.
+// Palco sem fundo: o mascote fica solto na página, só com a sombra embaixo.
 function MascotStage({ product }: { product: Product }) {
-  const [jumps, setJumps] = useState(0);
-  const [cheer, setCheer] = useState<string | null>(null);
-
-  function play() {
-    // Sorteio no clique (evento), não na renderização: cada pulo tem uma fala.
-    setCheer(CHEERS[Math.floor(Math.random() * CHEERS.length)] ?? "Oba!");
-    setJumps((count) => count + 1);
-  }
-
   return (
-    <div className="mascot-stage clay">
-      <button
-        type="button"
-        className="mascot-button"
-        onClick={play}
-        aria-label={`Fazer ${product.name} pular`}
-      >
-        {/* A key muda a cada clique: o React recria a imagem e a animação de pulo recomeça. */}
-        <img
-          key={jumps}
-          className={jumps > 0 ? "is-jumping" : undefined}
-          src={apiAssetUrl(product.imageUrl)}
-          alt={`Ilustração de massinha: ${product.name}`}
-          width={320}
-          height={320}
-        />
-        <span className="mascot-shadow" aria-hidden="true" />
-      </button>
-      <p className="cheer" aria-live="polite">
-        {cheer && <span key={jumps}>{cheer}</span>}
-      </p>
-      <p className="fine">Clique no {product.name.split(" ")[0]?.toLowerCase()} para ele pular.</p>
+    <div className="mascot-stage">
+      <InteractiveMascot product={product} />
     </div>
   );
 }

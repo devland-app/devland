@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export type Theme = "light" | "dark";
 
 // Mesma chave lida pelo script do index.html, que aplica o tema antes da primeira pintura.
-const STORAGE_KEY = "devzoo-theme";
+const STORAGE_KEY = "devland-theme";
 const darkQuery = () => window.matchMedia("(prefers-color-scheme: dark)");
 
 function chosenTheme(): Theme | undefined {

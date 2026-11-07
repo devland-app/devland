@@ -1,0 +1,44 @@
+.coins {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.coins--sm {
+  font-size: 0.95rem;
+}
+.coins--md {
+  font-size: 1.1rem;
+}
+.coins--lg {
+  font-size: 1.45rem;
+}
+
+/* Moedinha de massinha: borda mais escura embaixo dá a espessura, como nos botões. */
+.coin-icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+}
+.coin-edge {
+  fill: var(--sun-deep);
+}
+.coin-face {
+  fill: var(--sun);
+}
+.coin-ring {
+  fill: none;
+  stroke: var(--sun-deep);
+  stroke-width: 1.2;
+  opacity: 0.55;
+}
+.coin-mark {
+  fill: var(--sun-deep);
+}
+.coin-shine {
+  fill: #fff;
+  opacity: 0.55;
+}

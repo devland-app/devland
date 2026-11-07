@@ -4,8 +4,8 @@ import type { Order, OrderItem, OrderStatus } from "./orders.types.js";
 export interface NewOrder {
   id: string;
   idempotencyKey: string;
-  totalCents: number;
-  items: Omit<OrderItem, "subtotalCents">[];
+  totalCoins: number;
+  items: Omit<OrderItem, "subtotalCoins">[];
 }
 
 // Outro pedido já foi gravado com a mesma Idempotency-Key (ex.: dois cliques chegando juntos).
@@ -27,7 +27,7 @@ export interface OrderRepository {
 interface OrderRow {
   id: string;
   status: OrderStatus;
-  total_cents: number;
+  total_coins: number;
   created_at: Date;
   paid_at: Date | null;
 }
@@ -35,7 +35,7 @@ interface OrderRow {
 interface OrderItemRow {
   product_id: number;
   product_name: string;
-  unit_price_cents: number;
+  unit_price_coins: number;
   quantity: number;
 }
 
@@ -48,8 +48,8 @@ interface OrderItemsTable extends OrderItemRow {
   order_id: string;
 }
 
-const ORDER_COLUMNS = ["id", "status", "total_cents", "created_at", "paid_at"] as const;
-const ITEM_COLUMNS = ["product_id", "product_name", "unit_price_cents", "quantity"] as const;
+const ORDER_COLUMNS = ["id", "status", "total_coins", "created_at", "paid_at"] as const;
+const ITEM_COLUMNS = ["product_id", "product_name", "unit_price_coins", "quantity"] as const;
 
 // Código do Postgres para violação de unicidade.
 const UNIQUE_VIOLATION = "23505";
@@ -85,14 +85,14 @@ export class KnexOrderRepository implements OrderRepository {
           id: order.id,
           idempotency_key: order.idempotencyKey,
           status: "awaiting_payment",
-          total_cents: order.totalCents,
+          total_coins: order.totalCoins,
         });
         await trx("order_items").insert(
           order.items.map((item) => ({
             order_id: order.id,
             product_id: item.productId,
             product_name: item.productName,
-            unit_price_cents: item.unitPriceCents,
+            unit_price_coins: item.unitPriceCoins,
             quantity: item.quantity,
           })),
         );
@@ -135,11 +135,11 @@ export class KnexOrderRepository implements OrderRepository {
       items: items.map((item) => ({
         productId: item.product_id,
         productName: item.product_name,
-        unitPriceCents: item.unit_price_cents,
+        unitPriceCoins: item.unit_price_coins,
         quantity: item.quantity,
-        subtotalCents: item.unit_price_cents * item.quantity,
+        subtotalCoins: item.unit_price_coins * item.quantity,
       })),
-      totalCents: row.total_cents,
+      totalCoins: row.total_coins,
       createdAt: row.created_at.toISOString(),
       paidAt: row.paid_at ? row.paid_at.toISOString() : null,
     };

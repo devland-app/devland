@@ -4,9 +4,9 @@ export interface OrderItem {
   productId: number;
   // Nome e preço copiados no momento da compra: o pedido não muda se o produto mudar depois.
   productName: string;
-  unitPriceCents: number;
+  unitPriceCoins: number;
   quantity: number;
-  subtotalCents: number;
+  subtotalCoins: number;
 }
 
 export interface Order {
@@ -14,7 +14,7 @@ export interface Order {
   id: string;
   status: OrderStatus;
   items: OrderItem[];
-  totalCents: number;
+  totalCoins: number;
   createdAt: string;
   paidAt: string | null;
 }

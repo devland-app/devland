@@ -1,9 +1,9 @@
 ---
 name: security
-description: Regras de segurança do DevZoo para segredos, dependências, validação de entrada, autenticação, Docker e CI. Use ao mexer em configuração, variáveis de ambiente, endpoints, Dockerfiles, workflows ou ao revisar um PR.
+description: Regras de segurança do DevLand para segredos, dependências, validação de entrada, autenticação, Docker e CI. Use ao mexer em configuração, variáveis de ambiente, endpoints, Dockerfiles, workflows ou ao revisar um PR.
 ---
 
-# Segurança no DevZoo
+# Segurança no DevLand
 
 ## 1. Segredos (regra inegociável)
 

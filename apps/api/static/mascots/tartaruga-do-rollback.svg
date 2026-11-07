@@ -46,8 +46,8 @@
       <stop offset="1" stop-color="#cdeedd"/>
     </radialGradient>
   </defs>
-  <circle cx="120" cy="120" r="116" fill="url(#bg)"/>
-  <ellipse cx="120" cy="196" rx="84" ry="10" fill="#3b2f4a" opacity="0.12" filter="url(#soft)"/>
+  <circle class="backdrop" cx="120" cy="120" r="116" fill="url(#bg)"/>
+  <ellipse class="backdrop" cx="120" cy="196" rx="84" ry="10" fill="#3b2f4a" opacity="0.12" filter="url(#soft)"/>
   <g filter="url(#clay)">
     <ellipse cx="80" cy="180" rx="13" ry="11" fill="#9ccc65"/>
     <ellipse cx="110" cy="186" rx="13" ry="10" fill="#9ccc65"/>
@@ -68,11 +68,21 @@
     <path d="M104 132 A22 22 0 1 0 126 110" fill="none" stroke="#f1fff0" stroke-width="8" stroke-linecap="round"/>
     <path d="M132 99 L117 110 L132 121 Z" fill="#f1fff0" stroke="#f1fff0" stroke-width="4" stroke-linejoin="round"/>
   </g>
-  <ellipse cx="36" cy="152" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
-  <ellipse cx="68" cy="152" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
-  <ellipse cx="44" cy="137" rx="5" ry="6" fill="url(#eye)"/>
-  <circle cx="41.5" cy="133.5" r="1.8" fill="#fff"/>
-  <ellipse cx="62" cy="137" rx="5" ry="6" fill="url(#eye)"/>
-  <circle cx="59.5" cy="133.5" r="1.8" fill="#fff"/>
-  <path d="M47 150 Q53 156 59 150" fill="none" stroke="#4a2a3a" stroke-width="3" stroke-linecap="round"/>
+  <ellipse class="cheek" cx="36" cy="152" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse class="cheek" cx="68" cy="152" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <g class="eye">
+    <ellipse cx="44" cy="137" rx="5" ry="6" fill="url(#eye)"/>
+    <circle cx="41.5" cy="133.5" r="1.8" fill="#fff"/>
+  </g>
+  <path class="eye-happy" opacity="0" d="M39 138.5 Q44 131.6 49 138.5" fill="none" stroke="#2a1f35" stroke-width="2.6" stroke-linecap="round"/>
+  <g class="eye">
+    <ellipse cx="62" cy="137" rx="5" ry="6" fill="url(#eye)"/>
+    <circle cx="59.5" cy="133.5" r="1.8" fill="#fff"/>
+  </g>
+  <path class="eye-happy" opacity="0" d="M57 138.5 Q62 131.6 67 138.5" fill="none" stroke="#2a1f35" stroke-width="2.6" stroke-linecap="round"/>
+  <g class="mouth"><path d="M47 150 Q53 156 59 150" fill="none" stroke="#4a2a3a" stroke-width="3" stroke-linecap="round"/></g>
+  <g class="mouth-happy" opacity="0">
+    <path d="M47.0 150.0 Q53.0 162.6 59.0 150.0 Z" fill="#4a2a3a" stroke="#4a2a3a" stroke-width="1.7999999999999998" stroke-linejoin="round"/>
+    <ellipse cx="53.0" cy="155.3" rx="2.4" ry="2.3" fill="#ff7d96"/>
+  </g>
 </svg>

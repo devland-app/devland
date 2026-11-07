@@ -1,9 +1,10 @@
 openapi: 3.1.0
 info:
-  title: DevZoo API
+  title: DevLand API
   version: 0.2.0
-  description: API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em
-    DevOps. Nenhuma compra é real e nenhum valor é cobrado.
+  description: "API da DevLand: quizzes de DevOps rendem moedas virtuais, e as
+    moedas adotam mascotes que explicam cada conceito. As moedas não valem
+    dinheiro e nada é cobrado."
 components:
   schemas:
     Product:
@@ -16,7 +17,7 @@ components:
         - name
         - concept
         - description
-        - priceCents
+        - priceCoins
         - stock
         - imageUrl
         - lesson
@@ -40,11 +41,12 @@ components:
             - Contêineres
         description:
           type: string
-        priceCents:
+        priceCoins:
           type: integer
-          description: "Preço em centavos de real (de mentirinha: nada é cobrado)"
+          description: Preço em moedas virtuais, ganhas nos quizzes. As moedas não valem
+            dinheiro.
           examples:
-            - 4990
+            - 120
         stock:
           type: integer
           description: Unidades disponíveis
@@ -53,9 +55,11 @@ components:
         imageUrl:
           type: string
           format: uri-reference
-          description: Ilustração do mascote (SVG), relativa à URL da API
+          description: Ilustração do mascote (SVG), relativa à URL da API. O parâmetro v
+            muda sempre que o desenho muda, para o navegador não usar uma cópia
+            antiga em cache.
           examples:
-            - /images/mascots/caranguejo-dos-conteineres.svg
+            - /images/mascots/caranguejo-dos-conteineres.svg?v=3f8c2a1e
         lesson:
           type: object
           description: O conceito de DevOps que o mascote ensina
@@ -63,7 +67,7 @@ components:
           required:
             - explanation
             - realWorld
-            - inDevZoo
+            - inProject
           properties:
             explanation:
               type: string
@@ -71,18 +75,188 @@ components:
             realWorld:
               type: string
               description: Um exemplo do dia a dia
-            inDevZoo:
+            inProject:
               type: string
-              description: Onde a própria DevZoo aplica o conceito
+              description: Onde a própria DevLand aplica o conceito
+    Wallet:
+      type: object
+      description: Carteira de moedas virtuais. As moedas não valem dinheiro.
+      additionalProperties: false
+      required:
+        - id
+        - balanceCoins
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Código da carteira. Sem login, é ele que dá acesso a ela.
+        balanceCoins:
+          type: integer
+          minimum: 0
+          examples:
+            - 120
+        createdAt:
+          type: string
+          format: date-time
+    QuizSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - slug
+        - title
+        - concept
+        - questionCount
+        - totalCoins
+        - earnedCoins
+      properties:
+        slug:
+          type: string
+          description: Mesmo slug do mascote do conceito
+          examples:
+            - caranguejo-dos-conteineres
+        title:
+          type: string
+          examples:
+            - O que são contêineres
+        concept:
+          type: string
+          examples:
+            - Contêineres
+        questionCount:
+          type: integer
+          description: Perguntas por tentativa
+          examples:
+            - 5
+        totalCoins:
+          type: integer
+          description: "Soma do que as perguntas pagam: o preço do mascote do conceito"
+          examples:
+            - 120
+        earnedCoins:
+          type: integer
+          description: Quanto a carteira informada já ganhou neste quiz (0 sem carteira)
+          examples:
+            - 72
+    QuizAttempt:
+      type: object
+      description: "Tentativa de quiz: as perguntas vêm sem a resposta certa."
+      additionalProperties: false
+      required:
+        - id
+        - quizSlug
+        - title
+        - concept
+        - totalCoins
+        - earnedCoins
+        - questions
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Código da tentativa
+        quizSlug:
+          type: string
+        title:
+          type: string
+        concept:
+          type: string
+        totalCoins:
+          type: integer
+          examples:
+            - 120
+        earnedCoins:
+          type: integer
+          examples:
+            - 72
+        questions:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+              - id
+              - prompt
+              - options
+              - coins
+              - alreadyEarned
+            properties:
+              id:
+                type: string
+                examples:
+                  - conteineres-2
+              prompt:
+                type: string
+              options:
+                type: array
+                description: Em ordem embaralhada a cada tentativa
+                items:
+                  type: object
+                  additionalProperties: false
+                  required:
+                    - id
+                    - text
+                  properties:
+                    id:
+                      type: string
+                    text:
+                      type: string
+              coins:
+                type: integer
+                description: Moedas que o acerto paga
+                examples:
+                  - 24
+              alreadyEarned:
+                type: boolean
+                description: "A carteira já recebeu as moedas desta pergunta: acertar de novo
+                  não paga"
+    QuizAnswerResult:
+      type: object
+      additionalProperties: false
+      required:
+        - correct
+        - correctOptionId
+        - explanation
+        - coinsAwarded
+        - alreadyEarned
+        - balanceCoins
+        - answeredCount
+        - questionCount
+      properties:
+        correct:
+          type: boolean
+        correctOptionId:
+          type: string
+        explanation:
+          type: string
+          description: Por que a resposta certa é a certa
+        coinsAwarded:
+          type: integer
+          examples:
+            - 24
+        alreadyEarned:
+          type: boolean
+          description: Acertou, mas as moedas desta pergunta já tinham sido ganhas antes
+        balanceCoins:
+          type: integer
+          description: Saldo da carteira depois da resposta
+        answeredCount:
+          type: integer
+          examples:
+            - 3
+        questionCount:
+          type: integer
+          examples:
+            - 5
     OrderItem:
       type: object
       additionalProperties: false
       required:
         - productId
         - productName
-        - unitPriceCents
+        - unitPriceCoins
         - quantity
-        - subtotalCents
+        - subtotalCoins
       properties:
         productId:
           type: integer
@@ -92,28 +266,28 @@ components:
           type: string
           examples:
             - Caranguejo dos Contêineres
-        unitPriceCents:
+        unitPriceCoins:
           type: integer
-          description: Preço unitário no momento da compra, em centavos
+          description: Preço unitário no momento da adoção, em moedas
           examples:
-            - 4990
+            - 120
         quantity:
           type: integer
           examples:
-            - 2
-        subtotalCents:
+            - 1
+        subtotalCoins:
           type: integer
           examples:
-            - 9980
+            - 120
     Order:
       type: object
-      description: "Pedido de mentirinha: nada é cobrado"
+      description: Pedido de adoção, pago com moedas virtuais
       additionalProperties: false
       required:
         - id
         - status
         - items
-        - totalCents
+        - totalCoins
         - createdAt
         - paidAt
       properties:
@@ -130,11 +304,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/OrderItem"
-        totalCents:
+        totalCoins:
           type: integer
-          description: Total em centavos
+          description: Total em moedas
           examples:
-            - 14470
+            - 200
         createdAt:
           type: string
           format: date-time
@@ -145,13 +319,13 @@ components:
           format: date-time
     Payment:
       type: object
-      description: Pagamento de mentirinha aprovado
+      description: Pagamento aprovado, feito com moedas virtuais
       additionalProperties: false
       required:
         - id
         - method
         - status
-        - amountCents
+        - amountCoins
         - receiptCode
         - createdAt
       properties:
@@ -161,23 +335,27 @@ components:
         method:
           type: string
           enum:
+            - coins
             - pix
             - toy_card
             - broke_toy_card
+          description: "coins: moedas da carteira. pix, toy_card e broke_toy_card são
+            formas simuladas de antes das moedas e só aparecem em pedidos
+            antigos."
         status:
           type: string
           enum:
             - approved
-        amountCents:
+        amountCoins:
           type: integer
-          description: Valor simulado, em centavos
+          description: Moedas debitadas
           examples:
-            - 14470
+            - 200
         receiptCode:
           type: string
-          description: Recibo de mentirinha
+          description: Código do recibo
           examples:
-            - DZ-3F8C2A1E
+            - DL-3F8C2A1E
         createdAt:
           type: string
           format: date-time
@@ -295,10 +473,284 @@ paths:
                   message:
                     type: string
                     description: Explicação do erro, pronta para mostrar na tela
+  /wallets:
+    post:
+      operationId: createWallet
+      summary: Cria uma carteira de moedas vazia
+      tags:
+        - wallets
+      description: "Sem login nem cadastro: o navegador guarda o código da carteira.
+        As moedas entram por acertos nos quizzes e saem na adoção dos mascotes."
+      responses:
+        "201":
+          description: Carteira criada, com saldo zero
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wallet"
+  /wallets/{id}:
+    get:
+      operationId: getWallet
+      summary: Consulta o saldo de uma carteira
+      tags:
+        - wallets
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: path
+          name: id
+          required: true
+          description: Código da carteira
+      responses:
+        "200":
+          description: A carteira
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wallet"
+        "400":
+          description: Código em formato inválido
+          content:
+            application/json:
+              schema:
+                description: Código em formato inválido
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "404":
+          description: Nenhuma carteira com esse código
+          content:
+            application/json:
+              schema:
+                description: Nenhuma carteira com esse código
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+  /quizzes:
+    get:
+      operationId: listQuizzes
+      summary: Lista os quizzes, um por conceito de DevOps
+      tags:
+        - quizzes
+      description: Cada quiz paga, no total, o preço do mascote do conceito, e cada
+        pergunta paga uma vez por carteira. Com a carteira informada, mostra
+        quanto ela já ganhou em cada quiz.
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: walletId
+          required: false
+          description: Carteira para o progresso
+      responses:
+        "200":
+          description: Quizzes disponíveis
+          content:
+            application/json:
+              schema:
+                description: Quizzes disponíveis
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuizSummary"
+        "400":
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                description: Requisição inválida
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+  /quizzes/{slug}/attempts:
+    post:
+      operationId: startQuizAttempt
+      summary: Começa uma tentativa de quiz
+      tags:
+        - quizzes
+      description: Sorteia as perguntas e embaralha as opções. Dá para começar quantas
+        tentativas quiser; cada pergunta rende moedas só no primeiro acerto da
+        carteira.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - walletId
+              properties:
+                walletId:
+                  type: string
+                  format: uuid
+                  description: Carteira que recebe as moedas
+      parameters:
+        - schema:
+            type: string
+            pattern: ^[a-z0-9-]+$
+            maxLength: 60
+          in: path
+          name: slug
+          required: true
+      responses:
+        "201":
+          description: Tentativa criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizAttempt"
+        "400":
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                description: Requisição inválida
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "404":
+          description: Nenhum quiz com esse slug
+          content:
+            application/json:
+              schema:
+                description: Nenhum quiz com esse slug
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "422":
+          description: Carteira não encontrada
+          content:
+            application/json:
+              schema:
+                description: Carteira não encontrada
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+  /quiz-attempts/{id}/answers:
+    post:
+      operationId: answerQuizQuestion
+      summary: Responde uma pergunta da tentativa
+      tags:
+        - quizzes
+      description: A API corrige, devolve a resposta certa com a explicação e, no
+        primeiro acerto da carteira, credita as moedas da pergunta. Cada
+        pergunta pode ser respondida uma vez por tentativa.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - questionId
+                - optionId
+              properties:
+                questionId:
+                  type: string
+                  pattern: ^[a-z0-9-]+$
+                  maxLength: 60
+                optionId:
+                  type: string
+                  pattern: ^[a-f0-9]+$
+                  maxLength: 20
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: path
+          name: id
+          required: true
+          description: Código da tentativa
+      responses:
+        "200":
+          description: Resposta corrigida
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizAnswerResult"
+        "400":
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                description: Requisição inválida
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "404":
+          description: Nenhuma tentativa com esse código
+          content:
+            application/json:
+              schema:
+                description: Nenhuma tentativa com esse código
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "409":
+          description: Pergunta já respondida nesta tentativa
+          content:
+            application/json:
+              schema:
+                description: Pergunta já respondida nesta tentativa
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
+        "422":
+          description: Pergunta ou opção fora desta tentativa
+          content:
+            application/json:
+              schema:
+                description: Pergunta ou opção fora desta tentativa
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: Explicação do erro, pronta para mostrar na tela
   /orders:
     post:
       operationId: createOrder
-      summary: Cria um pedido de mentirinha a partir do carrinho
+      summary: Cria um pedido de adoção a partir do carrinho
       tags:
         - orders
       description: "Só produto e quantidade vêm do cliente: preços e nomes saem do
@@ -446,12 +898,12 @@ paths:
   /orders/{id}/payment:
     post:
       operationId: payOrder
-      summary: Paga um pedido de mentirinha
+      summary: Paga um pedido com as moedas de uma carteira
       tags:
         - orders
-      description: Nenhum valor é cobrado. Baixa de estoque, pagamento e pedido pago
-        acontecem juntos ou não acontecem. Pagar um pedido já pago devolve o
-        mesmo recibo, sem nova cobrança.
+      description: As moedas são virtuais e não valem dinheiro. Baixa de estoque,
+        débito das moedas e pedido pago acontecem juntos ou não acontecem. Pagar
+        um pedido já pago devolve o mesmo recibo, sem debitar de novo.
       requestBody:
         required: true
         content:
@@ -460,17 +912,12 @@ paths:
               type: object
               additionalProperties: false
               required:
-                - method
+                - walletId
               properties:
-                method:
+                walletId:
                   type: string
-                  enum:
-                    - pix
-                    - toy_card
-                    - broke_toy_card
-                  description: "pix: Pix de mentirinha · toy_card: cartão de brinquedo ·
-                    broke_toy_card: cartão sem saldo, sempre recusado (para ver
-                    a tela de recusa)"
+                  format: uuid
+                  description: Carteira que paga o pedido
       parameters:
         - schema:
             type: string
@@ -496,7 +943,7 @@ paths:
                   notice:
                     type: string
                     examples:
-                      - "Pagamento de mentirinha: nenhum valor foi cobrado."
+                      - "Pago com moedas virtuais: nenhum dinheiro foi usado."
                   order:
                     $ref: "#/components/schemas/Order"
                   payment:
@@ -515,11 +962,11 @@ paths:
                     type: string
                     description: Explicação do erro, pronta para mostrar na tela
         "402":
-          description: Pagamento recusado (cartão sem saldo)
+          description: Pagamento recusado (saldo insuficiente)
           content:
             application/json:
               schema:
-                description: Pagamento recusado (cartão sem saldo)
+                description: Pagamento recusado (saldo insuficiente)
                 type: object
                 required:
                   - message
@@ -559,8 +1006,12 @@ servers:
 security: []
 tags:
   - name: catalog
-    description: Vitrine de miniaturas
+    description: Vitrine de mascotes
+  - name: quizzes
+    description: Quizzes que rendem moedas
+  - name: wallets
+    description: Carteiras de moedas virtuais
   - name: orders
-    description: Pedidos de mentirinha (nada é cobrado)
+    description: Pedidos de adoção, pagos com moedas
   - name: health
     description: Saúde da API e do banco

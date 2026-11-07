@@ -1,17 +1,21 @@
 import "./checkout.css";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
-import { ApiError, apiAssetUrl, createOrder, payOrder } from "../../shared/api/client.ts";
-import type { Order, Payment, PaymentMethod } from "../../shared/api/types.ts";
+import { ApiError, createOrder, payOrder } from "../../shared/api/client.ts";
+import type { Order, Payment } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
-import { formatCents } from "../../shared/format.ts";
+import { useSound } from "../../shared/sound/soundContext.ts";
+import { Coins } from "../../shared/ui/Coins.tsx";
+import { MascotArt } from "../../shared/ui/MascotArt.tsx";
+import { formatCoins } from "../../shared/format.ts";
 import { rememberOrder } from "../../shared/myOrders.ts";
 import { Dialog } from "../../shared/ui/Dialog.tsx";
+import { useProducts } from "../../shared/useProducts.ts";
+import { useWallet } from "../../shared/wallet/walletContext.ts";
 
-import { burstConfetti } from "./confetti.ts";
-import { PaymentPreview } from "./PaymentPreview.tsx";
+import { burstConfetti, themeColors } from "../../shared/ui/confetti.ts";
 
 type Step =
   | { name: "review"; busy: boolean; error?: string }
@@ -19,17 +23,7 @@ type Step =
   | { name: "processing"; order: Order }
   | { name: "done"; order: Order; payment: Payment };
 
-const METHODS: Array<{ value: PaymentMethod; label: string; note: string }> = [
-  { value: "pix", label: "Pix de mentirinha", note: "Um QR code que não leva a lugar nenhum." },
-  {
-    value: "toy_card",
-    label: "Cartão de brinquedo",
-    note: "Nada para digitar: ele já vem pronto.",
-  },
-  { value: "broke_toy_card", label: "Cartão sem saldo", note: "Para ver como fica uma recusa." },
-];
-
-// A API responde na hora; a espera é só para a "experiência" de pagar.
+// A API responde na hora; a espera curta só torna a etapa de pagamento perceptível.
 const PROCESSING_MS = 1400;
 
 const STEP_LABELS = [
@@ -40,7 +34,7 @@ const STEP_LABELS = [
 
 interface CheckoutDialogProps {
   onClose: () => void;
-  // Pedido que ficou aguardando pagamento ("Meus pedidos"): o checkout começa direto no pagamento.
+  // Pedido que ficou aguardando pagamento: o checkout começa direto no pagamento.
   resumeOrder?: Order;
 }
 
@@ -48,10 +42,12 @@ interface CheckoutDialogProps {
 export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
   const cart = useCart();
   const adoptions = useAdoptions();
+  const products = useProducts();
+  const sound = useSound();
+  const wallet = useWallet();
   const [step, setStep] = useState<Step>(
     resumeOrder ? { name: "pay", order: resumeOrder } : { name: "review", busy: false },
   );
-  const [method, setMethod] = useState<PaymentMethod>("pix");
   // Gerada uma vez por tentativa de compra: clicar de novo devolve o mesmo pedido, sem duplicar.
   const idempotencyKey = useRef(crypto.randomUUID());
   const heading = useRef<HTMLHeadingElement>(null);
@@ -79,18 +75,23 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
 
   async function pay(order: Order) {
     setStep({ name: "processing", order });
-    const settled = payOrder(order.id, method).then(
-      (value) => ({ ok: true as const, value }),
-      (error: unknown) => ({ ok: false as const, error }),
-    );
+    const settled = wallet
+      .ensureWallet()
+      .then((walletId) => payOrder(order.id, walletId))
+      .then(
+        (value) => ({ ok: true as const, value }),
+        (error: unknown) => ({ ok: false as const, error }),
+      );
     const [outcome] = await Promise.all([settled, wait(PROCESSING_MS)]);
     if (!outcome.ok) {
       setStep({ name: "pay", order, error: messageOf(outcome.error) });
       return;
     }
     adoptions.recordOrder(outcome.value.order);
+    void wallet.refresh();
     setStep({ name: "done", order: outcome.value.order, payment: outcome.value.payment });
     burstConfetti(themeColors());
+    sound.play("chime");
   }
 
   const currentKey = step.name === "processing" ? "pay" : step.name;
@@ -98,7 +99,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
   return (
     <Dialog open onClose={onClose} labelledBy="checkout-title" variant="modal">
       <div className="panel-head">
-        <h2 id="checkout-title">Checkout de mentirinha</h2>
+        <h2 id="checkout-title">Adoção</h2>
         <button
           className="btn btn--soft btn--icon"
           type="button"
@@ -109,7 +110,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
         </button>
       </div>
 
-      <ol className="steps" aria-label="Etapas da compra">
+      <ol className="steps" aria-label="Etapas da adoção">
         {STEP_LABELS.map((item, index) => {
           const currentIndex = STEP_LABELS.findIndex((candidate) => candidate.key === currentKey);
           return (
@@ -133,17 +134,15 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
             {cart.lines.map((line) => (
               <li key={line.productId}>
                 <span>{line.name}</span>
-                <span>{formatCents(line.priceCents)}</span>
+                <Coins value={line.priceCoins} size="sm" />
               </li>
             ))}
           </ul>
           <div className="total-row">
-            <span>Total estimado</span>
-            <span>{formatCents(cart.estimatedTotalCents)}</span>
+            <span>Total</span>
+            <Coins value={cart.estimatedTotalCoins} />
           </div>
-          <p className="fine">
-            O valor oficial é calculado pela loja no próximo passo. Nenhum valor será cobrado.
-          </p>
+          <p className="fine">O total oficial é conferido pela loja no próximo passo.</p>
           {step.error && (
             <p className="error-note" role="alert">
               {step.error}
@@ -166,46 +165,13 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
       )}
 
       {step.name === "pay" && (
-        <div className="step">
-          <h3 ref={heading} tabIndex={-1}>
-            Como você quer fingir que paga?
-          </h3>
-          <fieldset className="methods">
-            <legend className="sr-only">Forma de pagamento de mentirinha</legend>
-            {METHODS.map((option) => (
-              <label key={option.value} className="method">
-                <input
-                  type="radio"
-                  name="payment-method"
-                  value={option.value}
-                  checked={method === option.value}
-                  onChange={() => setMethod(option.value)}
-                />
-                <span className="dot" aria-hidden="true" />
-                <strong>{option.label}</strong>
-                <span className="note">{option.note}</span>
-              </label>
-            ))}
-          </fieldset>
-          <PaymentPreview method={method} orderId={step.order.id} />
-          {step.error && (
-            <p className="error-note" role="alert">
-              {step.error}
-            </p>
-          )}
-          <p className="fine">
-            Esta loja nunca pede dados de cartão de verdade. Se um site de brincadeira pedir,
-            desconfie.
-          </p>
-          <div className="step-actions">
-            <button className="btn btn--soft" type="button" onClick={onClose}>
-              Pagar depois
-            </button>
-            <button className="btn btn--mint" type="button" onClick={() => pay(step.order)}>
-              Pagar de mentirinha · {formatCents(step.order.totalCents)}
-            </button>
-          </div>
-        </div>
+        <CoinPayment
+          order={step.order}
+          error={step.error}
+          heading={heading}
+          onPay={() => pay(step.order)}
+          onLater={onClose}
+        />
       )}
 
       {step.name === "processing" && (
@@ -216,27 +182,34 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
             <span />
           </div>
           <h3 ref={heading} tabIndex={-1}>
-            Falando com o banco imaginário…
+            Processando o pagamento…
           </h3>
-          <p className="fine">Isso leva só um instante e não cobra nada.</p>
+          <p className="fine">É uma simulação: nenhum valor é cobrado.</p>
         </div>
       )}
 
       {step.name === "done" && (
         <div className="step result">
-          <img
-            src={apiAssetUrl("/images/mascots/polvo-orquestrador.svg")}
-            alt=""
-            width={130}
-            height={130}
-          />
+          {products.state.status === "ready" && (
+            <div className="adopted-thumbs" aria-hidden="true">
+              {step.order.items.map((item) => {
+                const product =
+                  products.state.status === "ready"
+                    ? products.state.products.find((candidate) => candidate.id === item.productId)
+                    : undefined;
+                return product ? (
+                  <MascotArt key={item.productId} product={product} size={72} />
+                ) : null;
+              })}
+            </div>
+          )}
           <h3 ref={heading} tabIndex={-1}>
-            Pedido aprovado!
+            Adoção concluída!
           </h3>
-          <span className="badge-free">Nenhum valor foi cobrado</span>
+          <span className="badge-free">Pago com moedas virtuais</span>
           <p>
-            Seus mascotes já estão em "Meus mascotes", prontos para explicar o que sabem. Total
-            simulado: {formatCents(step.order.totalCents)}.
+            Os mascotes adotados já estão em Meus mascotes, cada um com a explicação do seu
+            conceito. Total: {formatCoins(step.order.totalCoins)}.
           </p>
           <dl className="receipt">
             <div>
@@ -265,17 +238,87 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
   );
 }
 
+interface CoinPaymentProps {
+  order: Order;
+  error?: string;
+  heading: RefObject<HTMLHeadingElement | null>;
+  onPay: () => void;
+  onLater: () => void;
+}
+
+// Pagamento com moedas: mostra saldo, total e o que sobra. Sem saldo suficiente, o pedido fica
+// guardado aguardando pagamento e a tela aponta para os quizzes.
+function CoinPayment({ order, error, heading, onPay, onLater }: CoinPaymentProps) {
+  const wallet = useWallet();
+  const ready = wallet.status === "ready";
+  const missing = order.totalCoins - wallet.balanceCoins;
+
+  return (
+    <div className="step">
+      <h3 ref={heading} tabIndex={-1}>
+        Pagamento com moedas
+      </h3>
+      <dl className="coin-summary">
+        <div>
+          <dt>Seu saldo</dt>
+          <dd>{ready ? <Coins value={wallet.balanceCoins} /> : "…"}</dd>
+        </div>
+        <div>
+          <dt>Total do pedido</dt>
+          <dd>
+            <Coins value={order.totalCoins} />
+          </dd>
+        </div>
+        {ready && missing <= 0 && (
+          <div>
+            <dt>Saldo depois</dt>
+            <dd>
+              <Coins value={-missing} />
+            </dd>
+          </div>
+        )}
+      </dl>
+      {ready && missing > 0 && (
+        <p className="error-note">
+          Faltam {formatCoins(missing)}.{" "}
+          <a href="#quizzes" onClick={onLater}>
+            Ganhe moedas nos quizzes
+          </a>
+          : o pedido fica guardado aguardando pagamento.
+        </p>
+      )}
+      {wallet.status === "error" && (
+        <p className="error-note" role="alert">
+          Não deu para conferir o saldo agora. Tente de novo em instantes.
+        </p>
+      )}
+      {error && (
+        <p className="error-note" role="alert">
+          {error}
+        </p>
+      )}
+      <p className="fine">As moedas são virtuais e não valem dinheiro.</p>
+      <div className="step-actions">
+        <button className="btn btn--soft" type="button" onClick={onLater}>
+          Pagar depois
+        </button>
+        <button
+          className="btn btn--mint"
+          type="button"
+          onClick={onPay}
+          disabled={!ready || missing > 0}
+        >
+          Pagar {formatCoins(order.totalCoins)}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function messageOf(error: unknown): string {
   return error instanceof ApiError ? error.message : "Algo deu errado. Tente de novo.";
-}
-
-function themeColors(): string[] {
-  const styles = getComputedStyle(document.documentElement);
-  return ["--coral", "--mint", "--lilac", "--sun"].map((token) =>
-    styles.getPropertyValue(token).trim(),
-  );
 }

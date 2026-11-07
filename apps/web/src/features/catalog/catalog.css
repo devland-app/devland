@@ -4,41 +4,52 @@
   gap: 1.6rem;
 }
 
+/* Cada card ocupa cinco linhas da grade e usa as linhas dela (subgrid): imagem, nome, etiqueta,
+   preço e link ficam na mesma altura em todos os cards lado a lado, mesmo com nomes de tamanhos
+   diferentes. */
 .card {
+  grid-row: span 5;
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto;
-  gap: 0.7rem;
+  grid-template-rows: subgrid;
+  row-gap: 0.7rem;
   padding: 1rem 1rem 1.2rem;
 }
 
 .card--placeholder {
   min-height: 26rem;
-  animation: breathe 1.4s ease-in-out infinite;
+  animation: placeholder-pulse 1.4s ease-in-out infinite;
 }
-@keyframes breathe {
+@keyframes placeholder-pulse {
   50% {
     opacity: 0.55;
   }
 }
 
+/* O mascote fica solto no card, com uma sombra macia embaixo, como na página dele. */
 .card-art {
-  background: var(--well);
-  border-radius: var(--r-lg);
-  box-shadow:
-    inset 0 6px 14px var(--shade),
-    inset 0 -2px 0 var(--shine);
-  padding: 0.7rem;
+  position: relative;
   display: grid;
   place-items: center;
+  padding: 0.4rem 0.7rem 1rem;
 }
-.card-art img {
+.card-art::after {
+  content: "";
+  position: absolute;
+  bottom: 0.5rem;
+  width: 46%;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--shade);
+  filter: blur(4px);
+}
+.card-art .mascot-art {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 210px;
-  height: auto;
-  aspect-ratio: 1;
   transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.card:hover .card-art img {
+.card:hover .card-art .mascot-art {
   transform: translateY(-6px) rotate(-2deg);
 }
 
@@ -88,4 +99,9 @@
     0 3px 0 var(--mint-deep),
     inset 0 0 0 3px color-mix(in srgb, var(--mint) 60%, transparent),
     inset 0 2px 0 var(--shine);
+}
+
+/* Chamada para os quizzes logo abaixo do texto: do tamanho do conteúdo, não da largura toda. */
+.intro > .btn {
+  justify-self: start;
 }

@@ -1,6 +1,6 @@
 **Nível: A (avançado)**
 
-# DevZoo 🐾
+# DevLand
 
 Marketplace de miniaturas fofas inspiradas em conceitos de DevOps: o caranguejo dos contêineres,
 a lesminha do pipeline, a corujinha das branches e a turma toda.

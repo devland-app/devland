@@ -3,7 +3,7 @@ name: accessibility
 description: Checklist de acessibilidade (WCAG 2.2 AA) para criar ou revisar telas e componentes React do apps/web. Use ao escrever UI, revisar PRs de front ou quando pedirem para checar acessibilidade.
 ---
 
-# Acessibilidade no DevZoo
+# Acessibilidade no DevLand
 
 Meta: WCAG 2.2 nível AA. A loja precisa ser usável só com teclado, com leitor de tela e com zoom de 200%.
 

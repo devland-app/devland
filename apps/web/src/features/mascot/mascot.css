@@ -22,14 +22,13 @@
   }
 }
 
+/* A folga no topo é a altura do pulo: sem ela, o mascote encosta no link "Meus mascotes". */
 .mascot-stage {
   position: sticky;
   top: 8rem;
   display: grid;
   justify-items: center;
-  gap: 0.4rem;
-  padding: 1.4rem 1rem 1.2rem;
-  text-align: center;
+  padding-top: 2.5rem;
 }
 @media (max-width: 760px) {
   .mascot-stage {
@@ -40,48 +39,57 @@
 .mascot-button {
   position: relative;
   border: 0;
-  padding: 0 0 1.2rem;
+  padding: 0 0 1.4rem;
   background: none;
   cursor: pointer;
   border-radius: var(--r-xl);
   display: grid;
   justify-items: center;
 }
-.mascot-button img {
-  width: min(100%, 280px);
-  height: auto;
-  transform-origin: 50% 90%;
-  animation: breathe 3.2s ease-in-out infinite;
+
+.mascot-button .mascot-art {
+  width: min(100%, 300px);
+  transform-origin: 50% 88%;
+  animation: mascot-breathe 3.2s ease-in-out infinite;
   transition: rotate 220ms ease;
 }
-.mascot-button:hover img {
+.mascot-button:hover .mascot-art {
   rotate: -4deg;
 }
 
-/* Pulo de massinha: amassa para pegar impulso, estica no ar, amassa ao cair e assenta. */
-.mascot-button img.is-jumping {
-  animation:
-    jump 720ms cubic-bezier(0.3, 0.7, 0.4, 1),
-    breathe 3.2s ease-in-out 720ms infinite;
+.mascot-art.is-jump {
+  animation: jump 720ms cubic-bezier(0.3, 0.7, 0.4, 1);
 }
-.mascot-shadow {
-  position: absolute;
-  bottom: 0.4rem;
-  width: 55%;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--shade);
-  filter: blur(4px);
+.mascot-art.is-wiggle {
+  animation: wiggle 640ms ease-in-out;
 }
-.mascot-button img.is-jumping + .mascot-shadow {
-  animation: shadow-jump 720ms cubic-bezier(0.3, 0.7, 0.4, 1);
+.mascot-art.is-giggle {
+  animation: giggle 900ms ease-in-out;
+}
+.mascot-art.is-spin {
+  animation: spin-hop 860ms cubic-bezier(0.3, 0.7, 0.4, 1);
 }
 
-@keyframes breathe {
+.mascot-shadow {
+  position: absolute;
+  bottom: 0.5rem;
+  width: 52%;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--shade);
+  filter: blur(5px);
+}
+.mascot-button:has(.is-jump) .mascot-shadow,
+.mascot-button:has(.is-spin) .mascot-shadow {
+  animation: shadow-jump 760ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+@keyframes mascot-breathe {
   50% {
     transform: scale(1.025, 0.985);
   }
 }
+/* Pulo de massinha: amassa para pegar impulso, estica no ar, amassa ao cair e assenta. */
 @keyframes jump {
   0% {
     transform: scale(1, 1);
@@ -102,31 +110,61 @@
     transform: scale(1, 1);
   }
 }
-@keyframes shadow-jump {
-  42% {
-    transform: scale(0.6);
-    opacity: 0.5;
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(7deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  80% {
+    transform: rotate(3deg);
   }
 }
-
-.cheer {
-  min-height: 2.4rem;
-  margin: 0;
+@keyframes giggle {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  15%,
+  45%,
+  75% {
+    transform: translateY(-7px) scale(0.97, 1.03);
+  }
+  30%,
+  60%,
+  90% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
 }
-.cheer span {
-  display: inline-block;
-  font: 800 1.2rem/1 var(--font-display);
-  color: var(--on-color);
-  background: var(--sun);
-  padding: 0.55em 0.9em;
-  border-radius: var(--r-pill);
-  box-shadow: 0 4px 0 var(--sun-deep);
-  animation: pop-cheer 420ms cubic-bezier(0.22, 1, 0.36, 1);
+@keyframes spin-hop {
+  0% {
+    transform: rotate(0) scale(1, 1);
+  }
+  15% {
+    transform: scale(1.1, 0.88);
+  }
+  50% {
+    transform: translateY(-34px) rotate(180deg) scale(0.95, 1.05);
+  }
+  80% {
+    transform: translateY(0) rotate(360deg) scale(1.08, 0.92);
+  }
+  100% {
+    transform: rotate(360deg) scale(1, 1);
+  }
 }
-@keyframes pop-cheer {
-  from {
-    transform: translateY(8px) scale(0.8);
-    opacity: 0;
+@keyframes shadow-jump {
+  45% {
+    transform: scale(0.6);
+    opacity: 0.5;
   }
 }
 
@@ -161,7 +199,7 @@
   max-width: 65ch;
   line-height: 1.65;
 }
-.lesson--devzoo {
+.lesson--project {
   background: color-mix(in srgb, var(--mint) 18%, var(--surface));
 }
 

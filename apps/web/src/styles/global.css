@@ -23,8 +23,6 @@
   --shadow: rgba(58, 38, 92, 0.2);
   --shine: rgba(255, 255, 255, 0.75);
   --shade: rgba(58, 38, 92, 0.13);
-  --banner: #ffe28f;
-  --banner-ink: #4a3300;
   --focus: #2f6fe4;
   --danger: #b3261e;
   --scrim: rgba(20, 12, 32, 0.45);
@@ -64,8 +62,6 @@
     --shadow: rgba(0, 0, 0, 0.55);
     --shine: rgba(255, 255, 255, 0.16);
     --shade: rgba(0, 0, 0, 0.38);
-    --banner: #3a2e10;
-    --banner-ink: #ffe28f;
     --focus: #8fb6ff;
     --danger: #ff9b94;
     --scrim: rgba(0, 0, 0, 0.6);
@@ -95,8 +91,6 @@
   --shadow: rgba(0, 0, 0, 0.55);
   --shine: rgba(255, 255, 255, 0.16);
   --shade: rgba(0, 0, 0, 0.38);
-  --banner: #3a2e10;
-  --banner-ink: #ffe28f;
   --focus: #8fb6ff;
   --danger: #ff9b94;
   --scrim: rgba(0, 0, 0, 0.6);

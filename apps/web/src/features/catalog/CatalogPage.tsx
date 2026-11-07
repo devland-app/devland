@@ -15,12 +15,17 @@ export function CatalogPage() {
     <section aria-labelledby="catalog-title">
       <div className="intro">
         <h1 id="catalog-title">
-          Miniaturas de massinha que <em>entendem de DevOps</em>
+          Mascotes divertidos que <em>explicam DevOps</em>
         </h1>
         <p>
-          Adote um de cada, finalize a compra de mentirinha e desbloqueie a página de cada mascote,
-          onde ele explica o conceito de DevOps que representa. Ninguém cobra nada.
+          Responda os quizzes, ganhe moedas e adote os mascotes: acertando todas as perguntas, as
+          moedas dão exatamente para adotar todos. Cada mascote desbloqueia uma página com o
+          conceito de DevOps que ele representa, explicado de forma simples. As moedas são virtuais:
+          nada aqui custa dinheiro.
         </p>
+        <a className="btn btn--lilac" href="#quizzes">
+          Ganhar moedas nos quizzes
+        </a>
       </div>
 
       {state.status === "ready" && (

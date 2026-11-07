@@ -1,4 +1,7 @@
-// Explosão de confete na aprovação: é a "dopamina" da loja. Desligada para quem pede menos movimento.
+import "./confetti.css";
+
+// Explosão de confete nas conquistas (adoção aprovada, quiz gabaritado). Desligada para quem pede
+// menos movimento.
 export function burstConfetti(colors: string[]): void {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     return;
@@ -58,4 +61,12 @@ export function burstConfetti(colors: string[]): void {
     }
   };
   requestAnimationFrame(frame);
+}
+
+// As cores do confete seguem o tema atual (claro ou escuro).
+export function themeColors(): string[] {
+  const styles = getComputedStyle(document.documentElement);
+  return ["--coral", "--mint", "--lilac", "--sun"].map((token) =>
+    styles.getPropertyValue(token).trim(),
+  );
 }
