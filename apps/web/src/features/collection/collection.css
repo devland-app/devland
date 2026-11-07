@@ -7,15 +7,28 @@
   gap: 1.4rem;
 }
 
+/* Cada card ocupa quatro linhas da grade (desenho, nome, etiqueta e rodapé) e usa as linhas dela:
+   tudo fica na mesma altura nos cards lado a lado, adotados ou não. */
+.collection > li {
+  grid-row: span 4;
+  display: grid;
+  grid-template-rows: subgrid;
+}
 .collected,
 .locked {
-  height: 100%;
+  grid-row: span 4;
   display: grid;
+  grid-template-rows: subgrid;
+  row-gap: 0.55rem;
   justify-items: center;
-  align-content: start;
-  gap: 0.55rem;
+  align-items: start;
   padding: 1.1rem 1rem 1.3rem;
   text-align: center;
+}
+.collected .chip,
+.locked .chip,
+.locked .card-link {
+  justify-self: center;
 }
 .collected strong,
 .locked strong {
