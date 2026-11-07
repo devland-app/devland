@@ -75,7 +75,19 @@ docker compose up --build
 `docker compose ps` mostra os três serviços como `healthy`. As migrations rodam sozinhas quando a
 API sobe. Para apagar os dados locais: `docker compose down -v`.
 
-### Desenvolvimento
+### Desenvolvimento com recarga automática
+
+No Docker, sem instalar Node na máquina:
+
+```bash
+npm run dev:docker        # ou: docker compose -f compose.dev.yaml up
+```
+
+O código é montado nos containers: ao salvar, a API reinicia sozinha e o site atualiza no
+navegador. Site em http://localhost:5173 e API em http://localhost:3333. Use um ambiente de cada
+vez (`docker compose stop` antes), porque os dois usam as mesmas portas.
+
+Ou direto na máquina, com Node 22:
 
 ```bash
 npm install                      # também ativa os hooks de commit
