@@ -20,6 +20,20 @@ export function apiAssetUrl(path: string): string {
   return `${API_URL}${path}`;
 }
 
+// A ilustração como texto, para a página do mascote animar as partes do desenho (olhos, boca).
+export async function getMascotSvg(imageUrl: string): Promise<string> {
+  let response: Response;
+  try {
+    response = await fetch(apiAssetUrl(imageUrl));
+  } catch {
+    throw new ApiError(0, "Não deu para carregar a ilustração agora.");
+  }
+  if (!response.ok) {
+    throw new ApiError(response.status, "Não deu para carregar a ilustração agora.");
+  }
+  return response.text();
+}
+
 export function listProducts(): Promise<Product[]> {
   return request<Product[]>("/products");
 }

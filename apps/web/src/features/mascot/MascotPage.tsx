@@ -1,12 +1,11 @@
 import "./mascot.css";
 
-import { useState } from "react";
-
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
 import { apiAssetUrl } from "../../shared/api/client.ts";
 import type { Product } from "../../shared/api/types.ts";
 import { formatDateTime } from "../../shared/format.ts";
 import { useProducts } from "../../shared/useProducts.ts";
+import { InteractiveMascot } from "./InteractiveMascot.tsx";
 
 interface MascotPageProps {
   slug: string;
@@ -87,29 +86,11 @@ export function MascotPage({ slug }: MascotPageProps) {
   );
 }
 
-// O mascote é um botão: clicar (ou apertar Enter/Espaço) faz ele reagir.
+// Palco sem fundo: o mascote fica solto na página, só com a sombra embaixo.
 function MascotStage({ product }: { product: Product }) {
-  const [jumps, setJumps] = useState(0);
-
   return (
-    <div className="mascot-stage clay">
-      <button
-        type="button"
-        className="mascot-button"
-        onClick={() => setJumps((count) => count + 1)}
-        aria-label={`Interagir com ${product.name}`}
-      >
-        {/* A key muda a cada clique: o React recria a imagem e a animação recomeça. */}
-        <img
-          key={jumps}
-          className={jumps > 0 ? "is-jumping" : undefined}
-          src={apiAssetUrl(product.imageUrl)}
-          alt={`Ilustração de massinha: ${product.name}`}
-          width={320}
-          height={320}
-        />
-        <span className="mascot-shadow" aria-hidden="true" />
-      </button>
+    <div className="mascot-stage">
+      <InteractiveMascot product={product} />
     </div>
   );
 }
