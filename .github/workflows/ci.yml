@@ -28,6 +28,16 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run build
+      # Regera o contrato a partir das rotas: se mudou, a API foi alterada sem atualizar o docs/openapi.yaml.
+      - name: Contrato OpenAPI atualizado
+        run: |
+          npm run openapi -w @devzoo/api
+          git diff --exit-code docs/openapi.yaml || {
+            echo "::error file=docs/openapi.yaml::Contrato desatualizado: rode 'npm run openapi -w @devzoo/api' e commite o resultado."
+            exit 1
+          }
+      - name: Lint do contrato OpenAPI (Redocly)
+        run: npm run lint:openapi
       - name: Auditoria de dependências de produção (SCA)
         run: npm audit --omit=dev --audit-level=high
 

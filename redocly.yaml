@@ -1,0 +1,8 @@
+# Lint do contrato da API (docs/openapi.yaml), rodado no CI com o Redocly CLI.
+extends:
+  - recommended
+
+rules:
+  # Rotas sem nenhuma entrada (GET /health, GET /products) não têm resposta 4xx possível.
+  # Exigir uma seria documentar um erro que nunca acontece.
+  operation-4xx-response: off
