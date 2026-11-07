@@ -58,6 +58,10 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Erros de negócio e de validação saem como `{ "message": "..." }` (`errorResponseSchema` em
   `src/shared/http.ts`); erros 5xx viram mensagem genérica e o detalhe vai só para o log.
 - O AJV rejeita campos desconhecidos (`removeAdditional: false`): campo extra no body é 400.
+- Pagamento (`POST /orders/{id}/payment`): gateway falso atrás da interface `PaymentGateway`
+  (Strategy). Trava o pedido (`FOR UPDATE`), baixa o estoque, aprova e marca como pago numa
+  transação só; `broke_toy_card` sempre recusa (402) e a tentativa recusada é gravada fora dela.
+  Pagar de novo devolve o mesmo recibo. O banco aceita um único pagamento aprovado por pedido.
 
 ## Front
 
