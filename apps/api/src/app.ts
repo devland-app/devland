@@ -15,6 +15,7 @@ const healthStatusSchema = {
 
 const healthSchema = {
   tags: ["health"],
+  operationId: "getHealth",
   summary: "Verifica se a API e o banco estão respondendo",
   response: {
     200: { description: "API e banco saudáveis", ...healthStatusSchema },

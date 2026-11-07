@@ -53,6 +53,7 @@ export function registerCatalogRoutes(app: FastifyInstance, service: CatalogServ
     {
       schema: {
         tags: ["catalog"],
+        operationId: "listProducts",
         summary: "Lista as miniaturas da vitrine",
         response: {
           200: {
@@ -71,6 +72,7 @@ export function registerCatalogRoutes(app: FastifyInstance, service: CatalogServ
     {
       schema: {
         tags: ["catalog"],
+        operationId: "getProduct",
         summary: "Detalha uma miniatura",
         params: {
           type: "object",

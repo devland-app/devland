@@ -17,6 +17,10 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
           "API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em DevOps. " +
           "Nenhuma compra é real e nenhum valor é cobrado.",
       },
+      servers: [{ url: "http://localhost:3333", description: "Ambiente local (docker compose)" }],
+      // API pública por decisão de produto: a loja não tem login nem cadastro. "security: []" deixa
+      // isso explícito no contrato, em vez de parecer que a autenticação foi esquecida.
+      security: [],
       tags: [
         { name: "catalog", description: "Vitrine de miniaturas" },
         { name: "health", description: "Saúde da API e do banco" },
