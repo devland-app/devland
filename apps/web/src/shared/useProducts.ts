@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { ApiError, listProducts } from "../../shared/api/client.ts";
-import type { Product } from "../../shared/api/types.ts";
+import { ApiError, listProducts } from "./api/client.ts";
+import type { Product } from "./api/types.ts";
 
 export type ProductsState =
   | { status: "loading" }

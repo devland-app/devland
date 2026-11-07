@@ -31,15 +31,46 @@ jobs:
       # Regera o contrato a partir das rotas: se mudou, a API foi alterada sem atualizar o docs/openapi.yaml.
       - name: Contrato OpenAPI atualizado
         run: |
-          npm run openapi -w @devzoo/api
+          npm run openapi -w @devland/api
           git diff --exit-code docs/openapi.yaml || {
-            echo "::error file=docs/openapi.yaml::Contrato desatualizado: rode 'npm run openapi -w @devzoo/api' e commite o resultado."
+            echo "::error file=docs/openapi.yaml::Contrato desatualizado: rode 'npm run openapi -w @devland/api' e commite o resultado."
             exit 1
           }
       - name: Lint do contrato OpenAPI (Redocly)
         run: npm run lint:openapi
       - name: Auditoria de dependências de produção (SCA)
         run: npm audit --omit=dev --audit-level=high
+
+  test:
+    name: Testes e cobertura
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Tipos dos testes da API
+        run: npm run typecheck:test -w @devland/api
+      # Os testes de integração sobem um Postgres descartável por arquivo (Testcontainers), com as
+      # mesmas migrations da produção. O runner do GitHub já tem Docker.
+      - name: Testes da API (unitários e de integração)
+        run: npm run test:coverage -w @devland/api
+      - name: Testes do site
+        run: npm run test:coverage -w @devland/web
+      - name: Resumo da cobertura
+        if: always()
+        run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+      - name: Relatório de cobertura (HTML)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: cobertura
+          path: |
+            apps/api/coverage/
+            apps/web/coverage/
+          retention-days: 14
 
   secrets-scan:
     name: Varredura de segredos (gitleaks)
@@ -64,13 +95,14 @@ jobs:
 
   docker:
     name: Imagem ${{ matrix.app }}
-    needs: [quality, secrets-scan]
+    # Imagem só é construída (e publicada) depois de lint, testes e varredura de segredos.
+    needs: [quality, test, secrets-scan]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         app: [api, web]
     env:
-      IMAGE: ${{ vars.DOCKERHUB_USERNAME || 'devzoo' }}/devzoo-${{ matrix.app }}
+      IMAGE: ${{ vars.DOCKERHUB_USERNAME || 'devland' }}/devland-${{ matrix.app }}
       # Publica no Docker Hub em push na main ou em tag de release; em PR só constrói e escaneia.
       SHOULD_PUSH: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
     steps:

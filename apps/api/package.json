@@ -1,6 +1,6 @@
 {
-  "name": "@devzoo/api",
-  "version": "0.2.0",
+  "name": "@devland/api",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,11 +8,18 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "openapi": "tsx src/scripts/export-openapi.ts && prettier --write ../../docs/openapi.yaml",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run test/unit",
+    "test:coverage": "vitest run --coverage",
+    "typecheck:test": "tsc -p tsconfig.test.json"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^12.2.1",
     "@types/node": "^22.20.5",
-    "tsx": "^4.23.15"
+    "@vitest/coverage-v8": "^5.1.0",
+    "tsx": "^4.23.15",
+    "vitest": "^5.1.0"
   },
   "dependencies": {
     "@fastify/cors": "^11.4.1",

@@ -1,9 +1,13 @@
-const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const dateTime = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" });
+const integer = new Intl.NumberFormat("pt-BR");
 
-// A API trabalha em centavos (inteiros); só a tela converte para reais.
-export function formatCents(cents: number): string {
-  return brl.format(cents / 100);
+// As moedas são virtuais e inteiras; só a tela escreve "moeda" ou "moedas".
+export function formatCoins(coins: number): string {
+  return `${integer.format(coins)} ${coins === 1 ? "moeda" : "moedas"}`;
+}
+
+export function formatNumber(value: number): string {
+  return integer.format(value);
 }
 
 export function formatDateTime(iso: string): string {

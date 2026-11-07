@@ -1,18 +1,25 @@
 import "./cart.css";
 
-import { apiAssetUrl } from "../../shared/api/client.ts";
-import { formatCents } from "../../shared/format.ts";
+import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
+import type { Order } from "../../shared/api/types.ts";
+import { useCart } from "../../shared/cart/cartContext.ts";
+import { useWallet } from "../../shared/wallet/walletContext.ts";
+import { Coins } from "../../shared/ui/Coins.tsx";
 import { Dialog } from "../../shared/ui/Dialog.tsx";
-import { useCart } from "./cartContext.ts";
+import { MascotArt } from "../../shared/ui/MascotArt.tsx";
 
 interface CartDrawerProps {
   open: boolean;
   onClose: () => void;
   onCheckout: () => void;
+  // Retoma o pagamento de um pedido que ficou aguardando.
+  onPayPending: (order: Order) => void;
 }
 
-export function CartDrawer({ open, onClose, onCheckout }: CartDrawerProps) {
-  const { lines, units, estimatedTotalCents, maxUnitsFor, setQuantity } = useCart();
+export function CartDrawer({ open, onClose, onCheckout, onPayPending }: CartDrawerProps) {
+  const cart = useCart();
+  const { pendingOrders } = useAdoptions();
+  const wallet = useWallet();
 
   return (
     <Dialog open={open} onClose={onClose} labelledBy="cart-title" variant="drawer">
@@ -28,65 +35,72 @@ export function CartDrawer({ open, onClose, onCheckout }: CartDrawerProps) {
         </button>
       </div>
 
-      {lines.length === 0 ? (
-        <div className="cart-empty">
-          <img src={apiAssetUrl("/images/mascots/lesminha-do-pipeline.svg")} alt="" width={120} />
-          <strong>Carrinho vazio</strong>
-          <span>Escolha um mascote na vitrine e toque em "Adotar".</span>
-        </div>
-      ) : (
-        <ul className="cart-list">
-          {lines.map((line) => (
-            <li key={line.productId} className="cart-item">
-              <img src={apiAssetUrl(line.imageUrl)} alt="" width={64} height={64} />
-              <div>
-                <h3>{line.name}</h3>
-                <div className="cart-line">
-                  <div className="stepper" role="group" aria-label={`Quantidade de ${line.name}`}>
-                    <button
-                      className="btn btn--soft"
-                      type="button"
-                      onClick={() => setQuantity(line.productId, line.quantity - 1)}
-                      aria-label={line.quantity === 1 ? "Tirar do carrinho" : "Remover uma unidade"}
-                    >
-                      −
-                    </button>
-                    <output aria-live="polite">{line.quantity}</output>
-                    <button
-                      className="btn btn--soft"
-                      type="button"
-                      onClick={() => setQuantity(line.productId, line.quantity + 1)}
-                      disabled={line.quantity >= maxUnitsFor(line.productId)}
-                      aria-label="Adicionar uma unidade"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <span className="subtotal">{formatCents(line.priceCents * line.quantity)}</span>
+      <div className="cart-content">
+        {pendingOrders.map((order) => (
+          <div key={order.id} className="pending-note" role="status">
+            <p>
+              <strong>Pedido aguardando pagamento:</strong>{" "}
+              {order.items.map((item) => item.productName).join(", ")}.
+            </p>
+            <button
+              className="btn btn--mint btn--small"
+              type="button"
+              onClick={() => onPayPending(order)}
+            >
+              Pagar agora
+            </button>
+          </div>
+        ))}
+
+        {cart.lines.length === 0 ? (
+          <div className="cart-empty">
+            <strong>Carrinho vazio</strong>
+            <span>Escolha um mascote na vitrine e toque em "Adotar".</span>
+          </div>
+        ) : (
+          <ul className="cart-list">
+            {cart.lines.map((line) => (
+              <li key={line.productId} className="cart-item">
+                <MascotArt product={line} size={64} />
+                <div className="cart-item-body">
+                  <h3>{line.name}</h3>
+                  <Coins value={line.priceCoins} size="sm" />
                 </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+                <button
+                  className="btn btn--soft btn--small"
+                  type="button"
+                  onClick={() => cart.remove(line.productId)}
+                  aria-label={`Remover ${line.name} do carrinho`}
+                >
+                  Remover
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <div className="cart-foot">
         <div className="total-row">
-          <span>Total estimado</span>
-          <span>{formatCents(estimatedTotalCents)}</span>
+          <span>Total</span>
+          <Coins value={cart.estimatedTotalCoins} />
         </div>
-        <p className="fine">Valor de mentirinha: nada será cobrado.</p>
+        <p className="fine">
+          Pago com as moedas ganhas nos quizzes. Seu saldo:{" "}
+          {wallet.status === "ready" ? `${wallet.balanceCoins} moedas` : "…"}.
+        </p>
         <button
           className="btn btn--mint btn--block"
           type="button"
           onClick={onCheckout}
-          disabled={units === 0}
+          disabled={cart.count === 0}
         >
-          Finalizar compra simulada
+          Finalizar adoção
         </button>
-        <button className="btn btn--soft btn--block" type="button" onClick={onClose}>
+        {/* Link, e não botão: de qualquer página, leva de volta à vitrine e fecha o carrinho. */}
+        <a className="btn btn--soft btn--block" href="#vitrine" onClick={onClose}>
           Continuar olhando
-        </button>
+        </a>
       </div>
     </Dialog>
   );

@@ -1,5 +1,5 @@
 {
-  "name": "devzoo",
+  "name": "devland",
   "private": true,
   "description": "Marketplace de miniaturas fofas inspiradas em conceitos de DevOps",
   "type": "module",
@@ -17,7 +17,8 @@
     "lint:openapi": "npx --yes @redocly/cli@2.76.0 lint docs/openapi.yaml",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "dev:docker": "docker compose -f compose.dev.yaml up"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

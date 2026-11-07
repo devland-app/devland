@@ -17,9 +17,12 @@ interface ProductRow {
   name: string;
   concept: string;
   description: string;
-  price_cents: number;
+  price_coins: number;
   stock: number;
   image_path: string;
+  lesson_explanation: string;
+  lesson_real_world: string;
+  lesson_in_project: string;
 }
 
 // Colunas explícitas em vez de "select *": a resposta não muda sozinha quando a tabela ganha colunas.
@@ -29,9 +32,12 @@ const PRODUCT_COLUMNS = [
   "name",
   "concept",
   "description",
-  "price_cents",
+  "price_coins",
   "stock",
   "image_path",
+  "lesson_explanation",
+  "lesson_real_world",
+  "lesson_in_project",
 ] as const;
 
 export class KnexProductRepository implements ProductRepository {
@@ -82,8 +88,13 @@ function toProduct(row: ProductRow): Product {
     name: row.name,
     concept: row.concept,
     description: row.description,
-    priceCents: row.price_cents,
+    priceCoins: row.price_coins,
     stock: row.stock,
     imageUrl: row.image_path,
+    lesson: {
+      explanation: row.lesson_explanation,
+      realWorld: row.lesson_real_world,
+      inProject: row.lesson_in_project,
+    },
   };
 }

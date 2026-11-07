@@ -5,8 +5,14 @@ export interface Product {
   name: string;
   concept: string;
   description: string;
-  priceCents: number;
+  priceCoins: number;
   stock: number;
   // Caminho da ilustração, relativo à URL da API (ex.: /images/mascots/<slug>.svg).
   imageUrl: string;
+  // O conceito de DevOps que o mascote ensina, em linguagem simples.
+  lesson: {
+    explanation: string;
+    realWorld: string;
+    inProject: string;
+  };
 }

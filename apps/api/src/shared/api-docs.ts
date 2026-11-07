@@ -11,19 +11,21 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
     openapi: {
       openapi: "3.1.0",
       info: {
-        title: "DevZoo API",
+        title: "DevLand API",
         version: readApiVersion(),
         description:
-          "API da DevZoo, uma loja de brincadeira de miniaturas inspiradas em DevOps. " +
-          "Nenhuma compra é real e nenhum valor é cobrado.",
+          "API da DevLand: quizzes de DevOps rendem moedas virtuais, e as moedas adotam mascotes " +
+          "que explicam cada conceito. As moedas não valem dinheiro e nada é cobrado.",
       },
       servers: [{ url: "http://localhost:3333", description: "Ambiente local (docker compose)" }],
       // API pública por decisão de produto: a loja não tem login nem cadastro. "security: []" deixa
       // isso explícito no contrato, em vez de parecer que a autenticação foi esquecida.
       security: [],
       tags: [
-        { name: "catalog", description: "Vitrine de miniaturas" },
-        { name: "orders", description: "Pedidos de mentirinha (nada é cobrado)" },
+        { name: "catalog", description: "Vitrine de mascotes" },
+        { name: "quizzes", description: "Quizzes que rendem moedas" },
+        { name: "wallets", description: "Carteiras de moedas virtuais" },
+        { name: "orders", description: "Pedidos de adoção, pagos com moedas" },
         { name: "health", description: "Saúde da API e do banco" },
       ],
     },

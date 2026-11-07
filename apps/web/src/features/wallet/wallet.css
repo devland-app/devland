@@ -1,0 +1,25 @@
+/* Texto simples, sem relevo nem fundo: é informação, não um botão. */
+.wallet-balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding-inline: 0.2rem 0.4rem;
+  color: var(--ink);
+  font: 800 1.1rem/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.wallet-balance .coin-icon {
+  width: 1.4em;
+  height: 1.4em;
+}
+.wallet-amount {
+  display: inline-block;
+  animation: coin-bump 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes coin-bump {
+  from {
+    transform: scale(1.35);
+  }
+}

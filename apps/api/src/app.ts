@@ -4,6 +4,8 @@ import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
 import { createCatalogModule } from "./modules/catalog/index.js";
 import { createOrdersModule } from "./modules/orders/index.js";
 import { createPaymentsModule } from "./modules/payments/index.js";
+import { createQuizzesModule } from "./modules/quizzes/index.js";
+import { createWalletsModule } from "./modules/wallets/index.js";
 import { registerApiDocs } from "./shared/api-docs.js";
 import type { Database } from "./shared/database.js";
 
@@ -80,7 +82,14 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   const catalog = createCatalogModule(options.db);
   catalog.registerRoutes(app);
 
-  const payments = createPaymentsModule(options.db);
+  // Carteiras não dependem de ninguém; quizzes creditam e pagamentos debitam moedas nelas.
+  const wallets = createWalletsModule(options.db);
+  wallets.registerRoutes(app);
+
+  const quizzes = createQuizzesModule(options.db, wallets.service, catalog.service);
+  quizzes.registerRoutes(app);
+
+  const payments = createPaymentsModule(options.db, wallets.service);
   const orders = createOrdersModule(options.db, catalog.service, payments.service);
   orders.registerRoutes(app);
 

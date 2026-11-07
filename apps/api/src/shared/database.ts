@@ -38,6 +38,13 @@ export async function runMigrations(db: Database, migrations: Migration[]): Prom
   return applied;
 }
 
+// Desfaz todas as migrations aplicadas, da mais nova para a mais antiga. Os testes usam para
+// garantir que cada "down" realmente desfaz o seu "up" (o caminho de um rollback de versão).
+export async function rollbackMigrations(db: Database, migrations: Migration[]): Promise<string[]> {
+  const [, reverted] = await db.migrate.rollback({ migrationSource: listSource(migrations) }, true);
+  return reverted;
+}
+
 function listSource(migrations: Migration[]): Knex.MigrationSource<Migration> {
   return {
     getMigrations: async () => migrations,

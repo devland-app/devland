@@ -1,0 +1,41 @@
+.mascot-art {
+  display: block;
+}
+.mascot-art.is-loading {
+  aspect-ratio: 1;
+}
+.mascot-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+/* Os mascotes ficam soltos: o círculo de fundo e a sombra do chão do desenho não aparecem. */
+.mascot-art .backdrop {
+  display: none;
+}
+
+.mascot-art .eye,
+.mascot-art .eye-happy,
+.mascot-art .mouth,
+.mascot-art .mouth-happy,
+.mascot-art .cheek {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 120ms ease,
+    transform 90ms ease;
+}
+.mascot-art.is-blinking .eye {
+  transform: scaleY(0.12);
+}
+/* Feliz: olhinhos fechados em arco, sorriso aberto e bochechas mais coradas. */
+.mascot-art.is-happy .eye,
+.mascot-art.is-happy .mouth {
+  opacity: 0;
+}
+.mascot-art.is-happy .eye-happy,
+.mascot-art.is-happy .mouth-happy,
+.mascot-art.is-happy .cheek {
+  opacity: 1;
+}

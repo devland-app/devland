@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 
-import { useCart } from "./cartContext.ts";
+import { useCart } from "../../shared/cart/cartContext.ts";
 
 interface CartButtonProps {
   onOpen: () => void;
 }
 
 export function CartButton({ onOpen }: CartButtonProps) {
-  const { units } = useCart();
+  const { count: units } = useCart();
   const badge = useRef<HTMLSpanElement>(null);
   const previous = useRef(units);
 

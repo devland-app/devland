@@ -1,24 +1,36 @@
 import "./catalog.css";
 
+import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
+import { CollectionProgress } from "../../shared/ui/CollectionProgress.tsx";
+import { useProducts } from "../../shared/useProducts.ts";
 import { ProductCard } from "./ProductCard.tsx";
-import { useProducts } from "./useProducts.ts";
 
 const PLACEHOLDER_CARDS = 8;
 
 export function CatalogPage() {
   const { state, retry } = useProducts();
+  const adoptions = useAdoptions();
 
   return (
     <section aria-labelledby="catalog-title">
       <div className="intro">
         <h1 id="catalog-title">
-          Miniaturas de massinha que <em>entendem de DevOps</em>
+          Mascotes divertidos que <em>explicam DevOps</em>
         </h1>
         <p>
-          Adote um mascote, encha o carrinho e finalize a compra. O pagamento é de mentirinha: você
-          ganha o pedido, a confirmação e os confetes, e ninguém cobra nada.
+          Responda os quizzes, ganhe moedas e adote os mascotes: acertando todas as perguntas, as
+          moedas dão exatamente para adotar todos. Cada mascote desbloqueia uma página com o
+          conceito de DevOps que ele representa, explicado de forma simples. As moedas são virtuais:
+          nada aqui custa dinheiro.
         </p>
+        <a className="btn btn--lilac" href="#quizzes">
+          Ganhar moedas nos quizzes
+        </a>
       </div>
+
+      {state.status === "ready" && (
+        <CollectionProgress adopted={adoptions.adopted.size} total={state.products.length} />
+      )}
 
       {state.status === "error" && (
         <div className="catalog-error clay" role="alert">

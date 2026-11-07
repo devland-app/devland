@@ -2,7 +2,7 @@ import { readStored, writeStored } from "./storage.ts";
 
 // Sem login, "Meus pedidos" são os códigos guardados neste navegador. O código (UUID) é o que dá
 // acesso ao pedido na API, então ele só fica aqui, nunca vai para outro lugar.
-const STORAGE_KEY = "devzoo-orders";
+const STORAGE_KEY = "devland-orders";
 const MAX_REMEMBERED = 50;
 
 function isIdList(value: unknown): value is string[] {

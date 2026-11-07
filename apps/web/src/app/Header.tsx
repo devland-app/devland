@@ -1,12 +1,23 @@
 import type { ReactNode } from "react";
 
+import { SoundToggle } from "../features/sound/SoundToggle.tsx";
 import { ThemeToggle } from "../features/theme/ThemeToggle.tsx";
-import { useBannerDismissed } from "./useBannerDismissed.ts";
+import { WalletBalance } from "../features/wallet/WalletBalance.tsx";
 import type { Route } from "./useHashRoute.ts";
 
-const TABS: Array<{ route: Route; label: string }> = [
-  { route: "vitrine", label: "Vitrine" },
-  { route: "pedidos", label: "Meus pedidos" },
+const TABS: Array<{ hash: string; label: string; isCurrent: (route: Route) => boolean }> = [
+  { hash: "#vitrine", label: "Vitrine", isCurrent: (route) => route.name === "vitrine" },
+  {
+    hash: "#quizzes",
+    label: "Quizzes",
+    isCurrent: (route) => route.name === "quizzes" || route.name === "quiz",
+  },
+  {
+    hash: "#mascotes",
+    label: "Meus mascotes",
+    // A página de um mascote também pertence à aba da coleção.
+    isCurrent: (route) => route.name === "mascotes" || route.name === "mascote",
+  },
 ];
 
 interface HeaderProps {
@@ -16,46 +27,30 @@ interface HeaderProps {
 }
 
 export function Header({ route, actions }: HeaderProps) {
-  const banner = useBannerDismissed();
-
   return (
     <header className="topbar">
-      {!banner.dismissed && (
-        <div className="banner gutter" role="note">
-          <p>
-            <strong>Loja de brincadeira.</strong> Nada aqui é vendido de verdade e nenhum valor é
-            cobrado.
-          </p>
-          <button
-            className="banner-close"
-            type="button"
-            onClick={banner.dismiss}
-            aria-label="Fechar aviso de loja de brincadeira"
-          >
-            ×
-          </button>
-        </div>
-      )}
       <div className="nav-band gutter">
         <div className="wrap nav-row">
-          <a className="logo" href="#vitrine" aria-label="DevZoo, ir para a vitrine">
+          <a className="logo" href="#vitrine" aria-label="DevLand, ir para a vitrine">
             <img src="/favicon.svg" alt="" width={46} height={46} />
-            DevZoo
+            <span className="logo-text">DevLand</span>
           </a>
           <nav className="tabs" aria-label="Seções da loja">
             {TABS.map((tab) => (
               <a
-                key={tab.route}
-                href={`#${tab.route}`}
-                aria-current={route === tab.route ? "page" : undefined}
+                key={tab.hash}
+                href={tab.hash}
+                aria-current={tab.isCurrent(route) ? "page" : undefined}
               >
                 {tab.label}
               </a>
             ))}
           </nav>
           <div className="actions">
+            <SoundToggle />
             <ThemeToggle />
             {actions}
+            <WalletBalance />
           </div>
         </div>
       </div>

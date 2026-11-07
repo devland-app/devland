@@ -1,0 +1,76 @@
+.collection {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: 1.4rem;
+}
+
+/* Cada card ocupa quatro linhas da grade (desenho, nome, etiqueta e rodapé) e usa as linhas dela:
+   tudo fica na mesma altura nos cards lado a lado, adotados ou não. */
+.collection > li {
+  grid-row: span 4;
+  display: grid;
+  grid-template-rows: subgrid;
+}
+.collected,
+.locked {
+  grid-row: span 4;
+  display: grid;
+  grid-template-rows: subgrid;
+  row-gap: 0.55rem;
+  justify-items: center;
+  align-items: start;
+  padding: 1.1rem 1rem 1.3rem;
+  text-align: center;
+}
+.collected .chip,
+.locked .chip,
+.locked .card-link {
+  justify-self: center;
+}
+.collected strong,
+.locked strong {
+  font: 800 1.15rem/1.1 var(--font-display);
+  text-wrap: balance;
+}
+
+/* Mascote adotado: a peça inteira é um link que "afunda" ao ser apertado. */
+.collected {
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+.collected .mascot-art {
+  width: 150px;
+  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.collected:hover .mascot-art {
+  transform: translateY(-6px) rotate(-3deg);
+}
+.collected:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 2px 0 var(--line),
+    inset 0 4px 10px var(--shade);
+}
+
+/* Ainda não adotado: só a silhueta, para dar vontade de completar a coleção. */
+.locked-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.locked-art .mascot-art {
+  width: 150px;
+  filter: grayscale(1) brightness(0);
+  opacity: 0.16;
+}
+.locked-mark {
+  position: absolute;
+  font: 800 3.4rem/1 var(--font-display);
+  color: var(--muted);
+}

@@ -23,8 +23,6 @@
   --shadow: rgba(58, 38, 92, 0.2);
   --shine: rgba(255, 255, 255, 0.75);
   --shade: rgba(58, 38, 92, 0.13);
-  --banner: #ffe28f;
-  --banner-ink: #4a3300;
   --focus: #2f6fe4;
   --danger: #b3261e;
   --scrim: rgba(20, 12, 32, 0.45);
@@ -64,8 +62,6 @@
     --shadow: rgba(0, 0, 0, 0.55);
     --shine: rgba(255, 255, 255, 0.16);
     --shade: rgba(0, 0, 0, 0.38);
-    --banner: #3a2e10;
-    --banner-ink: #ffe28f;
     --focus: #8fb6ff;
     --danger: #ff9b94;
     --scrim: rgba(0, 0, 0, 0.6);
@@ -95,8 +91,6 @@
   --shadow: rgba(0, 0, 0, 0.55);
   --shine: rgba(255, 255, 255, 0.16);
   --shade: rgba(0, 0, 0, 0.38);
-  --banner: #3a2e10;
-  --banner-ink: #ffe28f;
   --focus: #8fb6ff;
   --danger: #ff9b94;
   --scrim: rgba(0, 0, 0, 0.6);
@@ -224,6 +218,17 @@ img {
 .btn--block {
   width: 100%;
 }
+/* Botão liga/desliga (Adotar → Incluído): quando ligado, fica afundado como um botão apertado. */
+.btn--toggle[aria-pressed="true"] {
+  --face: var(--mint);
+  --depth: var(--mint-deep);
+  transform: translateY(5px);
+  box-shadow:
+    0 1px 0 var(--depth),
+    0 4px 8px -6px var(--shadow),
+    inset 0 4px 10px rgba(0, 0, 0, 0.22);
+}
+
 /* Botão de ícone (tema, carrinho): relevo mais baixo que o dos botões de ação. */
 .btn--icon {
   width: 42px;
@@ -276,6 +281,72 @@ img {
   box-shadow: inset 0 2px 5px var(--shade);
   overflow-wrap: anywhere;
   user-select: all;
+}
+
+/* Peças de texto usadas por várias telas (vitrine, coleção, mascote). */
+.intro {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+.intro h1 {
+  font: 800 clamp(2rem, 4.5vw, 3.2rem) / 1.05 var(--font-display);
+  margin: 0;
+  text-wrap: balance;
+  letter-spacing: -0.015em;
+}
+.intro h1 em {
+  font-style: normal;
+  color: var(--coral-deep);
+}
+:root[data-theme="dark"] .intro h1 em {
+  color: var(--coral);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .intro h1 em {
+    color: var(--coral);
+  }
+}
+.intro p {
+  margin: 0;
+  color: var(--muted);
+  max-width: 60ch;
+  font-size: 1.08rem;
+}
+
+.chip {
+  justify-self: start;
+  font: 700 0.75rem/1 var(--font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lilac-ink);
+  background: color-mix(in srgb, var(--lilac) 28%, transparent);
+  border-radius: var(--r-pill);
+  padding: 0.45em 0.8em;
+}
+
+.catalog-error {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+  padding: 1.4rem;
+  margin-bottom: 1.6rem;
+}
+.catalog-error p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.card-link {
+  justify-self: start;
+  font: 700 0.95rem/1 var(--font-display);
+  color: var(--lilac-ink);
+  text-decoration: none;
+  padding: 0.3em 0;
+  border-bottom: 2px solid currentColor;
+}
+.card-link:hover {
+  color: var(--ink);
 }
 
 @media (prefers-reduced-motion: reduce) {
