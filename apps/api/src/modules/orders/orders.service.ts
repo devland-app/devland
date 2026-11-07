@@ -6,7 +6,9 @@ import type { ChargeRequest, ChargeResult, Payment, PaymentMethod } from "../pay
 import { DuplicateIdempotencyKeyError, type OrderRepository } from "./orders.repository.js";
 import type { Order, OrderItemRequest } from "./orders.types.js";
 
-export const MAX_UNITS_PER_PRODUCT = 10;
+// Cada mascote é adotado uma vez: é uma coleção, não um estoque para revenda. O banco aceita até 10
+// por item (a tabela permite), mas a regra de negócio da loja é uma unidade de cada por pedido.
+export const MAX_UNITS_PER_PRODUCT = 1;
 
 // O que o módulo de pedidos precisa saber de um produto. O catálogo fornece isso pela API pública
 // dele; nos testes, entra um catálogo em memória com o mesmo formato.
@@ -51,7 +53,7 @@ export class UnknownProductsError extends Error {
 
 export class QuantityLimitError extends Error {
   constructor(productName: string) {
-    super(`Cada pedido aceita até ${MAX_UNITS_PER_PRODUCT} unidades de ${productName}.`);
+    super(`Cada mascote é adotado uma vez só: ${productName} já está no pedido.`);
     this.name = "QuantityLimitError";
   }
 }
