@@ -30,7 +30,8 @@ Monorepo com npm workspaces, Node 22 e TypeScript em tudo.
 apps/
   api/   Fastify + Knex + PostgreSQL, monólito modular
   web/   React + Vite, servido por nginx em produção
-docs/    contrato OpenAPI e registro de uso de IA
+docs/    ADRs, diagramas C4, contrato OpenAPI, testes e uso de IA
+infra/   Terraform da Vercel e do Neon
 ```
 
 A API é dividida em módulos com fronteiras explícitas: cada um é dono das próprias tabelas e só é
@@ -54,6 +55,10 @@ Decisões que valem destacar:
   marca como pago. O banco aceita um único pagamento aprovado por pedido.
 - Moedas nunca ficam negativas (`UPDATE` condicional) e não são creditadas em dobro (referência
   única no extrato), mesmo com requisições simultâneas.
+
+O porquê de cada escolha, com as alternativas descartadas, está nos
+[ADRs](docs/adr/README.md). Os diagramas de contexto, contêineres e componentes estão em
+[`docs/c4`](docs/c4/README.md).
 
 ## Como rodar
 
@@ -193,6 +198,18 @@ veja [`infra/README.md`](infra/README.md).
 Segredos do deploy, todos no GitHub: `VERCEL_TOKEN` (repositório) e `DATABASE_URL` (um por ambiente,
 `production` e `preview`). Ids públicos em variáveis: `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`,
 `SITE_URL`.
+
+## Documentação
+
+| Documento                                | O que tem                                                |
+| ---------------------------------------- | -------------------------------------------------------- |
+| [`docs/adr`](docs/adr/README.md)         | Decisões de arquitetura e as alternativas descartadas    |
+| [`docs/c4`](docs/c4/README.md)           | Diagramas C4: contexto, contêineres e componentes da API |
+| [`docs/openapi.yaml`](docs/openapi.yaml) | Contrato da API (OpenAPI 3.1)                            |
+| [`docs/testes.md`](docs/testes.md)       | Estratégia de testes e cobertura                         |
+| [`infra/README.md`](infra/README.md)     | Infraestrutura como código (Terraform)                   |
+| [`docs/ia.md`](docs/ia.md)               | Registro do uso de IA                                    |
+| [`CONTRIBUTORS.md`](CONTRIBUTORS.md)     | Autoria e divisão do trabalho                            |
 
 ## Fluxo de contribuição
 

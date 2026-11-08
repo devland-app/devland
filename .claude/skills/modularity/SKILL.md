@@ -5,8 +5,9 @@ description: Como organizar o monólito modular da API do DevLand (catalog, quiz
 
 # Modularidade no DevLand
 
-O enunciado do Projeto A exige **monólito modular com fronteiras explícitas**. Um deploy só, mas
-módulos que poderiam virar serviços separados sem reescrever o domínio.
+A API é um **monólito modular com fronteiras explícitas**: um deploy só, mas módulos que poderiam
+virar serviços separados sem reescrever o domínio. O porquê está no
+[ADR 0001](../../../docs/adr/0001-monolito-modular.md).
 
 ## Estrutura da API
 
