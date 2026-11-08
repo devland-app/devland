@@ -13,7 +13,8 @@
     "test:unit": "vitest run test/unit",
     "test:coverage": "vitest run --coverage",
     "typecheck:test": "tsc -p tsconfig.test.json",
-    "migrate": "tsx src/scripts/migrate.ts"
+    "migrate": "tsx src/scripts/migrate.ts",
+    "check:serverless": "node --no-experimental-require-module dist/scripts/check-serverless.js"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "^12.2.1",
