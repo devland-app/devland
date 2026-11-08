@@ -163,9 +163,11 @@ describe("adoção com moedas", () => {
 
     await user.click(screen.getByRole("link", { name: /Caranguejo dos Contêineres/ }));
     expect(await screen.findByRole("heading", { name: "Em poucas palavras" })).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("button", { name: "Interagir com Caranguejo dos Contêineres" }),
-    );
+    // Clique alterna o truque do desenho (o mesmo da vitrine) com as reações do corpo todo.
+    const mascot = screen.getByRole("button", { name: "Interagir com Caranguejo dos Contêineres" });
+    await user.click(mascot);
+    expect(document.querySelector(".mascot-art.is-playing.is-happy")).not.toBeNull();
+    await user.click(mascot);
     expect(document.querySelector(".mascot-art.is-jump.is-happy")).not.toBeNull();
 
     await go("#vitrine");

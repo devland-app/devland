@@ -1,7 +1,8 @@
 // Efeitos sonoros sintetizados na hora com a Web Audio API: sem arquivos de áudio para baixar ou
 // licenciar. Cada som é a soma de notas curtas com subida/descida de volume suave (sem estalo).
 
-export type SoundName = "pop" | "unpop" | "jump" | "wiggle" | "spin" | "giggle" | "chime" | "coin";
+export type SoundName =
+  "pop" | "unpop" | "jump" | "wiggle" | "spin" | "giggle" | "trick" | "chime" | "coin";
 
 let context: AudioContext | null = null;
 
@@ -68,6 +69,12 @@ const SOUNDS: Record<SoundName, Note[]> = {
     delay,
     volume: 0.12,
   })),
+  // O truque do mascote: duas notas rápidas e uma que sobe, como um "tcharam".
+  trick: [
+    { frequency: 392, duration: 0.07, type: "triangle", volume: 0.1 },
+    { frequency: 523.25, duration: 0.07, delay: 0.08, type: "triangle", volume: 0.1 },
+    { frequency: 659.25, to: 988, duration: 0.22, delay: 0.16, type: "triangle", volume: 0.1 },
+  ],
   // Duas notas agudas e rápidas, a segunda mais longa: o "plim" de pegar uma moeda.
   coin: [
     { frequency: 987.77, duration: 0.08, type: "square", volume: 0.06 },
