@@ -277,6 +277,9 @@ jobs:
           test "$products" -gt 0
           test "$products" = "$(curl -fsS "$URL/api/quizzes" | jq length)"
           curl -fsS "$URL/api/metrics" | grep -q "TYPE http_request_duration_seconds histogram"
+          # O Swagger precisa pedir os próprios arquivos dentro de /api, e eles precisam existir.
+          curl -fsS "$URL/api/docs" | grep -q 'src="/api/docs/static/swagger-ui-bundle.js"'
+          curl -fsS -o /dev/null "$URL/api/docs/static/swagger-ui-bundle.js"
           curl -fsS "$URL/" | grep -q "<title>DevLand"
 
       # Deploy publicado mas sem responder: mostra os logs da função para entender o porquê.

@@ -35,6 +35,9 @@ export interface AppOptions {
   db: Database;
   // Origens do front autorizadas a chamar a API pelo navegador.
   corsOrigins: string[];
+  // Caminho pelo qual o navegador chega à API quando ela roda atrás de um roteamento por caminho
+  // (na Vercel, /api). A documentação usa esse caminho nos links e no servidor do contrato.
+  publicPrefix?: string;
 }
 
 // A construção do app fica separada do listen para que os testes usem app.inject() sem abrir porta.
@@ -69,7 +72,7 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   });
 
   // Precisa vir antes das rotas: o Swagger só documenta as rotas declaradas depois de carregado.
-  await registerApiDocs(app);
+  await registerApiDocs(app, options.publicPrefix);
   registerMetrics(app);
 
   // O healthcheck do Docker chama esta rota: se o banco não responde, a API também não está saudável.

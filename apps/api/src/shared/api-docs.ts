@@ -6,7 +6,11 @@ import type { FastifyInstance } from "fastify";
 
 // A especificação OpenAPI 3.1 é gerada a partir dos JSON Schemas das rotas: como é o mesmo schema
 // que valida as requisições, a documentação não fica desatualizada em relação ao código.
-export async function registerApiDocs(app: FastifyInstance): Promise<void> {
+//
+// Atrás de um prefixo (na Vercel, a API fica em /api do site), o Swagger UI precisa saber dele: sem
+// isso, a página pede o CSS e o JS em /docs/static, fora da API, e o "Try it out" manda as
+// requisições para o servidor errado.
+export async function registerApiDocs(app: FastifyInstance, publicPrefix?: string): Promise<void> {
   await app.register(swagger, {
     openapi: {
       openapi: "3.1.0",
@@ -17,7 +21,9 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
           "API da DevLand: quizzes de DevOps rendem moedas virtuais, e as moedas adotam mascotes " +
           "que explicam cada conceito. As moedas não valem dinheiro e nada é cobrado.",
       },
-      servers: [{ url: "http://localhost:3333", description: "Ambiente local (docker compose)" }],
+      servers: publicPrefix
+        ? [{ url: publicPrefix, description: "Mesmo endereço do site" }]
+        : [{ url: "http://localhost:3333", description: "Ambiente local (docker compose)" }],
       // API pública por decisão de produto: a loja não tem login nem cadastro. "security: []" deixa
       // isso explícito no contrato, em vez de parecer que a autenticação foi esquecida.
       security: [],
@@ -36,7 +42,7 @@ export async function registerApiDocs(app: FastifyInstance): Promise<void> {
         typeof json.$id === "string" ? json.$id : `def-${index}`,
     },
   });
-  await app.register(swaggerUi, { routePrefix: "/docs" });
+  await app.register(swaggerUi, { routePrefix: "/docs", indexPrefix: publicPrefix });
 }
 
 // A versão vem do package.json da API, a mesma das releases. O caminho relativo funciona tanto em
