@@ -48,6 +48,8 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
   // Erros inesperados (5xx) viram uma mensagem genérica: detalhes internos, como o nome do host do
   // banco ou o texto de um erro de SQL, ficam só no log. Erros 4xx (ex.: validação) seguem iguais.
   app.setErrorHandler<FastifyError>((error, request, reply) => {
+    // Erro nunca vai para o cache da CDN, mesmo que a rota já tivesse definido um.
+    reply.removeHeader("Cache-Control");
     const statusCode = error.statusCode ?? 500;
     if (statusCode >= 500) {
       request.log.error(error);
