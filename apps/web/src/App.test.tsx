@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.tsx";
 import { ApiError } from "./shared/api/client.ts";
+import { playSound } from "./shared/sound/synth.ts";
 import { fake, FakeBackend } from "./test/fakeApi.ts";
 
 vi.mock("./shared/api/client.ts", async (importOriginal) => {
@@ -16,10 +17,13 @@ vi.mock("./shared/api/client.ts", async (importOriginal) => {
 const PAYMENT_TIMEOUT = { timeout: 4000 };
 
 let user: UserEvent;
+vi.mock("./shared/sound/synth.ts", () => ({ playSound: vi.fn() }));
+
 let backend: FakeBackend;
 
 beforeEach(() => {
   backend = new FakeBackend(ApiError);
+  vi.mocked(playSound).mockClear();
   fake.backend = backend;
   user = userEvent.setup();
 });
@@ -317,6 +321,22 @@ describe("páginas e preferências", () => {
     expect(swagger).toHaveAttribute("href", "http://localhost:3333/docs");
     expect(swagger).toHaveAttribute("target", "_blank");
     expect(swagger).toHaveAccessibleName(/abre em outra aba/);
+  });
+
+  it("abrir o carrinho e trocar o tema têm som, só com o som ligado", async () => {
+    renderApp();
+    await user.click(cartButton());
+    await user.keyboard("{Escape}");
+    await user.click(await screen.findByRole("button", { name: /^Tema claro ativo/ }));
+    expect(playSound).not.toHaveBeenCalled();
+
+    await user.click(await screen.findByRole("button", { name: "Som desligado. Ligar som" }));
+    vi.mocked(playSound).mockClear();
+    await user.click(cartButton());
+    await user.keyboard("{Escape}");
+    await user.click(await screen.findByRole("button", { name: /^Tema escuro ativo/ }));
+    await user.click(await screen.findByRole("button", { name: /^Tema claro ativo/ }));
+    expect(vi.mocked(playSound).mock.calls).toEqual([["cart"], ["themeLight"], ["themeDark"]]);
   });
 
   it("tema e som ficam salvos neste navegador", async () => {
