@@ -8,8 +8,8 @@ eles passam.
 
 | App  | Testes | Linhas | Ramos | Limite no CI (linhas / ramos) |
 | ---- | -----: | -----: | ----: | ----------------------------- |
-| API  |    121 |  96,5% |   84% | 90% / 80%                     |
-| Site |     91 |  98,9% | 91,4% | 90% / 85%                     |
+| API  |    172 |  96,5% |   85% | 90% / 80%                     |
+| Site |    100 |  98,9% | 91,7% | 90% / 85%                     |
 
 ## Como rodar
 
@@ -36,15 +36,18 @@ nenhuma configuração.
 
 ## API
 
-### Unitários (`apps/api/test/unit`, 56 testes)
+### Unitários (`apps/api/test/unit`, 104 testes)
 
 Os services recebem as dependências por interface, então os testes usam implementações em memória
 que imitam as garantias do banco (chave única, saldo que não fica negativo). Rodam em milissegundos.
 Cobrem quizzes (divisão do preço, gabarito escondido, pagamento único por pergunta, quiz com menos
 de 5 perguntas, conteúdo inválido), carteiras e o pagamento com moedas, pedidos, catálogo (baixa de
-estoque em ordem de id, para evitar deadlock) e a configuração por variáveis de ambiente.
+estoque em ordem de id, para evitar deadlock), a configuração por variáveis de ambiente, a entrada
+da Vercel (prefixo `/api` e o parâmetro que a regra de redirecionamento acrescenta), a documentação
+da API atrás desse prefixo e os desenhos dos mascotes: cada um precisa de lição e quiz com o mesmo
+slug, olhos que piscam, uma parte que se mexe na vitrine e nenhum script.
 
-### Integração (`apps/api/test/integration`, 65 testes)
+### Integração (`apps/api/test/integration`, 68 testes)
 
 A aplicação inteira (`buildApp`) com um PostgreSQL de verdade, via `app.inject()`, sem abrir porta.
 
@@ -54,7 +57,7 @@ A aplicação inteira (`buildApp`) com um PostgreSQL de verdade, via `app.inject
 - `data-migrations.test.ts`: um banco com dados do formato antigo (centavos, Pix, textos com o nome
   DevZoo) é convertido para o novo, e a conversão é desfeita migration por migration.
 
-## Site (`apps/web/src/**/*.test.ts(x)`, 91 testes)
+## Site (`apps/web/src/**/*.test.ts(x)`, 100 testes)
 
 Vitest com jsdom e Testing Library, testando pelo que a pessoa vê e clica (papéis e nomes
 acessíveis, nunca classes de CSS como critério principal).
@@ -64,8 +67,9 @@ acessíveis, nunca classes de CSS como critério principal).
   único por pergunta.
 - **Unidades:** cliente da API (cada tipo de falha vira uma mensagem), rotas por hash, coleção e
   carrinho derivados dos pedidos, modal (Esc, clique fora, animação de saída, movimento reduzido),
-  desenho do mascote (reserva quando o SVG falha, ids únicos, piscadas), sanitizador do SVG, sons
-  (com um dublê da Web Audio API), confete e tema.
+  desenho do mascote (reserva quando o SVG falha, ids únicos, piscadas e animações da vitrine, que
+  param com movimento reduzido), sanitizador do SVG, sons (com um dublê da Web Audio API), som dos
+  links com cara de botão, feature flags, confete e tema.
 
 ## Bug encontrado pelos testes
 
