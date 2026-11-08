@@ -10,11 +10,13 @@ import { createDatabase } from "./shared/database.js";
 // requisição de pré-verificação), e o vercel.json manda tudo de /api para cá. A função tira o
 // prefixo e entrega a requisição ao mesmo app Fastify do Docker. As migrations não rodam aqui: o
 // CI as aplica antes do deploy, e a função sobe mais rápido.
+export const API_PREFIX = "/api";
+
 export function stripApiPrefix(url: string): string {
   if (!/^\/api(?=\/|\?|$)/.test(url)) {
     return url;
   }
-  const rest = url.slice("/api".length);
+  const rest = url.slice(API_PREFIX.length);
   return rest.startsWith("/") ? rest : `/${rest}`;
 }
 
@@ -54,6 +56,7 @@ async function productionApp(): Promise<FastifyInstance> {
     logger: true,
     db: createDatabase(config.databaseUrl),
     corsOrigins: config.corsOrigins,
+    publicPrefix: API_PREFIX,
   });
 }
 
