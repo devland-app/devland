@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { OutOfStockError } from "../../src/modules/catalog/index.js";
 import {
@@ -170,6 +170,30 @@ describe("OrdersService", () => {
       expect(again.alreadyPaid).toBe(true);
       expect(again.payment.id).toBe(first.payment.id);
       expect(payments.authorizations).toBe(1);
+    });
+
+    // A linha do mascote é disputada por todos os pagamentos dele: quanto mais tarde a trava, menos
+    // tempo os outros esperam (no teste de carga, essa espera era 63% do tempo de banco).
+    it("baixa o estoque por último e nem toca nele numa recusa", async () => {
+      const authorize = vi.spyOn(payments, "authorize");
+      const markPaid = vi.spyOn(orders, "markPaid");
+      const reserveStock = vi.spyOn(catalog, "reserveStock");
+
+      const { order: paid } = await create([{ productId: 1, quantity: 1 }], "chave-paga");
+      await service.payOrder(paid.id, WALLET);
+      const [authorized = 0] = authorize.mock.invocationCallOrder;
+      const [markedPaid = 0] = markPaid.mock.invocationCallOrder;
+      const [reserved = 0] = reserveStock.mock.invocationCallOrder;
+      expect(authorized).toBeLessThan(markedPaid);
+      expect(markedPaid).toBeLessThan(reserved);
+
+      reserveStock.mockClear();
+      payments.decision = { status: "declined", reason: "Saldo insuficiente: faltam 20 moedas." };
+      const { order: declined } = await create([{ productId: 1, quantity: 1 }], "chave-recusada");
+      await expect(service.payOrder(declined.id, WALLET)).rejects.toBeInstanceOf(
+        PaymentDeclinedError,
+      );
+      expect(reserveStock).not.toHaveBeenCalled();
     });
 
     it("grava a recusa fora da transação e mantém o pedido aguardando", async () => {
