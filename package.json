@@ -44,5 +44,10 @@
     "*.{json,md,css,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "@fastify/static": {
+      "content-disposition": "2.0.1"
+    }
   }
 }
