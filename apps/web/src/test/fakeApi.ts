@@ -230,7 +230,7 @@ export class FakeBackend {
       notice: "Pago com moedas virtuais: nenhum dinheiro foi usado.",
       order: structuredClone(order),
       payment: {
-        id: `pagamento-${id}`,
+        id: crypto.randomUUID(),
         method: "coins",
         status: "approved",
         amountCoins: order.totalCoins,
