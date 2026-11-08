@@ -51,8 +51,8 @@ Decisões que valem destacar:
   pessoa (IDOR).
 - `POST /orders` exige `Idempotency-Key`: clique duplo ou nova tentativa da rede devolvem o mesmo
   pedido.
-- Pagamento numa transação só: trava o pedido (`FOR UPDATE`), baixa o estoque, debita as moedas e
-  marca como pago. O banco aceita um único pagamento aprovado por pedido.
+- Pagamento numa transação só: trava o pedido (`FOR UPDATE`), debita as moedas, marca como pago e
+  baixa o estoque por último. O banco aceita um único pagamento aprovado por pedido.
 - Moedas nunca ficam negativas (`UPDATE` condicional) e não são creditadas em dobro (referência
   única no extrato), mesmo com requisições simultâneas.
 
@@ -191,6 +191,8 @@ a mensagem.
   de cada requisição por método, rota e status, de onde saem taxa, erros e latência.
 - **Teste de fumaça (k6):** `docker compose --profile perf run --rm k6`. p95 medido: 6 ms no
   Docker local e 204 ms em produção, sem erros.
+- **Teste de carga (k6, 3 estágios, 100 mil pedidos):** achou uma trava disputada na baixa de
+  estoque. Corrigida, o p95 a 800 usuários caiu de 58 ms para 26 ms.
 
 Detalhes, consultas e resultados em [`docs/desempenho.md`](docs/desempenho.md).
 

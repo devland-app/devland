@@ -97,7 +97,7 @@ export const ABOUT_SECTIONS: AboutSection[] = [
         </p>
         <p>
           O pagamento troca de forma de pagar sem mexer no resto (padrão Strategy) e acontece numa
-          transação só: trava o pedido, baixa o estoque, debita as moedas e marca como pago. No
+          transação só: trava o pedido, debita as moedas, marca como pago e baixa o estoque. No
           site, cada funcionalidade tem a própria pasta, e uma não importa a outra.
         </p>
         <p>
