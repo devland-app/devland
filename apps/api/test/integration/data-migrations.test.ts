@@ -91,6 +91,10 @@ describe("migrations de dados", () => {
 
     const payment = await db("payments").where({ order_id: orderId }).first();
     expect(payment).toMatchObject({ method: "pix", amount_coins: 95, wallet_id: null });
+
+    // A lição do castor passa a contar o cache da CDN, e não o do nginx de antes do deploy.
+    const beaver = await db("products").where({ slug: "castor-do-cache" }).first();
+    expect(beaver.lesson_in_project).toContain("CDN");
   });
 
   it("desfaz as migrations novas uma a uma, devolvendo os dados ao formato antigo", async () => {
@@ -106,6 +110,8 @@ describe("migrations de dados", () => {
 
     const crab = await db("products").where({ slug: "caranguejo-dos-conteineres" }).first();
     expect(crab.price_cents).toBe(4990);
+    const beaver = await db("products").where({ slug: "castor-do-cache" }).first();
+    expect(beaver.lesson_in_devzoo).toContain("O nginx da DevZoo");
     expect(crab.lesson_in_devzoo).toBe("A DevZoo inteira roda em contêineres.");
     expect(crab).not.toHaveProperty("price_coins");
 

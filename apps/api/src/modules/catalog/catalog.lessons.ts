@@ -67,8 +67,10 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
       "funcionava, investigar com calma e tentar de novo.",
     realWorld: "É o botão de desfazer de um editor de texto, só que para um site inteiro.",
     inProject:
-      "Cada imagem da DevLand no Docker Hub ganha uma etiqueta com o código do commit (sha-…), e as " +
-      "releases ganham número de versão (0.2.0). Para voltar, basta subir a etiqueta anterior.",
+      "Na Vercel, cada deploy fica guardado com um endereço próprio, e voltar para o anterior é " +
+      "um comando só (vercel rollback), que leva segundos. No Docker Hub, cada imagem ganha a " +
+      "etiqueta do commit (sha-…) e a da versão (como 0.4.1): para voltar, basta subir a " +
+      "etiqueta anterior.",
   },
   "abelha-dos-logs": {
     explanation:
@@ -79,9 +81,10 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
       "Funciona como a caixa-preta de um avião: quando algo dá errado, é ela que conta o que " +
       "aconteceu.",
     inProject:
-      "A API da DevLand registra cada requisição em JSON estruturado, com tempo de resposta e código " +
-      "de status. Um erro interno aparece completo no log, mas quem usa a loja vê só uma mensagem " +
-      "genérica.",
+      "A API da DevLand registra cada requisição em JSON estruturado e mede a duração de todas " +
+      "elas em /metrics, no formato do Prometheus. É dali que sai o objetivo de serviço: 95% das " +
+      "respostas em menos de meio segundo. Um erro interno aparece completo no log, mas quem usa " +
+      "a loja vê só uma mensagem genérica.",
   },
   "castor-do-cache": {
     explanation:
@@ -91,8 +94,10 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
     realWorld:
       "É como deixar o café passado na garrafa térmica em vez de passar um novo a cada xícara.",
     inProject:
-      "O nginx da DevLand manda o navegador guardar os arquivos da loja por um ano (eles mudam de " +
-      "nome a cada versão), e as ilustrações dos mascotes ficam em cache por um dia.",
+      "Os arquivos de código e estilo do site e as ilustrações dos mascotes ficam guardados por " +
+      "um ano no navegador e na CDN: quando um deles muda, o endereço muda junto, e ninguém " +
+      "recebe a versão velha. A vitrine fica 30 segundos no cache da CDN, que responde sem " +
+      "acordar o servidor nem o banco.",
   },
   "raposa-dos-segredos": {
     explanation:

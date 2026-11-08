@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Header } from "./app/Header.tsx";
 import { PressSound } from "./app/PressSound.tsx";
 import { useHashRoute } from "./app/useHashRoute.ts";
+import { AboutPage } from "./features/about/AboutPage.tsx";
 import { CartButton } from "./features/cart/CartButton.tsx";
 import { CartDrawer } from "./features/cart/CartDrawer.tsx";
 import { CatalogPage } from "./features/catalog/CatalogPage.tsx";
@@ -46,6 +47,7 @@ export default function App() {
                 {route.name === "quiz" && <QuizPage key={route.slug} slug={route.slug} />}
                 {route.name === "mascotes" && <CollectionPage />}
                 {route.name === "mascote" && <MascotPage key={route.slug} slug={route.slug} />}
+                {route.name === "sobre" && <AboutPage />}
               </div>
             </main>
             <footer className="site-footer gutter">
