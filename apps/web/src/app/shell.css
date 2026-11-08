@@ -146,8 +146,9 @@ main {
     transform: translateY(-1.2rem);
     pointer-events: none;
   }
+  /* O espaço entre as linhas separa as abas da borda da barra do logo. */
   .nav-row {
-    gap: 0.7rem;
+    gap: 1.5rem 0.7rem;
   }
   .tabs {
     order: 3;
