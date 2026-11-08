@@ -62,8 +62,8 @@ O porquê de cada escolha, com as alternativas descartadas, está nos
 
 ## Como rodar
 
-Pré-requisitos: Docker com Docker Compose. Para desenvolver fora do Docker, também Node 22
-(veja `.nvmrc`).
+Pré-requisitos: Docker 23 ou mais novo, com Docker Compose. Para desenvolver fora do Docker, também
+Node 22 (veja `.nvmrc`).
 
 ### Tudo no Docker
 
