@@ -1,7 +1,9 @@
 # Build context: raiz do monorepo.
 # docker build -f apps/web/Dockerfile --build-arg VITE_API_URL=http://localhost:3333 .
 
-FROM node:22-alpine AS build
+# O build roda na arquitetura de quem constrói: emulado no QEMU, para gerar a imagem ARM, o Node
+# quebrava com "Illegal instruction". O resultado são arquivos estáticos, que servem para qualquer uma.
+FROM --platform=$BUILDPLATFORM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/api/package.json apps/api/

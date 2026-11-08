@@ -172,6 +172,9 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
   - A correção é `chmod -R a+rX` depois dos `COPY` (API em `/app`, web no `dist`).
   - `--chmod=644` só serve em `COPY` para pasta que já existe (como a config do nginx). Se o `COPY`
     criar a pasta, ela também fica `644`, sem `x`, e vira inacessível.
+- Node nunca roda emulado: no build multi-arquitetura, o QEMU quebrava com "Illegal instruction". As
+  etapas com Node usam `--platform=$BUILDPLATFORM`, o que exige dependências de produção só em
+  JavaScript (`production-deps.test.ts` reprova pacote com binário por plataforma).
 - O Trivy do CI reprova vulnerabilidades HIGH/CRITICAL que já têm correção. Por isso as imagens
   rodam `apk upgrade` e a da API remove npm e corepack, que não são usados em execução. Para checar
   localmente: `docker save devland-api -o api.tar` e `aquasec/trivy image --input api.tar`.
