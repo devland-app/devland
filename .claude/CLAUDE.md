@@ -55,6 +55,9 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
   Modelos reutilizados entram com `app.addSchema` e `$id` (viram components, como `Product`).
 - Mudou rota ou schema? Rode `npm run openapi -w @devland/api` e commite o `docs/openapi.yaml`:
   o CI regenera o arquivo e falha se o versionado estiver diferente.
+- Teste de contrato nos dois lados, contra o `docs/openapi.yaml` (`contract.test.ts` na API e em
+  `apps/web/src/test`). Status novo no contrato precisa de um caso no teste da API, e função nova no
+  cliente precisa entrar no teste do site.
 
 ## Regras da loja
 

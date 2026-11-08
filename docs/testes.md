@@ -8,8 +8,8 @@ eles passam.
 
 | App  | Testes | Linhas | Ramos | Limite no CI (linhas / ramos) |
 | ---- | -----: | -----: | ----: | ----------------------------- |
-| API  |    172 |  96,5% |   85% | 90% / 80%                     |
-| Site |    100 |  98,9% | 91,7% | 90% / 85%                     |
+| API  |    180 |  96,9% |   86% | 90% / 80%                     |
+| Site |    112 |  98,9% | 91,9% | 90% / 85%                     |
 
 ## Como rodar
 
@@ -47,7 +47,7 @@ da Vercel (prefixo `/api` e o parâmetro que a regra de redirecionamento acresce
 da API atrás desse prefixo e os desenhos dos mascotes: cada um precisa de lição e quiz com o mesmo
 slug, olhos que piscam, uma parte que se mexe na vitrine e nenhum script.
 
-### Integração (`apps/api/test/integration`, 68 testes)
+### Integração (`apps/api/test/integration`, 76 testes)
 
 A aplicação inteira (`buildApp`) com um PostgreSQL de verdade, via `app.inject()`, sem abrir porta.
 
@@ -56,8 +56,27 @@ A aplicação inteira (`buildApp`) com um PostgreSQL de verdade, via `app.inject
 - `migrations.test.ts`: todas as migrations sobem, descem e sobem de novo.
 - `data-migrations.test.ts`: um banco com dados do formato antigo (centavos, Pix, textos com o nome
   DevZoo) é convertido para o novo, e a conversão é desfeita migration por migration.
+- `contract.test.ts`: o lado da API do teste de contrato (próxima seção).
 
-## Site (`apps/web/src/**/*.test.ts(x)`, 100 testes)
+## Contrato da API
+
+O `docs/openapi.yaml` versionado é o contrato, e os dois lados são testados contra ele:
+
+- **API** (`apps/api/test/integration/contract.test.ts`, 8 testes): chama cada rota com um
+  PostgreSQL de verdade e valida a resposta contra o schema daquele status. O último teste exige que
+  todas as combinações de rota e status declaradas tenham sido exercitadas: um status novo no
+  contrato reprova até ganhar um caso, e uma resposta com status não declarado também reprova.
+- **Site** (`apps/web/src/test/contract.test.ts`, 11 testes): confere o que o cliente envia (rota,
+  método, parâmetros e corpo de cada função de `shared/api/client.ts`) e o que ele espera receber
+  (o dublê usado nas jornadas tem de devolver o que a API promete).
+
+Se a API mudar, o CI obriga a regenerar o contrato, e o site reprova antes de quebrar em produção.
+Para confirmar que os testes têm efeito, o contrato foi alterado de propósito em três pontos (campo
+obrigatório novo, status removido e rota renomeada): a API reprovou nos três, e o site nos dois que
+o afetam. O teste do site também achou uma divergência real: o dublê devolvia um id de pagamento que
+não era UUID.
+
+## Site (`apps/web/src/**/*.test.ts(x)`, 112 testes)
 
 Vitest com jsdom e Testing Library, testando pelo que a pessoa vê e clica (papéis e nomes
 acessíveis, nunca classes de CSS como critério principal).
@@ -82,6 +101,10 @@ migration ficar de fora.
 
 ## O que ficou de fora, e por quê
 
+- **Pact:** ele resolve o problema de times e repositórios separados, que publicam contratos num
+  broker e implantam em momentos diferentes. Aqui site e API estão no mesmo repositório, são
+  publicados juntos e já têm um contrato único, conferido no CI. O Pact criaria um segundo contrato
+  para manter em dia e um binário nativo no CI, sem pegar nenhum erro a mais.
 - **Testes de ponta a ponta num navegador real (Playwright):** os fluxos já são testados de ponta a
   ponta na API, com banco de verdade, e as jornadas da tela rodam contra um backend falso com as
   mesmas regras. Um navegador real repetiria esses caminhos e somaria minutos a cada pull request.
