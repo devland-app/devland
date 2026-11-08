@@ -81,6 +81,27 @@
   align-items: center;
 }
 
+/* "?" da página Sobre: menor e sem a espessura de massinha dos botões, para não competir com eles. */
+.about-link {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  color: var(--muted);
+  font: 800 1rem/1 var(--font-display);
+  text-decoration: none;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+}
+.about-link:hover,
+.about-link[aria-current="page"] {
+  color: var(--ink);
+  border-color: var(--lilac);
+}
+
 main {
   padding-block: 2rem 4rem;
 }
@@ -109,5 +130,15 @@ main {
 @media (max-width: 440px) {
   .logo-text {
     display: none;
+  }
+}
+/* Celular bem estreito (320 px): espaços menores para os botões caberem na linha do logo. */
+@media (max-width: 360px) {
+  .actions {
+    gap: 0.35rem;
+  }
+  .about-link {
+    width: 26px;
+    height: 26px;
   }
 }
