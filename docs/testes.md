@@ -8,7 +8,7 @@ eles passam.
 
 | App  | Testes | Linhas | Ramos | Limite no CI (linhas / ramos) |
 | ---- | -----: | -----: | ----: | ----------------------------- |
-| API  |    183 |  96,9% |   86% | 90% / 80%                     |
+| API  |    184 |  96,9% |   86% | 90% / 80%                     |
 | Site |    112 |  98,9% | 91,9% | 90% / 85%                     |
 
 ## Como rodar
@@ -36,7 +36,7 @@ nenhuma configuração.
 
 ## API
 
-### Unitários (`apps/api/test/unit`, 107 testes)
+### Unitários (`apps/api/test/unit`, 108 testes)
 
 Os services recebem as dependências por interface, então os testes usam implementações em memória
 que imitam as garantias do banco (chave única, saldo que não fica negativo). Rodam em milissegundos.
