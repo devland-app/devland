@@ -190,7 +190,10 @@ jobs:
       - name: Confere que tudo responde
         run: |
           curl --fail --silent --show-error http://localhost:3333/health
-          test "$(curl -fsS http://localhost:3333/products | jq length)" = 8
+          # Cada mascote tem um quiz: se a migration de um mascote novo não rodar, as contagens diferem.
+          products=$(curl -fsS http://localhost:3333/products | jq length)
+          test "$products" -gt 0
+          test "$products" = "$(curl -fsS http://localhost:3333/quizzes | jq length)"
           curl -fsS http://localhost:8080/ | grep -q "<title>DevLand"
           wallet=$(curl -fsS -X POST http://localhost:3333/wallets | jq -r .id)
           curl -fsS -X POST -H "Content-Type: application/json" -d "{\"walletId\":\"$wallet\"}" \
@@ -270,8 +273,9 @@ jobs:
           URL: ${{ steps.deploy.outputs.url }}
         run: |
           curl --fail --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors "$URL/api/health"
-          test "$(curl -fsS "$URL/api/products" | jq length)" = 8
-          test "$(curl -fsS "$URL/api/quizzes" | jq length)" = 8
+          products=$(curl -fsS "$URL/api/products" | jq length)
+          test "$products" -gt 0
+          test "$products" = "$(curl -fsS "$URL/api/quizzes" | jq length)"
           curl -fsS "$URL/api/metrics" | grep -q "TYPE http_request_duration_seconds histogram"
           curl -fsS "$URL/" | grep -q "<title>DevLand"
 
