@@ -11,6 +11,9 @@ COPY apps/web apps/web
 # URL pública da API. Vai para o bundle do navegador, então nunca é segredo.
 ARG VITE_API_URL=http://localhost:3333
 ENV VITE_API_URL=${VITE_API_URL}
+# Feature flag das animações da vitrine: "false" desliga (shared/flags.ts).
+ARG VITE_FLAG_SHOWCASE_ANIMATIONS=true
+ENV VITE_FLAG_SHOWCASE_ANIMATIONS=${VITE_FLAG_SHOWCASE_ANIMATIONS}
 RUN npm run build -w @devland/web
 # O COPY preserva a permissão dos arquivos da máquina de origem (o Vite copia public/ como está).
 # Se lá estiverem como 600, o nginx não-root não lê. a+rX: todos leem; X dá acesso só às pastas.
