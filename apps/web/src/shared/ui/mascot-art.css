@@ -39,3 +39,199 @@
 .mascot-art.is-happy .cheek {
   opacity: 1;
 }
+
+/* Vitrine: de vez em quando um mascote mexe a parte que o desenho marcou com uma classe act-*. O
+   site só liga is-playing (até 1,7 s); o movimento de cada parte fica aqui. */
+.mascot-art
+  :is(
+    .act-toss,
+    .act-pop,
+    .act-hop,
+    .act-sway,
+    .act-rewind,
+    .act-flutter,
+    .act-flash,
+    .act-unlock,
+    .act-peck
+  ) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* Pulos, bicadas e asas giram a partir da base. */
+.mascot-art :is(.act-hop, .act-peck, .act-flutter) {
+  transform-origin: center bottom;
+}
+/* A seta gira em torno do centro do círculo dela, que o próprio desenho informa (style). */
+.mascot-art .act-rewind {
+  transform-box: view-box;
+}
+
+.mascot-art.is-playing .act-toss {
+  animation: act-toss 900ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.mascot-art.is-playing .act-pop {
+  animation: act-pop 520ms cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.mascot-art.is-playing .act-d1 {
+  animation-delay: 380ms;
+}
+.mascot-art.is-playing .act-d2 {
+  animation-delay: 760ms;
+}
+.mascot-art.is-playing .act-hop {
+  animation: act-hop 760ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+.mascot-art.is-playing .act-sway {
+  animation: act-sway 1200ms ease-in-out;
+}
+.mascot-art.is-playing .act-rewind {
+  animation: act-rewind 1000ms cubic-bezier(0.5, 0, 0.3, 1);
+}
+.mascot-art.is-playing .act-flutter {
+  animation: act-flutter 640ms linear;
+}
+.mascot-art.is-playing .act-flash {
+  animation: act-flash 900ms ease-in-out;
+}
+.mascot-art.is-playing .act-unlock {
+  animation: act-unlock 1000ms ease-in-out;
+}
+.mascot-art.is-playing .act-peck {
+  animation: act-peck 900ms ease-in-out;
+}
+
+@keyframes act-toss {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  35% {
+    transform: translateY(-16px) rotate(-6deg);
+  }
+  60% {
+    transform: translateY(0) rotate(0);
+  }
+  74% {
+    transform: translateY(-4px);
+  }
+  86% {
+    transform: translateY(0);
+  }
+}
+/* Some e reaparece com um pulinho: como um check que acabou de ficar verde. */
+@keyframes act-pop {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes act-hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  18% {
+    transform: translateY(0) scale(1.06, 0.92);
+  }
+  45% {
+    transform: translateY(-14px) scale(0.96, 1.05);
+  }
+  70% {
+    transform: translateY(0) scale(1.05, 0.95);
+  }
+  85% {
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes act-sway {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  25% {
+    transform: translate(-3px, -5px) rotate(-10deg);
+  }
+  50% {
+    transform: translate(0, -8px) rotate(6deg);
+  }
+  75% {
+    transform: translate(3px, -4px) rotate(-6deg);
+  }
+}
+@keyframes act-rewind {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes act-flutter {
+  0%,
+  25%,
+  50%,
+  75%,
+  100% {
+    transform: scaleY(1);
+  }
+  12.5%,
+  37.5%,
+  62.5%,
+  87.5% {
+    transform: scaleY(0.55);
+  }
+}
+@keyframes act-flash {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  20% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+  60% {
+    opacity: 0.4;
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+@keyframes act-unlock {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30%,
+  60% {
+    transform: translateY(-7px);
+  }
+}
+@keyframes act-peck {
+  0%,
+  35%,
+  70%,
+  100% {
+    transform: rotate(0);
+  }
+  20%,
+  55% {
+    transform: rotate(9deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-art.is-playing [class*="act-"] {
+    animation: none;
+  }
+}

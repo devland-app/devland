@@ -3,6 +3,7 @@ import "./app/shell.css";
 import { useState } from "react";
 
 import { Header } from "./app/Header.tsx";
+import { PressSound } from "./app/PressSound.tsx";
 import { useHashRoute } from "./app/useHashRoute.ts";
 import { AboutPage } from "./features/about/AboutPage.tsx";
 import { CartButton } from "./features/cart/CartButton.tsx";
@@ -34,6 +35,7 @@ export default function App() {
   return (
     // Adoções por fora: o carrinho esconde o que já foi adotado ou está aguardando pagamento.
     <SoundProvider>
+      <PressSound />
       <WalletProvider>
         <AdoptionsProvider>
           <CartProvider>

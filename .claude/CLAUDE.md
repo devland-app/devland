@@ -105,6 +105,11 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Mascote desenhado sempre por `shared/ui/MascotArt.tsx`: o SVG entra inline (sanitizado por
   `prepareSvg.ts`), sem o fundo redondo, e cada mascote pisca no seu tempo, revezando com os outros.
   Valores em moedas por `shared/ui/Coins.tsx`.
+- Animações da vitrine: o desenho marca a parte que se mexe com uma classe `act-*` (o movimento fica
+  em `mascot-art.css`), e o `MascotArt` com `play` liga `is-playing` de vez em quando, um mascote por
+  vez. Mascote novo precisa de uma parte `act-*` (o teste dos desenhos confere).
+- Feature flags em `shared/flags.ts`, lidas no build (`VITE_FLAG_*`, públicas). Hoje:
+  `VITE_FLAG_SHOWCASE_ANIMATIONS` (`false` desliga as animações da vitrine).
 - `src/shared/api/client.ts` é o único lugar que chama `fetch`; os tipos em `shared/api/types.ts`
   espelham o `docs/openapi.yaml`. Erros chegam como `ApiError` com a mensagem pronta da API.
 - A URL da API vem de `VITE_API_URL` em tempo de build. Tudo que começa com `VITE_` vai para o

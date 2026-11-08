@@ -1,6 +1,7 @@
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
 import type { Product } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
+import { FLAGS } from "../../shared/flags.ts";
 import { useSound } from "../../shared/sound/soundContext.ts";
 import { Coins } from "../../shared/ui/Coins.tsx";
 import { MascotArt } from "../../shared/ui/MascotArt.tsx";
@@ -20,7 +21,12 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className={`card clay${adopted ? " card--adopted" : ""}`}>
       <div className="card-art">
-        <MascotArt product={product} size={210} label={`Ilustração de massinha: ${product.name}`} />
+        <MascotArt
+          product={product}
+          size={210}
+          label={`Ilustração de massinha: ${product.name}`}
+          play={FLAGS.showcaseAnimations}
+        />
       </div>
       <h2>{product.name}</h2>
       <div className="card-body">

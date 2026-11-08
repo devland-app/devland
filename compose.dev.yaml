@@ -72,6 +72,7 @@ services:
     environment:
       <<: *polling
       VITE_API_URL: http://localhost:${API_PORT:-3333}
+      VITE_FLAG_SHOWCASE_ANIMATIONS: ${VITE_FLAG_SHOWCASE_ANIMATIONS:-true}
     ports:
       - "5173:5173"
     depends_on:

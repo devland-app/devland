@@ -49,6 +49,7 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
+        VITE_FLAG_SHOWCASE_ANIMATIONS: ${VITE_FLAG_SHOWCASE_ANIMATIONS:-true}
     ports:
       - "${WEB_PORT:-8080}:8080"
     depends_on:
