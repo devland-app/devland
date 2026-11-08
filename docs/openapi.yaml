@@ -360,6 +360,22 @@ components:
           type: string
           format: date-time
 paths:
+  /metrics:
+    get:
+      operationId: getMetrics
+      summary: Métricas da API no formato do Prometheus
+      tags:
+        - health
+      description: Duração das requisições por método, rota e status (taxa, erros e
+        latência saem da mesma métrica), mais as métricas do processo Node. Na
+        Vercel, cada instância da função tem os próprios contadores.
+      responses:
+        "200":
+          description: Métricas no formato de texto do Prometheus
+          content:
+            text/plain:
+              schema:
+                type: string
   /health:
     get:
       operationId: getHealth
