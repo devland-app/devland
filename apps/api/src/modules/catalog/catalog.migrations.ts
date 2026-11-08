@@ -365,6 +365,57 @@ const addInfrastructureMascot: Migration = {
   },
 };
 
+// O trecho "Onde a DevLand usa isso" de três lições descrevia o projeto de antes do deploy na nuvem:
+// cache no nginx, versão 0.2.0 e só logs. Agora conta a CDN, o rollback da Vercel e a métrica.
+const REFRESHED_PROJECT_LESSONS: Record<string, { before: string; after: string }> = {
+  "castor-do-cache": {
+    before:
+      "O nginx da DevLand manda o navegador guardar os arquivos da loja por um ano (eles mudam " +
+      "de nome a cada versão), e as ilustrações dos mascotes ficam em cache por um dia.",
+    after:
+      "Os arquivos de código e estilo do site e as ilustrações dos mascotes ficam guardados por " +
+      "um ano no navegador e na CDN: quando um deles muda, o endereço muda junto, e ninguém " +
+      "recebe a versão velha. A vitrine fica 30 segundos no cache da CDN, que responde sem " +
+      "acordar o servidor nem o banco.",
+  },
+  "tartaruga-do-rollback": {
+    before:
+      "Cada imagem da DevLand no Docker Hub ganha uma etiqueta com o código do commit (sha-…), e " +
+      "as releases ganham número de versão (0.2.0). Para voltar, basta subir a etiqueta " +
+      "anterior.",
+    after:
+      "Na Vercel, cada deploy fica guardado com um endereço próprio, e voltar para o anterior é " +
+      "um comando só (vercel rollback), que leva segundos. No Docker Hub, cada imagem ganha a " +
+      "etiqueta do commit (sha-…) e a da versão (como 0.4.1): para voltar, basta subir a " +
+      "etiqueta anterior.",
+  },
+  "abelha-dos-logs": {
+    before:
+      "A API da DevLand registra cada requisição em JSON estruturado, com tempo de resposta e " +
+      "código de status. Um erro interno aparece completo no log, mas quem usa a loja vê só uma " +
+      "mensagem genérica.",
+    after:
+      "A API da DevLand registra cada requisição em JSON estruturado e mede a duração de todas " +
+      "elas em /metrics, no formato do Prometheus. É dali que sai o objetivo de serviço: 95% das " +
+      "respostas em menos de meio segundo. Um erro interno aparece completo no log, mas quem usa " +
+      "a loja vê só uma mensagem genérica.",
+  },
+};
+
+const refreshProjectLessons: Migration = {
+  name: "catalog_010_refresh_project_lessons",
+  async up(db) {
+    for (const [slug, text] of Object.entries(REFRESHED_PROJECT_LESSONS)) {
+      await db("products").where({ slug }).update({ lesson_in_project: text.after });
+    }
+  },
+  async down(db) {
+    for (const [slug, text] of Object.entries(REFRESHED_PROJECT_LESSONS)) {
+      await db("products").where({ slug }).update({ lesson_in_project: text.before });
+    }
+  },
+};
+
 export const catalogMigrations: Migration[] = [
   createProducts,
   insertInitialProducts,
@@ -375,4 +426,5 @@ export const catalogMigrations: Migration[] = [
   renameToDevLand,
   priceInCoins,
   addInfrastructureMascot,
+  refreshProjectLessons,
 ];
