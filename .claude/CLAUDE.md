@@ -94,9 +94,10 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 ## Front
 
 - Estrutura: `src/app/` (casca: cabeçalho e rotas por hash `#vitrine`, `#quizzes`, `#quiz-<slug>`,
-  `#mascotes` e `#mascote-<slug>`), `src/features/<funcionalidade>/` (`catalog`, `quiz`, `cart`,
-  `checkout`, `collection`, `mascot`, `wallet`, `sound`, `theme`, cada uma com o próprio CSS) e
-  `src/shared/` (cliente da API, estado compartilhado, formatação, `localStorage`, UI genérica).
+  `#mascotes`, `#mascote-<slug>` e `#sobre`), `src/features/<funcionalidade>/` (`catalog`, `quiz`,
+  `cart`, `checkout`, `collection`, `mascot`, `wallet`, `sound`, `theme`, `about`, cada uma com o
+  próprio CSS) e `src/shared/` (cliente da API, estado compartilhado, formatação, `localStorage`, UI
+  genérica).
 - Features não importam umas das outras. Estado usado por várias telas mora em `shared/`:
   `shared/cart` (carrinho, um de cada), `shared/adoptions` (mascotes adotados e pedidos pendentes,
   derivados dos pedidos salvos neste navegador) e `shared/wallet` (saldo; a carteira só é criada no
