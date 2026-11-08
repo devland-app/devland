@@ -51,6 +51,9 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Detalhes e exemplos na skill `modularity`.
 - `GET /metrics` (`src/shared/metrics.ts`): um histograma `http_request_duration_seconds` por
   método, molde da rota e status. O rótulo de rota é sempre o molde, nunca a URL com id.
+- Tracing (OpenTelemetry) só na imagem Docker: `src/tracing.ts` entra antes da API por `node --import`
+  e só liga com `OTEL_EXPORTER_OTLP_ENDPOINT` (`compose.tracing.yaml` sobe o Jaeger). A função da
+  Vercel não importa esse arquivo.
 - Contrato OpenAPI 3.1 gerado dos JSON Schemas das rotas: Swagger UI em `/docs`, JSON em
   `/docs/json`. Toda rota tem `tags`, `operationId`, `summary` e descrição em cada resposta.
   Modelos reutilizados entram com `app.addSchema` e `$id` (viram components, como `Product`).
