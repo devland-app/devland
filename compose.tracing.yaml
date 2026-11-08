@@ -13,4 +13,4 @@ services:
     image: jaegertracing/jaeger:2.12.0
     # Só na própria máquina: os traces mostram as consultas feitas ao banco.
     ports:
-      - "127.0.0.1:${JAEGER_PORT:-16686}:16686"
+      - "127.0.0.1:16686:16686"

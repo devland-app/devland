@@ -1,7 +1,8 @@
 # Desempenho e observabilidade
 
-Um objetivo de serviço (SLO) declarado, uma métrica que mostra se ele está sendo cumprido e um
-teste de fumaça que mede a latência de verdade, local e em produção.
+Um objetivo de serviço (SLO) declarado, uma métrica que mostra se ele está sendo cumprido, um teste
+de fumaça que mede a latência de verdade, local e em produção, um teste de carga com o gargalo antes
+e depois, e um trace de um pagamento.
 
 ## SLO
 
@@ -206,8 +207,21 @@ O plano de p95 do projeto usa cache com tolerância na CDN (o catálogo com `s-m
 `stale-while-revalidate=300`). Fila não foi usada: o motivo está no
 [ADR 0003](adr/0003-pagamento-transacao-sem-fila.md).
 
-## O que fica para depois
+## Trace (OpenTelemetry e Jaeger)
 
-- **Rastreamento distribuído** (OpenTelemetry), útil quando uma requisição passa por vários
-  serviços. Aqui ela passa por um processo e um banco, e a métrica por rota já aponta onde está a
-  demora.
+A métrica diz quanto uma rota demora; o trace mostra onde o tempo foi, numa requisição específica.
+
+```bash
+docker compose -f docker-compose.yml -f compose.tracing.yaml up --build
+# interface em http://localhost:16686, serviço devland-api
+```
+
+![Trace de um pagamento no Jaeger: a requisição POST /orders/:id/payment e seus 14 comandos SQL](img/trace-pagamento.png)
+
+O trace acima é de um pagamento real: 4,8 ms no total, com 14 comandos SQL. Cada linha é uma ida ao
+banco, com o texto da consulta nos detalhes. Ele confirma de outro ângulo o que o perfil de CPU
+indicou no teste de carga: o custo do pagamento está em quantas vezes a API conversa com o banco.
+
+O tracing só existe na imagem Docker, e só liga com `OTEL_EXPORTER_OTLP_ENDPOINT` configurado
+(`src/tracing.ts`). A função da Vercel não importa esse arquivo, de propósito: uma dependência
+nova nesse caminho já derrubou a API em produção uma vez (veja o `CLAUDE.md`).

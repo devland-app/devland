@@ -138,20 +138,21 @@ hooks funcionam igual ao macOS e ao Linux.
 
 Ficam no `.env` (fora do git). O `.env.example` traz valores fictícios para uso local.
 
-| Variável                        | Onde      | Para quê                                                                    |
-| ------------------------------- | --------- | --------------------------------------------------------------------------- |
-| `NODE_ENV`                      | API       | `development`, `test` ou `production`                                       |
-| `PORT`                          | API       | Porta da API (padrão 3333)                                                  |
-| `DATABASE_URL`                  | API       | Conexão `postgres://` com o banco                                           |
-| `CORS_ORIGIN`                   | API       | Origens do site autorizadas, separadas por vírgula; obrigatória em produção |
-| `POSTGRES_USER`                 | compose   | Usuário do banco local                                                      |
-| `POSTGRES_PASSWORD`             | compose   | Senha do banco local                                                        |
-| `POSTGRES_DB`                   | compose   | Nome do banco local                                                         |
-| `DB_PORT`                       | compose   | Porta do banco no host (padrão 5432)                                        |
-| `API_PORT`                      | compose   | Porta da API no host (padrão 3333)                                          |
-| `WEB_PORT`                      | compose   | Porta do site no host (padrão 8080)                                         |
-| `VITE_API_URL`                  | web/build | Endereço da API usado pelo site. Vai para o navegador: é público            |
-| `VITE_FLAG_SHOWCASE_ANIMATIONS` | web/build | Feature flag das animações da vitrine (padrão `true`; `false` desliga)      |
+| Variável                        | Onde      | Para quê                                                                       |
+| ------------------------------- | --------- | ------------------------------------------------------------------------------ |
+| `NODE_ENV`                      | API       | `development`, `test` ou `production`                                          |
+| `PORT`                          | API       | Porta da API (padrão 3333)                                                     |
+| `DATABASE_URL`                  | API       | Conexão `postgres://` com o banco                                              |
+| `CORS_ORIGIN`                   | API       | Origens do site autorizadas, separadas por vírgula; obrigatória em produção    |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`   | API       | Coletor de traces. Vazio desliga o tracing; o `compose.tracing.yaml` já define |
+| `POSTGRES_USER`                 | compose   | Usuário do banco local                                                         |
+| `POSTGRES_PASSWORD`             | compose   | Senha do banco local                                                           |
+| `POSTGRES_DB`                   | compose   | Nome do banco local                                                            |
+| `DB_PORT`                       | compose   | Porta do banco no host (padrão 5432)                                           |
+| `API_PORT`                      | compose   | Porta da API no host (padrão 3333)                                             |
+| `WEB_PORT`                      | compose   | Porta do site no host (padrão 8080)                                            |
+| `VITE_API_URL`                  | web/build | Endereço da API usado pelo site. Vai para o navegador: é público               |
+| `VITE_FLAG_SHOWCASE_ANIMATIONS` | web/build | Feature flag das animações da vitrine (padrão `true`; `false` desliga)         |
 
 ## Contrato da API
 
@@ -193,6 +194,8 @@ a mensagem.
   Docker local e 204 ms em produção, sem erros.
 - **Teste de carga (k6, 3 estágios, 100 mil pedidos):** achou uma trava disputada na baixa de
   estoque. Corrigida, o p95 a 800 usuários caiu de 58 ms para 26 ms.
+- **Trace (OpenTelemetry e Jaeger):** `docker compose -f docker-compose.yml -f compose.tracing.yaml
+up --build`, com a interface em http://localhost:16686.
 
 Detalhes, consultas e resultados em [`docs/desempenho.md`](docs/desempenho.md).
 
