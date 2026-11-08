@@ -132,8 +132,8 @@ docker compose --profile perf run --rm -e VUS=1400 k6 run /perf/load.js
 ```
 
 O teste grava no banco: rode só no compose, nunca em produção. Para não misturar com o banco de
-desenvolvimento, use outro projeto e outras portas (`docker compose -p devland-perf`, com `API_PORT`,
-`WEB_PORT` e `DB_PORT` diferentes), e apague depois com `down -v`.
+desenvolvimento, use outro projeto e outras portas (`docker compose -p devland-perf`, com `API_PORT` e
+`WEB_PORT` diferentes), e apague depois com `down -v`.
 
 **Ambiente:** Docker Desktop no macOS, 15 CPUs e 7,7 GB, com API, banco e k6 na mesma máquina. Os
 números servem para comparar antes e depois, não como capacidade da produção. Cada rodada começou de

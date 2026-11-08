@@ -74,12 +74,12 @@ docker compose up --build
 O compose tem valores padrão para tudo, então o `.env` é opcional. Para mudar portas ou senhas
 locais, copie o `.env.example` para `.env` e edite.
 
-| Serviço | Endereço                         |
-| ------- | -------------------------------- |
-| Site    | http://localhost:8080            |
-| API     | http://localhost:3333            |
-| Swagger | http://localhost:3333/docs       |
-| Banco   | `127.0.0.1:5432` (só localmente) |
+| Serviço | Endereço                                  |
+| ------- | ----------------------------------------- |
+| Site    | http://localhost:8080                     |
+| API     | http://localhost:3333                     |
+| Swagger | http://localhost:3333/docs                |
+| Banco   | Só dentro do Docker, sem porta na máquina |
 
 `docker compose ps` mostra os três serviços como `healthy`. As migrations rodam sozinhas quando a
 API sobe. Para apagar os dados locais: `docker compose down -v`.
@@ -100,7 +100,7 @@ Ou direto na máquina, com Node 22:
 
 ```bash
 npm install                      # também ativa os hooks de commit
-docker compose up -d db          # só o banco
+docker compose -f compose.dev.yaml up -d db   # só o banco, na porta 5432
 npm run dev -w @devland/api      # API com recarga automática, porta 3333
 npm run dev -w @devland/web      # site com Vite, porta 5173
 ```
@@ -138,21 +138,21 @@ hooks funcionam igual ao macOS e ao Linux.
 
 Ficam no `.env` (fora do git). O `.env.example` traz valores fictícios para uso local.
 
-| Variável                        | Onde      | Para quê                                                                       |
-| ------------------------------- | --------- | ------------------------------------------------------------------------------ |
-| `NODE_ENV`                      | API       | `development`, `test` ou `production`                                          |
-| `PORT`                          | API       | Porta da API (padrão 3333)                                                     |
-| `DATABASE_URL`                  | API       | Conexão `postgres://` com o banco                                              |
-| `CORS_ORIGIN`                   | API       | Origens do site autorizadas, separadas por vírgula; obrigatória em produção    |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`   | API       | Coletor de traces. Vazio desliga o tracing; o `compose.tracing.yaml` já define |
-| `POSTGRES_USER`                 | compose   | Usuário do banco local                                                         |
-| `POSTGRES_PASSWORD`             | compose   | Senha do banco local                                                           |
-| `POSTGRES_DB`                   | compose   | Nome do banco local                                                            |
-| `DB_PORT`                       | compose   | Porta do banco no host (padrão 5432)                                           |
-| `API_PORT`                      | compose   | Porta da API no host (padrão 3333)                                             |
-| `WEB_PORT`                      | compose   | Porta do site no host (padrão 8080)                                            |
-| `VITE_API_URL`                  | web/build | Endereço da API usado pelo site. Vai para o navegador: é público               |
-| `VITE_FLAG_SHOWCASE_ANIMATIONS` | web/build | Feature flag das animações da vitrine (padrão `true`; `false` desliga)         |
+| Variável                        | Onde      | Para quê                                                                                            |
+| ------------------------------- | --------- | --------------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                      | API       | `development`, `test` ou `production`                                                               |
+| `PORT`                          | API       | Porta da API (padrão 3333)                                                                          |
+| `DATABASE_URL`                  | API       | Conexão `postgres://` com o banco                                                                   |
+| `CORS_ORIGIN`                   | API       | Origens do site autorizadas, separadas por vírgula; obrigatória em produção                         |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`   | API       | Coletor de traces. Vazio desliga o tracing; o `compose.tracing.yaml` já define                      |
+| `POSTGRES_USER`                 | compose   | Usuário do banco local                                                                              |
+| `POSTGRES_PASSWORD`             | compose   | Senha do banco local                                                                                |
+| `POSTGRES_DB`                   | compose   | Nome do banco local                                                                                 |
+| `DB_PORT`                       | compose   | Porta do banco na máquina, só no `compose.dev.yaml` (padrão 5432; troque se já tiver um PostgreSQL) |
+| `API_PORT`                      | compose   | Porta da API no host (padrão 3333)                                                                  |
+| `WEB_PORT`                      | compose   | Porta do site no host (padrão 8080)                                                                 |
+| `VITE_API_URL`                  | web/build | Endereço da API usado pelo site. Vai para o navegador: é público                                    |
+| `VITE_FLAG_SHOWCASE_ANIMATIONS` | web/build | Feature flag das animações da vitrine (padrão `true`; `false` desliga)                              |
 
 ## Contrato da API
 
