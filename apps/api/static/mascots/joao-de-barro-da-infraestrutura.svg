@@ -41,6 +41,10 @@
       <stop offset="0" stop-color="#5a4a6b"/>
       <stop offset="1" stop-color="#1e1626"/>
     </radialGradient>
+    <linearGradient id="beak" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7d6150"/>
+      <stop offset="1" stop-color="#3f2d24"/>
+    </linearGradient>
     <radialGradient id="bg" cx="40%" cy="35%" r="75%">
       <stop offset="0" stop-color="#fff7ee"/>
       <stop offset="1" stop-color="#fbe3c9"/>
@@ -73,9 +77,6 @@
   <g filter="url(#clay)">
     <circle cx="98" cy="100" r="30" fill="#c4743f"/>
   </g>
-  <g filter="url(#clay)">
-    <ellipse cx="106" cy="119" rx="17" ry="10" fill="#fff3e0"/>
-  </g>
   <g class="eye">
     <ellipse cx="90" cy="98" rx="6.5" ry="7.5" fill="url(#eye)"/>
     <circle cx="87.6" cy="94.6" r="2.6" fill="#fff"/>
@@ -86,12 +87,13 @@
     <circle cx="109.6" cy="94.6" r="2.6" fill="#fff"/>
   </g>
   <path class="eye-happy" opacity="0" d="M105.5 99.875 Q112 91.25 118.5 99.875" fill="none" stroke="#2a1f35" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M119 106 Q135 107 147 116 Q134 115 119 113 Z" fill="url(#beak)" stroke="#3a2a22" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M123 108.2 Q133 108.8 140 112" fill="none" stroke="#a88a78" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
   <g filter="url(#clay)">
-    <path d="M118 104 Q132 103 142 112 Q130 111 118 111 Z" fill="#6d5548" stroke="#6d5548" stroke-width="3" stroke-linejoin="round"/>
-    <circle cx="145" cy="114" r="6" fill="#d39461"/>
+    <circle cx="150" cy="118" r="6" fill="#d39461"/>
   </g>
   <ellipse class="cheek" cx="80" cy="111" rx="7" ry="4.5" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
-  <ellipse class="cheek" cx="118" cy="113" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse class="cheek" cx="112" cy="112" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
   <path d="M76 178 V192 M94 178 V192" fill="none" stroke="#8d7b70" stroke-width="5" stroke-linecap="round"/>
   <g filter="url(#clay)">
     <ellipse cx="78" cy="193" rx="9" ry="4.5" fill="#8d7b70"/>
