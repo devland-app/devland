@@ -56,5 +56,20 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Teste de fumaça de desempenho. Não sobe com o resto, só com o perfil "perf":
+  #   docker compose --profile perf run --rm k6
+  # Contra a produção, sem subir nada local: veja os comandos no começo de perf/smoke.js.
+  k6:
+    image: grafana/k6:1.4.2
+    profiles: ["perf"]
+    volumes:
+      - ./perf:/perf:ro
+    environment:
+      BASE_URL: http://api:${API_PORT:-3333}
+    command: ["run", "/perf/smoke.js"]
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   pgdata:

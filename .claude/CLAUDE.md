@@ -32,6 +32,7 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 | Cobertura            | `npm run test:coverage -w @devland/api` (e `-w @devland/web`)                          |
 | Gerar o contrato     | `npm run openapi -w @devland/api` (atualiza `docs/openapi.yaml`)                       |
 | Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)                             |
+| Teste de fumaça (k6) | `docker compose --profile perf run --rm k6` (SLO em `docs/desempenho.md`)              |
 
 ## Arquitetura da API
 
@@ -47,6 +48,8 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - `CHECK` em migration que altera tabela vai em SQL direto (`db.raw`): dentro de `alterTable`, o
   `table.check` do Knex monta a query errada. Em `createTable` ele funciona.
 - Detalhes e exemplos na skill `modularity`.
+- `GET /metrics` (`src/shared/metrics.ts`): um histograma `http_request_duration_seconds` por
+  método, molde da rota e status. O rótulo de rota é sempre o molde, nunca a URL com id.
 - Contrato OpenAPI 3.1 gerado dos JSON Schemas das rotas: Swagger UI em `/docs`, JSON em
   `/docs/json`. Toda rota tem `tags`, `operationId`, `summary` e descrição em cada resposta.
   Modelos reutilizados entram com `app.addSchema` e `$id` (viram components, como `Product`).

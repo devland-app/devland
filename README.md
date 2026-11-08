@@ -171,7 +171,8 @@ Cada pull request passa por:
 - varredura das imagens Docker com o Trivy, que reprova vulnerabilidades altas e críticas.
 
 Antes das imagens, o CI sobe o projeto recém-clonado com `docker compose up --build`, sem `.env`,
-em dois processadores (x64 e ARM) e confere que banco, API e site respondem.
+em dois processadores (x64 e ARM), confere que banco, API e site respondem e roda o teste de
+fumaça de desempenho (k6), que falha se o SLO não for cumprido.
 
 As imagens rodam sem root, saem para `linux/amd64` e `linux/arm64` (a mesma tag serve Windows, Linux
 e Mac com Apple Silicon) e são publicadas no Docker Hub:
@@ -181,6 +182,16 @@ publica `latest` e `sha-<commit>`; uma tag `vX.Y.Z` publica `X.Y.Z` e `X.Y`.
 
 Localmente, os hooks rodam o gitleaks e o lint-staged antes de cada commit, e o commitlint confere
 a mensagem.
+
+## Desempenho e observabilidade
+
+- **SLO:** 95% das requisições à API em menos de 500 ms e menos de 1% de erro.
+- **Métrica:** `GET /metrics` (em produção, `/api/metrics`), no formato do Prometheus: a duração
+  de cada requisição por método, rota e status, de onde saem taxa, erros e latência.
+- **Teste de fumaça (k6):** `docker compose --profile perf run --rm k6`. p95 medido: 6 ms no
+  Docker local e 204 ms em produção, sem erros.
+
+Detalhes, consultas e resultados em [`docs/desempenho.md`](docs/desempenho.md).
 
 ## Ambientes e deploy
 

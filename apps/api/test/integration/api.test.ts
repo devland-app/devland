@@ -123,6 +123,40 @@ describe("saúde e catálogo", () => {
   });
 });
 
+describe("métricas", () => {
+  const series = (route: string, status: number) =>
+    `http_request_duration_seconds_count{method="GET",route="${route}",status_code="${status}"}`;
+
+  it("mede cada requisição pelo molde da rota, com o status", async () => {
+    const unknownOrder = randomUUID();
+    await inject({ url: "/products" });
+    await inject({ url: `/orders/${unknownOrder}` });
+    await inject({ url: "/rota-que-nao-existe" });
+
+    const response = await inject({ url: "/metrics" });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/plain");
+    expect(response.headers["cache-control"]).toBe("no-store");
+
+    const text = response.body;
+    expect(text).toContain(series("/products", 200));
+    expect(text).toContain(series("/orders/:id", 404));
+    expect(text).toContain(series("unmatched", 404));
+    // O id do pedido nunca vira rótulo: cada pedido criaria uma série nova.
+    expect(text).not.toContain(unknownOrder);
+    // A faixa de 0,5 s é o limite do SLO.
+    expect(text).toMatch(
+      /http_request_duration_seconds_bucket\{le="0\.5",method="GET",route="\/products"/,
+    );
+    expect(text).toContain("process_cpu_seconds_total");
+  });
+
+  it("não conta a própria coleta", async () => {
+    await inject({ url: "/metrics" });
+    expect((await inject({ url: "/metrics" })).body).not.toContain('route="/metrics"');
+  });
+});
+
 describe("carteiras", () => {
   it("cria vazia e consulta pelo código", async () => {
     const created = await inject({ method: "POST", url: "/wallets" });

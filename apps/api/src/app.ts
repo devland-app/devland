@@ -8,6 +8,7 @@ import { createQuizzesModule } from "./modules/quizzes/index.js";
 import { createWalletsModule } from "./modules/wallets/index.js";
 import { registerApiDocs } from "./shared/api-docs.js";
 import type { Database } from "./shared/database.js";
+import { registerMetrics } from "./shared/metrics.js";
 
 const healthStatusSchema = {
   type: "object",
@@ -69,6 +70,7 @@ export async function buildApp(options: AppOptions): Promise<FastifyInstance> {
 
   // Precisa vir antes das rotas: o Swagger só documenta as rotas declaradas depois de carregado.
   await registerApiDocs(app);
+  registerMetrics(app);
 
   // O healthcheck do Docker chama esta rota: se o banco não responde, a API também não está saudável.
   app.get("/health", { schema: healthSchema }, async (request, reply) => {
