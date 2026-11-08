@@ -6,8 +6,9 @@ interface DialogProps {
   open: boolean;
   onClose: () => void;
   labelledBy: string;
-  // "drawer" desliza da direita (carrinho); "modal" aparece no centro (checkout).
-  variant: "drawer" | "modal";
+  // "drawer" desliza da direita (carrinho); "modal" aparece no centro (checkout); "menu" é um painel
+  // pequeno no canto do cabeçalho (configurações).
+  variant: "drawer" | "modal" | "menu";
   children: ReactNode;
 }
 

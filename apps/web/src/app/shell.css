@@ -81,25 +81,21 @@
   align-items: center;
 }
 
-/* "?" da página Sobre: menor e sem a espessura de massinha dos botões, para não competir com eles. */
-.about-link {
-  display: inline-grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid var(--line);
-  color: var(--muted);
-  font: 800 1rem/1 var(--font-display);
-  text-decoration: none;
-  transition:
-    color 150ms ease,
-    border-color 150ms ease;
+/* Opções do menu de configurações: uma por linha, ícone e texto alinhados à esquerda. */
+.settings-options {
+  display: grid;
+  gap: 0.6rem;
 }
-.about-link:hover,
-.about-link[aria-current="page"] {
-  color: var(--ink);
-  border-color: var(--lilac);
+.settings-options .btn {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 0.7rem;
+  text-decoration: none;
+}
+.settings-glyph {
+  width: 20px;
+  text-align: center;
+  font: 800 1.15rem/1 var(--font-display);
 }
 
 main {
@@ -113,8 +109,46 @@ main {
 }
 
 @media (max-width: 640px) {
+  /* Só a linha do logo é barra: o fundo vai até ela, e as abas ficam soltas embaixo, sem fundo. Ao
+     rolar a página elas saem do caminho, sem mudar a altura do cabeçalho (nada na página pula). */
+  .nav-band {
+    position: relative;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 0;
+    pointer-events: none;
+  }
+  .nav-band::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4.4rem;
+    z-index: -1;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .logo,
+  .actions,
+  .tabs {
+    pointer-events: auto;
+  }
+  .tabs {
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+  /* :focus-within: quem navega pelo teclado continua vendo a aba em foco. */
+  .topbar.is-scrolled .tabs:not(:focus-within) {
+    opacity: 0;
+    transform: translateY(-1.2rem);
+    pointer-events: none;
+  }
+  /* O espaço entre as linhas separa as abas da borda da barra do logo. */
   .nav-row {
-    gap: 0.7rem;
+    gap: 1.5rem 0.7rem;
   }
   .tabs {
     order: 3;
@@ -125,20 +159,10 @@ main {
     font-size: 1.6rem;
   }
 }
-/* Celular estreito: o saldo divide a linha com o logo, então o nome vira só o caranguejo (o link
+/* Celular estreito: o nome vira só o caranguejo, para os botões caberem na linha do logo (o link
    continua com o nome completo para leitor de tela). */
-@media (max-width: 440px) {
+@media (max-width: 400px) {
   .logo-text {
     display: none;
-  }
-}
-/* Celular bem estreito (320 px): espaços menores para os botões caberem na linha do logo. */
-@media (max-width: 360px) {
-  .actions {
-    gap: 0.35rem;
-  }
-  .about-link {
-    width: 26px;
-    height: 26px;
   }
 }
