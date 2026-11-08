@@ -18,6 +18,34 @@ export function stripApiPrefix(url: string): string {
   return rest.startsWith("/") ? rest : `/${rest}`;
 }
 
+// A regra "/api/:path*" do vercel.json faz a Vercel acrescentar "?path=<resto do caminho>" à URL.
+// As rotas que recusam parâmetros desconhecidos (como a lista de quizzes) responderiam 400. Sai só o
+// parâmetro cujo valor é exatamente o caminho da própria requisição: um "path" de verdade fica.
+export function removeRewriteParam(url: string): string {
+  const [pathname = "/", query] = url.split(/\?(.*)/s, 2);
+  if (!query) {
+    return url;
+  }
+  const params = new URLSearchParams(query);
+  let route = pathname.replace(/^\//, "");
+  try {
+    route = decodeURIComponent(route);
+  } catch {
+    return url;
+  }
+  if (params.getAll("path").join("/") !== route) {
+    return url;
+  }
+  params.delete("path");
+  const remaining = params.toString();
+  return remaining ? `${pathname}?${remaining}` : pathname;
+}
+
+// Caminho que a API recebe: sem o prefixo /api e sem o parâmetro que a regra da Vercel acrescenta.
+export function toApiUrl(url: string): string {
+  return removeRewriteParam(stripApiPrefix(url));
+}
+
 type AppFactory = () => Promise<FastifyInstance>;
 
 async function productionApp(): Promise<FastifyInstance> {
@@ -45,7 +73,7 @@ export function createVercelHandler(createApp: AppFactory = productionApp) {
         throw error;
       });
     const app = await ready;
-    request.url = stripApiPrefix(request.url ?? "/");
+    request.url = toApiUrl(request.url ?? "/");
     app.server.emit("request", request, response);
   };
 }
