@@ -102,8 +102,8 @@ describe("saúde e catálogo", () => {
     expect(response.json()).toEqual({ status: "ok", database: "ok" });
   });
 
-  it("lista os 8 mascotes com preço em moedas e imagem versionada", () => {
-    expect(products).toHaveLength(8);
+  it("lista os 9 mascotes com preço em moedas e imagem versionada", () => {
+    expect(products).toHaveLength(9);
     for (const item of products) {
       expect(item.priceCoins).toBeGreaterThan(0);
       expect(item.imageUrl).toMatch(/^\/images\/mascots\/[a-z-]+\.svg\?v=[0-9a-f]{8}$/);
@@ -120,6 +120,40 @@ describe("saúde e catálogo", () => {
 
   it("devolve 404 para mascote inexistente", async () => {
     expect((await inject({ url: "/products/9999" })).statusCode).toBe(404);
+  });
+});
+
+describe("métricas", () => {
+  const series = (route: string, status: number) =>
+    `http_request_duration_seconds_count{method="GET",route="${route}",status_code="${status}"}`;
+
+  it("mede cada requisição pelo molde da rota, com o status", async () => {
+    const unknownOrder = randomUUID();
+    await inject({ url: "/products" });
+    await inject({ url: `/orders/${unknownOrder}` });
+    await inject({ url: "/rota-que-nao-existe" });
+
+    const response = await inject({ url: "/metrics" });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/plain");
+    expect(response.headers["cache-control"]).toBe("no-store");
+
+    const text = response.body;
+    expect(text).toContain(series("/products", 200));
+    expect(text).toContain(series("/orders/:id", 404));
+    expect(text).toContain(series("unmatched", 404));
+    // O id do pedido nunca vira rótulo: cada pedido criaria uma série nova.
+    expect(text).not.toContain(unknownOrder);
+    // A faixa de 0,5 s é o limite do SLO.
+    expect(text).toMatch(
+      /http_request_duration_seconds_bucket\{le="0\.5",method="GET",route="\/products"/,
+    );
+    expect(text).toContain("process_cpu_seconds_total");
+  });
+
+  it("não conta a própria coleta", async () => {
+    await inject({ url: "/metrics" });
+    expect((await inject({ url: "/metrics" })).body).not.toContain('route="/metrics"');
   });
 });
 
@@ -141,7 +175,7 @@ describe("carteiras", () => {
 describe("quizzes e moedas", () => {
   it("cada quiz paga o preço do seu mascote", async () => {
     const quizzes = (await inject({ url: "/quizzes" })).json<QuizSummary[]>();
-    expect(quizzes).toHaveLength(8);
+    expect(quizzes).toHaveLength(9);
     for (const quiz of quizzes) {
       expect(quiz.totalCoins).toBe(product(quiz.slug).priceCoins);
     }

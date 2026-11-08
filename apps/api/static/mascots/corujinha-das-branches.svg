@@ -53,6 +53,7 @@
     <circle cx="198" cy="148" r="10" fill="#fff3e0"/>
     <circle cx="212" cy="188" r="10" fill="#fff3e0"/>
   </g>
+  <g class="act-hop">
   <g filter="url(#clay)">
     <path d="M70 84 L64 52 L92 72 Z M150 84 L156 52 L128 72 Z" fill="#a1887f" stroke="#a1887f" stroke-width="8" stroke-linejoin="round"/>
   </g>
@@ -88,5 +89,6 @@
   <g filter="url(#clay)">
     <ellipse cx="96" cy="184" rx="10" ry="6" fill="#ffb74d"/>
     <ellipse cx="124" cy="184" rx="10" ry="6" fill="#ffb74d"/>
+  </g>
   </g>
 </svg>

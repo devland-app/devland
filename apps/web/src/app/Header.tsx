@@ -47,6 +47,15 @@ export function Header({ route, actions }: HeaderProps) {
             ))}
           </nav>
           <div className="actions">
+            {/* Discreto de propósito: é a página sobre o projeto, não uma seção da loja. */}
+            <a
+              className="about-link"
+              href="#sobre"
+              aria-label="Sobre a DevLand"
+              aria-current={route.name === "sobre" ? "page" : undefined}
+            >
+              <span aria-hidden="true">?</span>
+            </a>
             <SoundToggle />
             <ThemeToggle />
             {actions}

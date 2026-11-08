@@ -7,7 +7,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
-  globalIgnores(["**/dist/", "**/coverage/", "**/node_modules/"]),
+  globalIgnores(["**/dist/", "**/coverage/", "**/node_modules/", ".vercel/"]),
   js.configs.recommended,
   tseslint.configs.recommended,
   prettier,
@@ -22,6 +22,13 @@ export default defineConfig(
       "no-console": ["warn", { allow: ["warn", "error"] }],
       eqeqeq: ["error", "always"],
       "prefer-const": "error",
+    },
+  },
+  {
+    // Scripts do k6: rodam no runtime do k6, que injeta __ENV, e não no Node.
+    files: ["perf/**/*.js"],
+    languageOptions: {
+      globals: { __ENV: "readonly", __VU: "readonly", __ITER: "readonly" },
     },
   },
   {

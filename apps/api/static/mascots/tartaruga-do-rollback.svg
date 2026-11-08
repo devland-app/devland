@@ -64,7 +64,7 @@
   <g filter="url(#clay)">
     <rect x="58" y="162" width="136" height="15" rx="7.5" fill="#2e7d32"/>
   </g>
-  <g filter="url(#clay)">
+  <g class="act-rewind" style="transform-origin: 126px 132px" filter="url(#clay)">
     <path d="M104 132 A22 22 0 1 0 126 110" fill="none" stroke="#f1fff0" stroke-width="8" stroke-linecap="round"/>
     <path d="M132 99 L117 110 L132 121 Z" fill="#f1fff0" stroke="#f1fff0" stroke-width="4" stroke-linejoin="round"/>
   </g>

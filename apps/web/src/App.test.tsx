@@ -163,9 +163,11 @@ describe("adoção com moedas", () => {
 
     await user.click(screen.getByRole("link", { name: /Caranguejo dos Contêineres/ }));
     expect(await screen.findByRole("heading", { name: "Em poucas palavras" })).toBeInTheDocument();
-    await user.click(
-      screen.getByRole("button", { name: "Interagir com Caranguejo dos Contêineres" }),
-    );
+    // Clique alterna o truque do desenho (o mesmo da vitrine) com as reações do corpo todo.
+    const mascot = screen.getByRole("button", { name: "Interagir com Caranguejo dos Contêineres" });
+    await user.click(mascot);
+    expect(document.querySelector(".mascot-art.is-playing.is-happy")).not.toBeNull();
+    await user.click(mascot);
     expect(document.querySelector(".mascot-art.is-jump.is-happy")).not.toBeNull();
 
     await go("#vitrine");
@@ -288,6 +290,33 @@ describe("páginas e preferências", () => {
       "aria-valuenow",
       "0",
     );
+  });
+
+  it("a interrogação do cabeçalho abre a página Sobre, com o Swagger em outra aba", async () => {
+    renderApp();
+    await user.click(screen.getByRole("link", { name: "Sobre a DevLand" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Por trás da DevLand" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Sobre a DevLand" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+
+    // Accordion nativo: fechado, o texto fica escondido; um clique no título abre, outro fecha.
+    const security = screen.getByText("Segurança").closest("details");
+    const detail = screen.getByText(/não pede nome, e-mail nem cartão/);
+    expect(detail).not.toBeVisible();
+    await user.click(screen.getByText("Segurança"));
+    expect(security).toHaveAttribute("open");
+    expect(detail).toBeVisible();
+    await user.click(screen.getByText("Segurança"));
+    expect(detail).not.toBeVisible();
+
+    const swagger = screen.getByRole("link", { name: /Explorar a API \(Swagger\)/ });
+    expect(swagger).toHaveAttribute("href", "http://localhost:3333/docs");
+    expect(swagger).toHaveAttribute("target", "_blank");
+    expect(swagger).toHaveAccessibleName(/abre em outra aba/);
   });
 
   it("tema e som ficam salvos neste navegador", async () => {

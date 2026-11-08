@@ -190,11 +190,18 @@ jobs:
       - name: Confere que tudo responde
         run: |
           curl --fail --silent --show-error http://localhost:3333/health
-          test "$(curl -fsS http://localhost:3333/products | jq length)" = 8
+          # Cada mascote tem um quiz: se a migration de um mascote novo não rodar, as contagens diferem.
+          products=$(curl -fsS http://localhost:3333/products | jq length)
+          test "$products" -gt 0
+          test "$products" = "$(curl -fsS http://localhost:3333/quizzes | jq length)"
           curl -fsS http://localhost:8080/ | grep -q "<title>DevLand"
           wallet=$(curl -fsS -X POST http://localhost:3333/wallets | jq -r .id)
           curl -fsS -X POST -H "Content-Type: application/json" -d "{\"walletId\":\"$wallet\"}" \
             http://localhost:3333/quizzes/castor-do-cache/attempts | jq -e '.questions | length == 5'
+          curl -fsS http://localhost:3333/metrics | grep -q "TYPE http_request_duration_seconds histogram"
+      # O SLO de latência (docs/desempenho.md) é limite do k6: se o p95 passar de 500 ms, falha.
+      - name: Teste de fumaça de desempenho (k6)
+        run: docker compose --profile perf run --rm k6
       - name: Logs dos containers
         if: failure()
         run: docker compose logs
@@ -266,8 +273,13 @@ jobs:
           URL: ${{ steps.deploy.outputs.url }}
         run: |
           curl --fail --silent --show-error --retry 5 --retry-delay 5 --retry-all-errors "$URL/api/health"
-          test "$(curl -fsS "$URL/api/products" | jq length)" = 8
-          test "$(curl -fsS "$URL/api/quizzes" | jq length)" = 8
+          products=$(curl -fsS "$URL/api/products" | jq length)
+          test "$products" -gt 0
+          test "$products" = "$(curl -fsS "$URL/api/quizzes" | jq length)"
+          curl -fsS "$URL/api/metrics" | grep -q "TYPE http_request_duration_seconds histogram"
+          # O Swagger precisa pedir os próprios arquivos dentro de /api, e eles precisam existir.
+          curl -fsS "$URL/api/docs" | grep -q 'src="/api/docs/static/swagger-ui-bundle.js"'
+          curl -fsS -o /dev/null "$URL/api/docs/static/swagger-ui-bundle.js"
           curl -fsS "$URL/" | grep -q "<title>DevLand"
 
       # Deploy publicado mas sem responder: mostra os logs da função para entender o porquê.

@@ -49,12 +49,28 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:3333}
+        VITE_FLAG_SHOWCASE_ANIMATIONS: ${VITE_FLAG_SHOWCASE_ANIMATIONS:-true}
     ports:
       - "${WEB_PORT:-8080}:8080"
     depends_on:
       api:
         condition: service_healthy
     restart: unless-stopped
+
+  # Teste de fumaça de desempenho. Não sobe com o resto, só com o perfil "perf":
+  #   docker compose --profile perf run --rm k6
+  # Contra a produção, sem subir nada local: veja os comandos no começo de perf/smoke.js.
+  k6:
+    image: grafana/k6:1.4.2
+    profiles: ["perf"]
+    volumes:
+      - ./perf:/perf:ro
+    environment:
+      BASE_URL: http://api:${API_PORT:-3333}
+    command: ["run", "/perf/smoke.js"]
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   pgdata:

@@ -90,3 +90,54 @@ describe("MascotArt: piscadas", () => {
     expect(container.querySelector(".mascot-art.is-blinking")).toBeNull();
   });
 });
+
+describe("MascotArt: animações da vitrine", () => {
+  beforeEach(() => {
+    vi.mocked(getMascotSvg).mockResolvedValue(SVG);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  async function renderShowcase(play: boolean, imageUrl: string) {
+    // Relógio falso antes de montar: a primeira animação é agendada na montagem.
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const { container } = render(
+      <MascotArt product={{ imageUrl }} size={50} blink="off" play={play} />,
+    );
+    await waitFor(() => expect(container.querySelector(".mascot-art svg")).not.toBeNull());
+    return container;
+  }
+
+  it("de vez em quando liga a animação por um instante, e depois para", async () => {
+    const container = await renderShowcase(true, "/g.svg?v=1");
+    expect(container.querySelector(".mascot-art.is-playing")).toBeNull();
+    let played = false;
+    for (let step = 0; step < 300 && !played; step += 1) {
+      act(() => vi.advanceTimersByTime(100));
+      played = container.querySelector(".mascot-art.is-playing") !== null;
+    }
+    expect(played).toBe(true);
+    act(() => vi.advanceTimersByTime(1800));
+    expect(container.querySelector(".mascot-art.is-playing")).toBeNull();
+  });
+
+  it("fora da vitrine não anima", async () => {
+    const container = await renderShowcase(false, "/h.svg?v=1");
+    act(() => vi.advanceTimersByTime(60_000));
+    expect(container.querySelector(".mascot-art.is-playing")).toBeNull();
+  });
+
+  it("com menos movimento pedido, não anima nem na vitrine", async () => {
+    vi.stubGlobal("matchMedia", (query: string) => ({
+      matches: query.includes("reduce"),
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+    const container = await renderShowcase(true, "/i.svg?v=1");
+    act(() => vi.advanceTimersByTime(60_000));
+    expect(container.querySelector(".mascot-art.is-playing")).toBeNull();
+  });
+});

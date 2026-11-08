@@ -24,6 +24,9 @@ export class ApiError extends Error {
   }
 }
 
+// Documentação interativa da API (Swagger UI), gerada do mesmo contrato que valida as rotas.
+export const API_DOCS_URL = `${API_URL}/docs`;
+
 // As imagens dos mascotes são servidas pela API: o produto traz só o caminho.
 export function apiAssetUrl(path: string): string {
   return `${API_URL}${path}`;

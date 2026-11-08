@@ -5,7 +5,8 @@ export type Route =
   | { name: "quizzes" }
   | { name: "quiz"; slug: string }
   | { name: "mascotes" }
-  | { name: "mascote"; slug: string };
+  | { name: "mascote"; slug: string }
+  | { name: "sobre" };
 
 const MASCOT_PREFIX = "#mascote-";
 const QUIZ_PREFIX = "#quiz-";
@@ -20,6 +21,9 @@ function routeFromHash(): Route {
   }
   if (hash === "#quizzes") {
     return { name: "quizzes" };
+  }
+  if (hash === "#sobre") {
+    return { name: "sobre" };
   }
   if (hash.startsWith(QUIZ_PREFIX) && hash.length > QUIZ_PREFIX.length) {
     return { name: "quiz", slug: decodeURIComponent(hash.slice(QUIZ_PREFIX.length)) };

@@ -3,9 +3,9 @@
 # DevLand
 
 Site educativo de DevOps com mascotes de massinha. Cada conceito (contêineres, CI/CD, controle de
-versão, orquestração, deploy, observabilidade, desempenho e segurança) tem um quiz e um mascote. Os
-quizzes rendem moedas virtuais, e as moedas adotam os mascotes. Cada mascote adotado desbloqueia
-uma página que explica o conceito dele de forma simples.
+versão, orquestração, deploy, observabilidade, desempenho, segurança e infraestrutura como código)
+tem um quiz e um mascote. Os quizzes rendem moedas virtuais, e as moedas adotam os mascotes. Cada
+mascote adotado desbloqueia uma página que explica o conceito dele de forma simples.
 
 Projeto final do curso de DevOps e Engenharia de Software do Geração Tech 4.0.
 
@@ -30,7 +30,8 @@ Monorepo com npm workspaces, Node 22 e TypeScript em tudo.
 apps/
   api/   Fastify + Knex + PostgreSQL, monólito modular
   web/   React + Vite, servido por nginx em produção
-docs/    contrato OpenAPI e registro de uso de IA
+docs/    ADRs, diagramas C4, contrato OpenAPI, testes e uso de IA
+infra/   Terraform da Vercel e do Neon
 ```
 
 A API é dividida em módulos com fronteiras explícitas: cada um é dono das próprias tabelas e só é
@@ -54,6 +55,10 @@ Decisões que valem destacar:
   marca como pago. O banco aceita um único pagamento aprovado por pedido.
 - Moedas nunca ficam negativas (`UPDATE` condicional) e não são creditadas em dobro (referência
   única no extrato), mesmo com requisições simultâneas.
+
+O porquê de cada escolha, com as alternativas descartadas, está nos
+[ADRs](docs/adr/README.md). Os diagramas de contexto, contêineres e componentes estão em
+[`docs/c4`](docs/c4/README.md).
 
 ## Como rodar
 
@@ -133,19 +138,20 @@ hooks funcionam igual ao macOS e ao Linux.
 
 Ficam no `.env` (fora do git). O `.env.example` traz valores fictícios para uso local.
 
-| Variável            | Onde      | Para quê                                                                    |
-| ------------------- | --------- | --------------------------------------------------------------------------- |
-| `NODE_ENV`          | API       | `development`, `test` ou `production`                                       |
-| `PORT`              | API       | Porta da API (padrão 3333)                                                  |
-| `DATABASE_URL`      | API       | Conexão `postgres://` com o banco                                           |
-| `CORS_ORIGIN`       | API       | Origens do site autorizadas, separadas por vírgula; obrigatória em produção |
-| `POSTGRES_USER`     | compose   | Usuário do banco local                                                      |
-| `POSTGRES_PASSWORD` | compose   | Senha do banco local                                                        |
-| `POSTGRES_DB`       | compose   | Nome do banco local                                                         |
-| `DB_PORT`           | compose   | Porta do banco no host (padrão 5432)                                        |
-| `API_PORT`          | compose   | Porta da API no host (padrão 3333)                                          |
-| `WEB_PORT`          | compose   | Porta do site no host (padrão 8080)                                         |
-| `VITE_API_URL`      | web/build | Endereço da API usado pelo site. Vai para o navegador: é público            |
+| Variável                        | Onde      | Para quê                                                                    |
+| ------------------------------- | --------- | --------------------------------------------------------------------------- |
+| `NODE_ENV`                      | API       | `development`, `test` ou `production`                                       |
+| `PORT`                          | API       | Porta da API (padrão 3333)                                                  |
+| `DATABASE_URL`                  | API       | Conexão `postgres://` com o banco                                           |
+| `CORS_ORIGIN`                   | API       | Origens do site autorizadas, separadas por vírgula; obrigatória em produção |
+| `POSTGRES_USER`                 | compose   | Usuário do banco local                                                      |
+| `POSTGRES_PASSWORD`             | compose   | Senha do banco local                                                        |
+| `POSTGRES_DB`                   | compose   | Nome do banco local                                                         |
+| `DB_PORT`                       | compose   | Porta do banco no host (padrão 5432)                                        |
+| `API_PORT`                      | compose   | Porta da API no host (padrão 3333)                                          |
+| `WEB_PORT`                      | compose   | Porta do site no host (padrão 8080)                                         |
+| `VITE_API_URL`                  | web/build | Endereço da API usado pelo site. Vai para o navegador: é público            |
+| `VITE_FLAG_SHOWCASE_ANIMATIONS` | web/build | Feature flag das animações da vitrine (padrão `true`; `false` desliga)      |
 
 ## Contrato da API
 
@@ -166,7 +172,8 @@ Cada pull request passa por:
 - varredura das imagens Docker com o Trivy, que reprova vulnerabilidades altas e críticas.
 
 Antes das imagens, o CI sobe o projeto recém-clonado com `docker compose up --build`, sem `.env`,
-em dois processadores (x64 e ARM) e confere que banco, API e site respondem.
+em dois processadores (x64 e ARM), confere que banco, API e site respondem e roda o teste de
+fumaça de desempenho (k6), que falha se o SLO não for cumprido.
 
 As imagens rodam sem root, saem para `linux/amd64` e `linux/arm64` (a mesma tag serve Windows, Linux
 e Mac com Apple Silicon) e são publicadas no Docker Hub:
@@ -176,6 +183,16 @@ publica `latest` e `sha-<commit>`; uma tag `vX.Y.Z` publica `X.Y.Z` e `X.Y`.
 
 Localmente, os hooks rodam o gitleaks e o lint-staged antes de cada commit, e o commitlint confere
 a mensagem.
+
+## Desempenho e observabilidade
+
+- **SLO:** 95% das requisições à API em menos de 500 ms e menos de 1% de erro.
+- **Métrica:** `GET /metrics` (em produção, `/api/metrics`), no formato do Prometheus: a duração
+  de cada requisição por método, rota e status, de onde saem taxa, erros e latência.
+- **Teste de fumaça (k6):** `docker compose --profile perf run --rm k6`. p95 medido: 6 ms no
+  Docker local e 204 ms em produção, sem erros.
+
+Detalhes, consultas e resultados em [`docs/desempenho.md`](docs/desempenho.md).
 
 ## Ambientes e deploy
 
@@ -193,6 +210,19 @@ veja [`infra/README.md`](infra/README.md).
 Segredos do deploy, todos no GitHub: `VERCEL_TOKEN` (repositório) e `DATABASE_URL` (um por ambiente,
 `production` e `preview`). Ids públicos em variáveis: `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`,
 `SITE_URL`.
+
+## Documentação
+
+| Documento                                  | O que tem                                                |
+| ------------------------------------------ | -------------------------------------------------------- |
+| [`docs/adr`](docs/adr/README.md)           | Decisões de arquitetura e as alternativas descartadas    |
+| [`docs/c4`](docs/c4/README.md)             | Diagramas C4: contexto, contêineres e componentes da API |
+| [`docs/openapi.yaml`](docs/openapi.yaml)   | Contrato da API (OpenAPI 3.1)                            |
+| [`docs/testes.md`](docs/testes.md)         | Estratégia de testes e cobertura                         |
+| [`docs/desempenho.md`](docs/desempenho.md) | SLO, métrica e teste de fumaça com o p95 medido          |
+| [`infra/README.md`](infra/README.md)       | Infraestrutura como código (Terraform)                   |
+| [`docs/ia.md`](docs/ia.md)                 | Registro do uso de IA                                    |
+| [`CONTRIBUTORS.md`](CONTRIBUTORS.md)       | Autoria e divisão do trabalho                            |
 
 ## Fluxo de contribuição
 

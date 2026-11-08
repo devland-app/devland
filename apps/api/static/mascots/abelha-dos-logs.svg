@@ -48,7 +48,7 @@
     <clipPath id="bee-body"><ellipse cx="112" cy="116" rx="55" ry="43"/></clipPath>
   </defs>
   <circle class="backdrop" cx="120" cy="120" r="116" fill="url(#bg)"/>
-  <g filter="url(#clay)">
+  <g class="act-flutter" filter="url(#clay)">
     <ellipse cx="96" cy="70" rx="22" ry="30" transform="rotate(-20 96 70)" fill="#ffffff" opacity="0.85"/>
     <ellipse cx="134" cy="68" rx="22" ry="30" transform="rotate(20 134 68)" fill="#ffffff" opacity="0.85"/>
   </g>

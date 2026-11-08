@@ -20,6 +20,7 @@ describe("useHashRoute", () => {
     ["#mascote-polvo-orquestrador", { name: "mascote", slug: "polvo-orquestrador" }],
     ["#mascote-", { name: "vitrine" }],
     ["#mascote-a%20b", { name: "mascote", slug: "a b" }],
+    ["#sobre", { name: "sobre" }],
   ])("%s abre %o", (hash, route) => {
     expect(routeFor(hash)).toEqual(route);
   });

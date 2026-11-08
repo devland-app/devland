@@ -78,7 +78,7 @@
     <path d="M200 84 L222 48" stroke="#6d4c41" stroke-width="6" stroke-linecap="round"/>
     <circle cx="222" cy="48" r="5" fill="#fff8e1"/>
   </g>
-  <g filter="url(#clay)">
+  <g class="act-sway" filter="url(#clay)">
     <ellipse cx="40" cy="78" rx="7.5" ry="5.5" transform="rotate(-20 40 78)" fill="#6a4c93"/>
     <ellipse cx="72" cy="50" rx="6.5" ry="5" transform="rotate(-20 72 50)" fill="#6a4c93"/>
     <path d="M46 76 V50 Q56 54 54 64 M77 48 V26 Q86 30 84 38" fill="none" stroke="#6a4c93" stroke-width="3.5" stroke-linecap="round"/>

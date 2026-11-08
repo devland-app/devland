@@ -334,6 +334,88 @@ const priceInCoins: Migration = {
   },
 };
 
+// O nono conceito, infraestrutura como código. O quiz dele (mesmo slug) passa a pagar o preço
+// deste mascote, e a economia continua fechando: acertar tudo paga a coleção inteira.
+const INFRASTRUCTURE_SLUG = "joao-de-barro-da-infraestrutura";
+
+const addInfrastructureMascot: Migration = {
+  name: "catalog_009_add_infrastructure_mascot",
+  async up(db) {
+    const lesson = MASCOT_LESSONS[INFRASTRUCTURE_SLUG];
+    if (lesson === undefined) {
+      throw new Error(`Lição do mascote ${INFRASTRUCTURE_SLUG} não encontrada`);
+    }
+    await db("products").insert({
+      slug: INFRASTRUCTURE_SLUG,
+      name: "João-de-barro da Infraestrutura",
+      concept: "Infraestrutura como código",
+      description:
+        "Descreve servidores e bancos em código para criar tudo igual, quantas vezes precisar.",
+      price_coins: 100,
+      stock: 1000,
+      image_path: `/images/mascots/${INFRASTRUCTURE_SLUG}.svg`,
+      lesson_explanation: lesson.explanation,
+      lesson_real_world: lesson.realWorld,
+      lesson_in_project: lesson.inProject,
+    });
+  },
+  async down(db) {
+    // Pedidos que já adotaram o mascote guardam nome e preço copiados: o histórico continua inteiro.
+    await db("products").where({ slug: INFRASTRUCTURE_SLUG }).delete();
+  },
+};
+
+// O trecho "Onde a DevLand usa isso" de três lições descrevia o projeto de antes do deploy na nuvem:
+// cache no nginx, versão 0.2.0 e só logs. Agora conta a CDN, o rollback da Vercel e a métrica.
+const REFRESHED_PROJECT_LESSONS: Record<string, { before: string; after: string }> = {
+  "castor-do-cache": {
+    before:
+      "O nginx da DevLand manda o navegador guardar os arquivos da loja por um ano (eles mudam " +
+      "de nome a cada versão), e as ilustrações dos mascotes ficam em cache por um dia.",
+    after:
+      "Os arquivos de código e estilo do site e as ilustrações dos mascotes ficam guardados por " +
+      "um ano no navegador e na CDN: quando um deles muda, o endereço muda junto, e ninguém " +
+      "recebe a versão velha. A vitrine fica 30 segundos no cache da CDN, que responde sem " +
+      "acordar o servidor nem o banco.",
+  },
+  "tartaruga-do-rollback": {
+    before:
+      "Cada imagem da DevLand no Docker Hub ganha uma etiqueta com o código do commit (sha-…), e " +
+      "as releases ganham número de versão (0.2.0). Para voltar, basta subir a etiqueta " +
+      "anterior.",
+    after:
+      "Na Vercel, cada deploy fica guardado com um endereço próprio, e voltar para o anterior é " +
+      "um comando só (vercel rollback), que leva segundos. No Docker Hub, cada imagem ganha a " +
+      "etiqueta do commit (sha-…) e a da versão (como 0.4.1): para voltar, basta subir a " +
+      "etiqueta anterior.",
+  },
+  "abelha-dos-logs": {
+    before:
+      "A API da DevLand registra cada requisição em JSON estruturado, com tempo de resposta e " +
+      "código de status. Um erro interno aparece completo no log, mas quem usa a loja vê só uma " +
+      "mensagem genérica.",
+    after:
+      "A API da DevLand registra cada requisição em JSON estruturado e mede a duração de todas " +
+      "elas em /metrics, no formato do Prometheus. É dali que sai o objetivo de serviço: 95% das " +
+      "respostas em menos de meio segundo. Um erro interno aparece completo no log, mas quem usa " +
+      "a loja vê só uma mensagem genérica.",
+  },
+};
+
+const refreshProjectLessons: Migration = {
+  name: "catalog_010_refresh_project_lessons",
+  async up(db) {
+    for (const [slug, text] of Object.entries(REFRESHED_PROJECT_LESSONS)) {
+      await db("products").where({ slug }).update({ lesson_in_project: text.after });
+    }
+  },
+  async down(db) {
+    for (const [slug, text] of Object.entries(REFRESHED_PROJECT_LESSONS)) {
+      await db("products").where({ slug }).update({ lesson_in_project: text.before });
+    }
+  },
+};
+
 export const catalogMigrations: Migration[] = [
   createProducts,
   insertInitialProducts,
@@ -343,4 +425,6 @@ export const catalogMigrations: Migration[] = [
   rewriteDescriptions,
   renameToDevLand,
   priceInCoins,
+  addInfrastructureMascot,
+  refreshProjectLessons,
 ];
