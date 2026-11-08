@@ -12,10 +12,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-devland}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devland}
       POSTGRES_DB: ${POSTGRES_DB:-devland}
-    # Porta publicada só em 127.0.0.1: a API em modo dev (fora do Docker) e clientes SQL da própria
-    # máquina alcançam o banco, mas ele não fica exposto para a rede.
-    ports:
-      - "127.0.0.1:${DB_PORT:-5432}:5432"
+    # Sem "ports": a API alcança o banco pela rede interna do compose. Publicar a 5432 impediria o
+    # projeto de subir em máquinas que já têm um PostgreSQL. Para conectar um cliente SQL ou rodar a
+    # API fora do Docker, use o compose.dev.yaml, que publica a porta.
     # Volume nomeado: os dados sobrevivem a "docker compose down" (só "down -v" apaga).
     volumes:
       - pgdata:/var/lib/postgresql/data
