@@ -5,7 +5,7 @@ export function SoundToggle() {
 
   return (
     <button
-      className="btn btn--soft btn--icon"
+      className="btn btn--soft"
       type="button"
       onClick={toggle}
       aria-pressed={enabled}
@@ -29,6 +29,7 @@ export function SoundToggle() {
           <path d="M16 9.5l5 5M21 9.5l-5 5" />
         )}
       </svg>
+      {enabled ? "Som ligado" : "Som desligado"}
     </button>
   );
 }

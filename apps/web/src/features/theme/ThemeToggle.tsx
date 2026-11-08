@@ -13,7 +13,7 @@ export function ThemeToggle() {
 
   return (
     <button
-      className="btn btn--soft btn--icon"
+      className="btn btn--soft"
       type="button"
       onClick={changeTheme}
       aria-pressed={dark}
@@ -40,6 +40,7 @@ export function ThemeToggle() {
           <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" />
         </svg>
       )}
+      {dark ? "Tema escuro" : "Tema claro"}
     </button>
   );
 }
