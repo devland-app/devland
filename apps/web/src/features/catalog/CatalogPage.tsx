@@ -13,7 +13,7 @@ export function CatalogPage() {
 
   return (
     <section aria-labelledby="catalog-title">
-      <div className="intro">
+      <div className="intro intro--center">
         <h1 id="catalog-title">
           Mascotes divertidos que <em>explicam DevOps</em>
         </h1>

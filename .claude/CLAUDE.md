@@ -166,6 +166,28 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - O CI depende da variável `DOCKERHUB_USERNAME` (GitHub Variables) e do segredo `DOCKERHUB_TOKEN`
   (GitHub Secrets).
 
+## Deploy
+
+- Vercel (site na CDN e API como função em `gru1`) + Neon (PostgreSQL em `aws-sa-east-1`), criados
+  pelo Terraform em `infra/` (rodado pela imagem `hashicorp/terraform`; estado e `terraform.tfvars`
+  ficam fora do git). Detalhes em `infra/README.md`.
+- `api/index.js` (raiz) reexporta `apps/api/dist/vercel.js`: tira o prefixo `/api` e entrega a
+  requisição ao mesmo `buildApp` do Docker. O `vercel.json` manda `/api/*` para essa função e
+  inclui as ilustrações e os arquivos do Swagger UI.
+- Na Vercel a API não roda migrations ao subir: o job `deploy` do CI roda `npm run migrate` antes de
+  publicar. O Docker continua migrando na subida (`server.ts`).
+- O site é construído com `VITE_API_URL=/api` (`npm run build:vercel`): mesmo domínio, sem CORS.
+- Catálogo com `Cache-Control` de CDN (`s-maxage=30, stale-while-revalidate=300`) e ilustrações
+  `immutable` (o endereço muda quando o desenho muda).
+- O CI testa o `docker compose` em x64 e ARM e publica as imagens para as duas arquiteturas.
+- Armadilha: o carregador das funções da Vercel não aceita `require()` de módulo ES (o Node 22
+  aceita, então localmente tudo passa). Dependência CommonJS que passe a exigir um pacote só-ESM
+  derruba a API só em produção (`FUNCTION_INVOCATION_FAILED`). Correção: `overrides` no
+  `package.json` raiz (hoje, `content-disposition` 2.0.1 dentro do `@fastify/static`). O CI roda
+  `npm run check:serverless -w @devland/api` com essa limitação depois do build.
+- No GitHub Actions, `cond && '' || 'x'` sempre dá `'x'` (string vazia conta como falso): inverta a
+  condição para que o valor vazio fique no fim.
+
 ## Segurança
 
 - Nenhum segredo no repositório. Valores reais ficam em `.env` (ignorado) ou no GitHub Secrets.

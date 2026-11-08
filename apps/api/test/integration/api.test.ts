@@ -356,6 +356,7 @@ describe("banco fora do ar", () => {
       const products = await app.inject({ url: "/products" });
       expect(products.statusCode).toBe(500);
       expect(products.json()).toEqual({ message: "Erro interno. Tente novamente em instantes." });
+      expect(products.headers["cache-control"]).toBeUndefined();
     } finally {
       await app.close();
       await offline.destroy();

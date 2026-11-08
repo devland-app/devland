@@ -9,6 +9,8 @@ uma página que explica o conceito dele de forma simples.
 
 Projeto final do curso de DevOps e Engenharia de Software do Geração Tech 4.0.
 
+**No ar:** https://devland-app.vercel.app
+
 ## Como funciona
 
 - **Quizzes:** um por conceito, com 5 perguntas. A API corrige: a pergunta chega sem o gabarito, e
@@ -61,9 +63,11 @@ Pré-requisitos: Docker com Docker Compose. Para desenvolver fora do Docker, tam
 ### Tudo no Docker
 
 ```bash
-cp .env.example .env      # valores de exemplo, prontos para uso local
 docker compose up --build
 ```
+
+O compose tem valores padrão para tudo, então o `.env` é opcional. Para mudar portas ou senhas
+locais, copie o `.env.example` para `.env` e edite.
 
 | Serviço | Endereço                         |
 | ------- | -------------------------------- |
@@ -103,14 +107,27 @@ npm test                                  # API e site
 npm run test:coverage -w @devland/api     # com relatório de cobertura
 ```
 
-- **API:** testes unitários das regras de negócio e testes de integração com um PostgreSQL de
-  verdade, descartável, criado pelo Testcontainers (precisa do Docker). Cobrem migrations que sobem
-  e descem, os fluxos HTTP, a economia de moedas e a concorrência (pagamentos e respostas
-  simultâneos).
-- **Site:** Vitest com Testing Library para o sanitizador do SVG, o `localStorage`, a carteira e o
-  fluxo do quiz.
+Cada regra é testada no caminho feliz, nos caminhos tristes e nos casos de borda.
+
+- **API (121 testes):** unitários das regras de negócio e de integração com um PostgreSQL de
+  verdade, descartável, criado pelo Testcontainers (precisa do Docker). Cobrem os limites de cada
+  campo, os erros de cada rota, a concorrência no banco e as migrations subindo e descendo, inclusive
+  com dados do formato antigo.
+- **Site (91 testes):** jornadas completas pela interface contra um backend falso com as mesmas
+  regras da API, mais o cliente da API, o sanitizador do SVG, o carrinho, a carteira e o modal.
 
 Estratégia, cobertura e o que ficou de fora de propósito: [`docs/testes.md`](docs/testes.md).
+
+### No Windows
+
+Os mesmos comandos funcionam no PowerShell, com o [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+usando o WSL 2. O repositório força quebra de linha LF (`.gitattributes`), então lint, Prettier e
+hooks funcionam igual ao macOS e ao Linux.
+
+- Para a recarga automática ficar rápida, clone dentro do WSL (por exemplo, em
+  `\\wsl$\Ubuntu\home\voce`). Fora dele também funciona: o `compose.dev.yaml` observa os
+  arquivos por polling justamente para isso, só que com um pouco mais de uso de CPU.
+- Para copiar o `.env.example`, use `Copy-Item .env.example .env` no PowerShell.
 
 ## Variáveis de ambiente
 
@@ -148,13 +165,34 @@ Cada pull request passa por:
 - busca de segredos com o gitleaks;
 - varredura das imagens Docker com o Trivy, que reprova vulnerabilidades altas e críticas.
 
-As imagens rodam sem root e são publicadas no Docker Hub:
+Antes das imagens, o CI sobe o projeto recém-clonado com `docker compose up --build`, sem `.env`,
+em dois processadores (x64 e ARM) e confere que banco, API e site respondem.
+
+As imagens rodam sem root, saem para `linux/amd64` e `linux/arm64` (a mesma tag serve Windows, Linux
+e Mac com Apple Silicon) e são publicadas no Docker Hub:
 [`flaviare1s/devland-api`](https://hub.docker.com/r/flaviare1s/devland-api) e
 [`flaviare1s/devland-web`](https://hub.docker.com/r/flaviare1s/devland-web). Push na `main`
 publica `latest` e `sha-<commit>`; uma tag `vX.Y.Z` publica `X.Y.Z` e `X.Y`.
 
 Localmente, os hooks rodam o gitleaks e o lint-staged antes de cada commit, e o commitlint confere
 a mensagem.
+
+## Ambientes e deploy
+
+| Ambiente        | Onde                                 | Banco                   | Quando                |
+| --------------- | ------------------------------------ | ----------------------- | --------------------- |
+| Desenvolvimento | Docker na máquina (`docker compose`) | PostgreSQL no container | sempre                |
+| Preview         | Vercel, um endereço por pull request | Neon, branch `preview`  | a cada pull request   |
+| Produção        | https://devland-app.vercel.app       | Neon, branch `main`     | a cada push na `main` |
+
+O site sai da CDN da Vercel, que não dorme, e a API roda como função da Vercel em São Paulo, no
+mesmo domínio (`/api`). O CI aplica as migrations no banco do ambiente, publica e só considera o
+deploy pronto se a API, o catálogo e o site responderem. Vercel e Neon são criados com Terraform:
+veja [`infra/README.md`](infra/README.md).
+
+Segredos do deploy, todos no GitHub: `VERCEL_TOKEN` (repositório) e `DATABASE_URL` (um por ambiente,
+`production` e `preview`). Ids públicos em variáveis: `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`,
+`SITE_URL`.
 
 ## Fluxo de contribuição
 

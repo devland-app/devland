@@ -14,9 +14,13 @@ export default mergeConfig(
         include: ["src/**/*.{ts,tsx}"],
         exclude: ["src/**/*.test.{ts,tsx}", "src/test/**", "src/main.tsx"],
         reporter: ["text", "json-summary", "html"],
-        // Limite só onde há regra ou risco: o sanitizador do SVG (segurança), o localStorage, a
-        // carteira e o fluxo do quiz. Componentes só visuais não têm limite (ver docs/testes.md).
+        // Limite global e, nos módulos sensíveis (sanitizador do SVG, localStorage, carteira e quiz),
+        // um limite mais alto por arquivo. Ver docs/testes.md.
         thresholds: {
+          lines: 90,
+          statements: 90,
+          functions: 90,
+          branches: 85,
           "src/shared/ui/prepareSvg.ts": { lines: 95, branches: 90 },
           "src/shared/storage.ts": { lines: 95, branches: 90 },
           "src/shared/wallet/WalletProvider.tsx": { lines: 90, branches: 85 },

@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "build:vercel": "npm run build -w @devland/api && VITE_API_URL=/api npm run build -w @devland/web",
     "test": "npm run test --workspaces --if-present",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -43,5 +44,10 @@
     "*.{json,md,css,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "@fastify/static": {
+      "content-disposition": "2.0.1"
+    }
   }
 }
