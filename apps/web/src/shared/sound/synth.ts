@@ -2,7 +2,7 @@
 // licenciar. Cada som é a soma de notas curtas com subida/descida de volume suave (sem estalo).
 
 export type SoundName =
-  "pop" | "unpop" | "jump" | "wiggle" | "spin" | "giggle" | "trick" | "chime" | "coin";
+  "pop" | "unpop" | "jump" | "wiggle" | "spin" | "giggle" | "trick" | "press" | "chime" | "coin";
 
 let context: AudioContext | null = null;
 
@@ -74,6 +74,11 @@ const SOUNDS: Record<SoundName, Note[]> = {
     { frequency: 392, duration: 0.07, type: "triangle", volume: 0.1 },
     { frequency: 523.25, duration: 0.07, delay: 0.08, type: "triangle", volume: 0.1 },
     { frequency: 659.25, to: 988, duration: 0.22, delay: 0.16, type: "triangle", volume: 0.1 },
+  ],
+  // Botão de massinha afundando: um estalinho e um "toc" grave e curto.
+  press: [
+    { frequency: 1400, to: 900, duration: 0.012, type: "square", volume: 0.02 },
+    { frequency: 230, to: 140, duration: 0.07, type: "triangle", volume: 0.16 },
   ],
   // Duas notas agudas e rápidas, a segunda mais longa: o "plim" de pegar uma moeda.
   coin: [
