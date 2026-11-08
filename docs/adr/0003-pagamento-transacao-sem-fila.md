@@ -15,8 +15,10 @@ duas compras podem disputar as mesmas moedas.
 - **Strategy:** o módulo de pagamentos depende da interface `PaymentGateway`. A implementação
   `CoinsPaymentGateway` debita a carteira. Trocar a forma de pagamento é trocar uma linha na
   composição do módulo.
-- **Transação única:** trava o pedido (`FOR UPDATE`), baixa o estoque em ordem crescente de id
-  (sem deadlock), debita as moedas com `UPDATE` condicional e marca como pago. Uma recusa desfaz
+- **Transação única:** trava o pedido (`FOR UPDATE`), debita as moedas com `UPDATE` condicional,
+  marca como pago e, por último, baixa o estoque em ordem crescente de id (sem deadlock). O estoque
+  fica no fim porque a linha de cada mascote é disputada por todos os pagamentos dele: o teste de
+  carga mostrou essa espera somando 63% do tempo de banco (`docs/desempenho.md`). Uma recusa desfaz
   tudo e é gravada fora da transação, para ficar no histórico.
 - **Idempotência no banco:** `Idempotency-Key` única por pedido; extrato com referência única por
   movimento; um único pagamento aprovado por pedido (índice parcial único). Repetir devolve o mesmo

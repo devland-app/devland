@@ -1,8 +1,7 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
-import { SoundToggle } from "../features/sound/SoundToggle.tsx";
-import { ThemeToggle } from "../features/theme/ThemeToggle.tsx";
 import { WalletBalance } from "../features/wallet/WalletBalance.tsx";
+import { SettingsMenu } from "./SettingsMenu.tsx";
 import type { Route } from "./useHashRoute.ts";
 
 const TABS: Array<{ hash: string; label: string; isCurrent: (route: Route) => boolean }> = [
@@ -14,7 +13,7 @@ const TABS: Array<{ hash: string; label: string; isCurrent: (route: Route) => bo
   },
   {
     hash: "#mascotes",
-    label: "Meus mascotes",
+    label: "Mascotes",
     // A página de um mascote também pertence à aba da coleção.
     isCurrent: (route) => route.name === "mascotes" || route.name === "mascote",
   },
@@ -26,9 +25,26 @@ interface HeaderProps {
   actions?: ReactNode;
 }
 
+const SCROLL_THRESHOLD_PX = 8;
+
+// No celular só a linha do logo fica fixa: rolando a página, as abas saem do caminho (shell.css).
+function useScrolled(): boolean {
+  const [scrolled, setScrolled] = useState(() => window.scrollY > SCROLL_THRESHOLD_PX);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD_PX);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return scrolled;
+}
+
 export function Header({ route, actions }: HeaderProps) {
+  const scrolled = useScrolled();
+
   return (
-    <header className="topbar">
+    <header className={scrolled ? "topbar is-scrolled" : "topbar"}>
       <div className="nav-band gutter">
         <div className="wrap nav-row">
           <a className="logo" href="#vitrine" aria-label="DevLand, ir para a vitrine">
@@ -47,17 +63,7 @@ export function Header({ route, actions }: HeaderProps) {
             ))}
           </nav>
           <div className="actions">
-            {/* Discreto de propósito: é a página sobre o projeto, não uma seção da loja. */}
-            <a
-              className="about-link"
-              href="#sobre"
-              aria-label="Sobre a DevLand"
-              aria-current={route.name === "sobre" ? "page" : undefined}
-            >
-              <span aria-hidden="true">?</span>
-            </a>
-            <SoundToggle />
-            <ThemeToggle />
+            <SettingsMenu aboutIsCurrent={route.name === "sobre"} />
             {actions}
             <WalletBalance />
           </div>

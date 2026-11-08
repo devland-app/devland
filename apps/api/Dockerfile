@@ -39,4 +39,5 @@ USER node
 EXPOSE 3333
 HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
   CMD wget -qO- "http://127.0.0.1:${PORT:-3333}/health" || exit 1
-CMD ["node", "apps/api/dist/server.js"]
+# tracing.js vem antes da API: sem OTEL_EXPORTER_OTLP_ENDPOINT, ele não carrega nada.
+CMD ["node", "--import", "./apps/api/dist/tracing.js", "apps/api/dist/server.js"]

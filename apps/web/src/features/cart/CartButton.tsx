@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 
 import { useCart } from "../../shared/cart/cartContext.ts";
+import { useSound } from "../../shared/sound/soundContext.ts";
 
 interface CartButtonProps {
   onOpen: () => void;
@@ -8,6 +9,7 @@ interface CartButtonProps {
 
 export function CartButton({ onOpen }: CartButtonProps) {
   const { count: units } = useCart();
+  const sound = useSound();
   const badge = useRef<HTMLSpanElement>(null);
   const previous = useRef(units);
 
@@ -26,7 +28,10 @@ export function CartButton({ onOpen }: CartButtonProps) {
     <button
       className="btn btn--lilac btn--icon cart-btn"
       type="button"
-      onClick={onOpen}
+      onClick={() => {
+        sound.play("cart");
+        onOpen();
+      }}
       aria-haspopup="dialog"
       aria-label={`Carrinho, ${units} ${units === 1 ? "item" : "itens"}`}
     >

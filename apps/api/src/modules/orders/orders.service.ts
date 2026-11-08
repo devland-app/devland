@@ -171,7 +171,7 @@ export class OrdersService {
     }
   }
 
-  // Baixa de estoque, débito das moedas, pagamento aprovado e pedido pago acontecem juntos (uma
+  // Débito das moedas, pagamento aprovado, pedido pago e baixa de estoque acontecem juntos (uma
   // transação) ou não acontecem. Uma recusa desfaz tudo e fica registrada fora da transação.
   async payOrder(orderId: string, walletId: string): Promise<PayOrderResult> {
     const order = await this.getOrder(orderId);
@@ -188,16 +188,19 @@ export class OrdersService {
         if (status === "paid") {
           return "already_paid";
         }
-        await this.catalog.reserveStock(
-          order.items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
-          trx,
-        );
         const result = await this.payments.authorize(request, trx);
         if (result.status === "declined") {
           throw new PaymentDeclinedError(result.reason);
         }
         await this.payments.record(request, result, trx);
         await this.orders.markPaid(orderId, trx);
+        // Por último: a linha do mascote é disputada por todos os pagamentos dele, e a trava só é
+        // solta no fim da transação. No teste de carga, baixar o estoque antes dos outros passos fazia
+        // essa espera somar 63% do tempo de banco (docs/desempenho.md).
+        await this.catalog.reserveStock(
+          order.items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
+          trx,
+        );
         return "paid";
       });
     } catch (error) {

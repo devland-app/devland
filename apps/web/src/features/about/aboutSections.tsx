@@ -42,7 +42,8 @@ export const ABOUT_SECTIONS: AboutSection[] = [
           <strong>Entrega:</strong> Docker, GitHub Actions, Terraform, Vercel e Neon.
         </li>
         <li>
-          <strong>Desempenho:</strong> k6 e métricas no formato do Prometheus.
+          <strong>Desempenho:</strong> k6, métricas no formato do Prometheus e traces com
+          OpenTelemetry.
         </li>
       </ul>
     ),
@@ -97,7 +98,7 @@ export const ABOUT_SECTIONS: AboutSection[] = [
         </p>
         <p>
           O pagamento troca de forma de pagar sem mexer no resto (padrão Strategy) e acontece numa
-          transação só: trava o pedido, baixa o estoque, debita as moedas e marca como pago. No
+          transação só: trava o pedido, debita as moedas, marca como pago e baixa o estoque. No
           site, cada funcionalidade tem a própria pasta, e uma não importa a outra.
         </p>
         <p>
@@ -181,6 +182,7 @@ export const ABOUT_SECTIONS: AboutSection[] = [
           teste de desempenho confere o objetivo de latência.
         </li>
         <li>Cada release ganha um número de versão e imagens novas no Docker Hub.</li>
+        <li>Uma feature flag liga e desliga as animações da vitrine, sem mexer no código.</li>
       </ul>
     ),
   },
@@ -223,8 +225,13 @@ export const ABOUT_SECTIONS: AboutSection[] = [
         </li>
         <li>No site, os testes clicam como uma pessoa: pelos nomes que o leitor de tela lê.</li>
         <li>
+          Teste de contrato nos dois lados: a API e o site são conferidos contra o mesmo{" "}
+          <code>openapi.yaml</code>.
+        </li>
+        <li>
           A API registra cada requisição em JSON estruturado e mede a duração de todas elas em{" "}
-          <code>/metrics</code>.
+          <code>/metrics</code>. No Docker, dá para ver cada requisição por dentro com um trace no
+          Jaeger.
         </li>
         <li>Detalhes em {repoLink("blob/main/docs/testes.md", "docs/testes.md")}.</li>
       </ul>
@@ -245,6 +252,10 @@ export const ABOUT_SECTIONS: AboutSection[] = [
           ficou em torno de 200 ms.
         </li>
         <li>O catálogo e os desenhos vêm do cache da CDN, sem acordar o servidor.</li>
+        <li>
+          Um teste de carga em 3 estágios, com 100 mil pedidos, achou uma trava disputada na baixa
+          de estoque. Com a correção, o p95 a 800 usuários caiu de 58 ms para 26 ms.
+        </li>
         <li>Detalhes em {repoLink("blob/main/docs/desempenho.md", "docs/desempenho.md")}.</li>
       </ul>
     ),

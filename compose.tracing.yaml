@@ -1,0 +1,16 @@
+# Liga o tracing e sobe o Jaeger, para ver cada requisição por dentro:
+#   docker compose -f docker-compose.yml -f compose.tracing.yaml up --build
+# A interface fica em http://localhost:16686 (serviço devland-api).
+services:
+  api:
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+    depends_on:
+      jaeger:
+        condition: service_started
+
+  jaeger:
+    image: jaegertracing/jaeger:2.12.0
+    # Só na própria máquina: os traces mostram as consultas feitas ao banco.
+    ports:
+      - "127.0.0.1:16686:16686"

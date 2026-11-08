@@ -55,10 +55,7 @@ describe("AdoptionsProvider", () => {
     await waitFor(() => expect(result.current.status).toBe("ready"));
 
     expect([...result.current.adopted.keys()]).toEqual([1, 2]);
-    expect(result.current.adopted.get(1)).toEqual({
-      orderId: "pago",
-      adoptedAt: "2026-11-07T11:00:00.000Z",
-    });
+    expect(result.current.adopted.get(1)).toEqual({ adoptedAt: "2026-11-07T11:00:00.000Z" });
     expect(result.current.pendingOrders.map((item) => item.id)).toEqual(["pendente"]);
     expect(result.current.isPending(3)).toBe(true);
     expect(result.current.isPending(1)).toBe(false);

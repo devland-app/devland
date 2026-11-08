@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.tsx";
 import { ApiError } from "./shared/api/client.ts";
+import { playSound } from "./shared/sound/synth.ts";
 import { fake, FakeBackend } from "./test/fakeApi.ts";
 
 vi.mock("./shared/api/client.ts", async (importOriginal) => {
@@ -16,10 +17,13 @@ vi.mock("./shared/api/client.ts", async (importOriginal) => {
 const PAYMENT_TIMEOUT = { timeout: 4000 };
 
 let user: UserEvent;
+vi.mock("./shared/sound/synth.ts", () => ({ playSound: vi.fn() }));
+
 let backend: FakeBackend;
 
 beforeEach(() => {
   backend = new FakeBackend(ApiError);
+  vi.mocked(playSound).mockClear();
   fake.backend = backend;
   user = userEvent.setup();
 });
@@ -37,6 +41,17 @@ async function go(hash: string) {
 const adoptButton = (name: string) => screen.findByRole("button", { name: `Adotar ${name}` });
 const cartButton = () => screen.getByRole("button", { name: /^Carrinho,/ });
 const cartDrawer = () => screen.getByRole("dialog", { name: "Seu carrinho" });
+
+async function openSettings() {
+  await user.click(await screen.findByRole("button", { name: "Configurações" }));
+}
+
+async function closeSettings() {
+  await user.click(screen.getByRole("button", { name: "Fechar configurações" }));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog", { name: "Configurações" })).not.toBeInTheDocument(),
+  );
+}
 
 async function openCheckoutWith(name: string) {
   await user.click(await adoptButton(name));
@@ -172,7 +187,9 @@ describe("adoção com moedas", () => {
 
     await go("#vitrine");
     expect(await screen.findByRole("button", { name: "Adotado ✓" })).toBeDisabled();
-    expect(screen.getByRole("link", { name: "Conhecer meu mascote →" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Interagir com o mascote Caranguejo dos Contêineres →" }),
+    ).toHaveAttribute("href", "#mascote-caranguejo-dos-conteineres");
   });
 
   it("o mascote adotado sai do carrinho e não entra de novo", async () => {
@@ -294,10 +311,15 @@ describe("páginas e preferências", () => {
 
   it("a interrogação do cabeçalho abre a página Sobre, com o Swagger em outra aba", async () => {
     renderApp();
+    await openSettings();
     await user.click(screen.getByRole("link", { name: "Sobre a DevLand" }));
     expect(
       await screen.findByRole("heading", { level: 1, name: "Por trás da DevLand" }),
     ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Configurações" })).not.toBeInTheDocument(),
+    );
+    await openSettings();
     expect(screen.getByRole("link", { name: "Sobre a DevLand" })).toHaveAttribute(
       "aria-current",
       "page",
@@ -319,8 +341,26 @@ describe("páginas e preferências", () => {
     expect(swagger).toHaveAccessibleName(/abre em outra aba/);
   });
 
+  it("abrir o carrinho e trocar o tema têm som, só com o som ligado", async () => {
+    renderApp();
+    await user.click(cartButton());
+    await user.keyboard("{Escape}");
+    await openSettings();
+    await user.click(await screen.findByRole("button", { name: /^Tema claro ativo/ }));
+    expect(playSound).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Som desligado. Ligar som" }));
+    vi.mocked(playSound).mockClear();
+    await user.click(screen.getByRole("button", { name: /^Tema escuro ativo/ }));
+    await user.click(screen.getByRole("button", { name: /^Tema claro ativo/ }));
+    await closeSettings();
+    await user.click(cartButton());
+    expect(vi.mocked(playSound).mock.calls).toEqual([["themeLight"], ["themeDark"], ["cart"]]);
+  });
+
   it("tema e som ficam salvos neste navegador", async () => {
     renderApp();
+    await openSettings();
     await user.click(screen.getByRole("button", { name: "Tema claro ativo. Mudar para o escuro" }));
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(localStorage.getItem("devland-theme")).toBe("dark");

@@ -72,5 +72,21 @@ services:
       api:
         condition: service_healthy
 
+  # Dados sintéticos do teste de carga: 100 mil pedidos (veja perf/seed-orders.sql).
+  seed:
+    image: postgres:17-alpine
+    profiles: ["perf"]
+    volumes:
+      - ./perf:/perf:ro
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-devland}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-devland}
+      PGDATABASE: ${POSTGRES_DB:-devland}
+    command: ["psql", "-v", "ON_ERROR_STOP=1", "-f", "/perf/seed-orders.sql"]
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   pgdata:

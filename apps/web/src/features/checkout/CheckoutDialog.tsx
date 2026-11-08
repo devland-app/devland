@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 
 import { useAdoptions } from "../../shared/adoptions/adoptionsContext.ts";
 import { ApiError, createOrder, payOrder } from "../../shared/api/client.ts";
-import type { Order, Payment } from "../../shared/api/types.ts";
+import type { Order } from "../../shared/api/types.ts";
 import { useCart } from "../../shared/cart/cartContext.ts";
 import { useSound } from "../../shared/sound/soundContext.ts";
 import { Coins } from "../../shared/ui/Coins.tsx";
@@ -21,7 +21,7 @@ type Step =
   | { name: "review"; busy: boolean; error?: string }
   | { name: "pay"; order: Order; error?: string }
   | { name: "processing"; order: Order }
-  | { name: "done"; order: Order; payment: Payment };
+  | { name: "done"; order: Order };
 
 // A API responde na hora; a espera curta só torna a etapa de pagamento perceptível.
 const PROCESSING_MS = 1400;
@@ -89,7 +89,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
     }
     adoptions.recordOrder(outcome.value.order);
     void wallet.refresh();
-    setStep({ name: "done", order: outcome.value.order, payment: outcome.value.payment });
+    setStep({ name: "done", order: outcome.value.order });
     burstConfetti(themeColors());
     sound.play("chime");
   }
@@ -211,19 +211,7 @@ export function CheckoutDialog({ onClose, resumeOrder }: CheckoutDialogProps) {
             Os mascotes adotados já estão em Meus mascotes, cada um com a explicação do seu
             conceito. Total: {formatCoins(step.order.totalCoins)}.
           </p>
-          <dl className="receipt">
-            <div>
-              <dt>Código do pedido</dt>
-              <dd className="code">{step.order.id}</dd>
-            </div>
-            <div>
-              <dt>Recibo</dt>
-              <dd className="code">{step.payment.receiptCode}</dd>
-            </div>
-          </dl>
-          <p className="fine">
-            Sem login, é o código que mostra o pedido. Sua coleção fica salva neste navegador.
-          </p>
+          <p className="fine">Sua coleção fica salva neste navegador.</p>
           <div className="step-actions">
             <button className="btn btn--soft" type="button" onClick={onClose}>
               Voltar à vitrine

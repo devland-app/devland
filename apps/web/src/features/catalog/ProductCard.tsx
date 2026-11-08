@@ -50,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       {adopted && (
         <a className="card-link" href={`#mascote-${product.slug}`}>
-          Conhecer meu mascote →
+          Interagir com o mascote <span className="sr-only">{product.name}</span> →
         </a>
       )}
     </article>

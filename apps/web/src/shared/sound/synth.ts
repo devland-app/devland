@@ -2,7 +2,19 @@
 // licenciar. Cada som é a soma de notas curtas com subida/descida de volume suave (sem estalo).
 
 export type SoundName =
-  "pop" | "unpop" | "jump" | "wiggle" | "spin" | "giggle" | "trick" | "press" | "chime" | "coin";
+  | "pop"
+  | "unpop"
+  | "jump"
+  | "wiggle"
+  | "spin"
+  | "giggle"
+  | "trick"
+  | "press"
+  | "cart"
+  | "themeLight"
+  | "themeDark"
+  | "chime"
+  | "coin";
 
 let context: AudioContext | null = null;
 
@@ -79,6 +91,20 @@ const SOUNDS: Record<SoundName, Note[]> = {
   press: [
     { frequency: 1400, to: 900, duration: 0.012, type: "square", volume: 0.02 },
     { frequency: 230, to: 140, duration: 0.07, type: "triangle", volume: 0.16 },
+  ],
+  // Gaveta deslizando e o sininho da porta da lojinha.
+  cart: [
+    { frequency: 280, to: 520, duration: 0.13, type: "triangle", volume: 0.1 },
+    { frequency: 1046.5, duration: 0.2, delay: 0.12, volume: 0.09 },
+  ],
+  // Interruptor: o mesmo estalo, e a nota sobe ao clarear e desce ao escurecer.
+  themeLight: [
+    { frequency: 1400, to: 900, duration: 0.012, type: "square", volume: 0.02 },
+    { frequency: 440, to: 880, duration: 0.2, delay: 0.02, volume: 0.1 },
+  ],
+  themeDark: [
+    { frequency: 1400, to: 900, duration: 0.012, type: "square", volume: 0.02 },
+    { frequency: 660, to: 300, duration: 0.2, delay: 0.02, volume: 0.1 },
   ],
   // Duas notas agudas e rápidas, a segunda mais longa: o "plim" de pegar uma moeda.
   coin: [

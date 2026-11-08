@@ -33,6 +33,7 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 | Gerar o contrato     | `npm run openapi -w @devland/api` (atualiza `docs/openapi.yaml`)                       |
 | Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)                             |
 | Teste de fumaça (k6) | `docker compose --profile perf run --rm k6` (SLO em `docs/desempenho.md`)              |
+| Teste de carga (k6)  | `docker compose --profile perf run --rm seed`, depois `... k6 run /perf/load.js`       |
 
 ## Arquitetura da API
 
@@ -50,11 +51,17 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Detalhes e exemplos na skill `modularity`.
 - `GET /metrics` (`src/shared/metrics.ts`): um histograma `http_request_duration_seconds` por
   método, molde da rota e status. O rótulo de rota é sempre o molde, nunca a URL com id.
+- Tracing (OpenTelemetry) só na imagem Docker: `src/tracing.ts` entra antes da API por `node --import`
+  e só liga com `OTEL_EXPORTER_OTLP_ENDPOINT` (`compose.tracing.yaml` sobe o Jaeger). A função da
+  Vercel não importa esse arquivo.
 - Contrato OpenAPI 3.1 gerado dos JSON Schemas das rotas: Swagger UI em `/docs`, JSON em
   `/docs/json`. Toda rota tem `tags`, `operationId`, `summary` e descrição em cada resposta.
   Modelos reutilizados entram com `app.addSchema` e `$id` (viram components, como `Product`).
 - Mudou rota ou schema? Rode `npm run openapi -w @devland/api` e commite o `docs/openapi.yaml`:
   o CI regenera o arquivo e falha se o versionado estiver diferente.
+- Teste de contrato nos dois lados, contra o `docs/openapi.yaml` (`contract.test.ts` na API e em
+  `apps/web/src/test`). Status novo no contrato precisa de um caso no teste da API, e função nova no
+  cliente precisa entrar no teste do site.
 
 ## Regras da loja
 
@@ -85,8 +92,9 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
   `src/shared/http.ts`); erros 5xx viram mensagem genérica e o detalhe vai só para o log.
 - O AJV rejeita campos desconhecidos (`removeAdditional: false`): campo extra no body é 400.
 - Pagamento (`POST /orders/{id}/payment`, body `{ walletId }`): `CoinsPaymentGateway` atrás da
-  interface `PaymentGateway` (Strategy). Trava o pedido (`FOR UPDATE`), baixa o estoque, debita as
-  moedas e marca como pago numa transação só. Saldo insuficiente recusa (402, "faltam N moedas") e
+  interface `PaymentGateway` (Strategy). Trava o pedido (`FOR UPDATE`), debita as moedas, marca como
+  pago e baixa o estoque por último (a linha do mascote é disputada: `docs/desempenho.md`), numa
+  transação só. Saldo insuficiente recusa (402, "faltam N moedas") e
   a tentativa recusada é gravada fora dela. Pagar de novo devolve o mesmo recibo, sem novo débito.
   O banco aceita um único pagamento aprovado por pedido. Pix e cartão simulados (`pix`,
   `toy_card`, `broke_toy_card`) só existem no histórico de pedidos antigos.

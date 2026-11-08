@@ -160,23 +160,3 @@
   border-radius: var(--r-pill);
   box-shadow: 0 4px 0 var(--sun-deep);
 }
-.receipt {
-  display: grid;
-  gap: 0.6rem;
-  margin: 0;
-  width: 100%;
-}
-.receipt div {
-  display: grid;
-  gap: 0.25rem;
-  justify-items: center;
-}
-.receipt dt {
-  font: 700 0.75rem/1 var(--font-body);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.receipt dd {
-  margin: 0;
-}
