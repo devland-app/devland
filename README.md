@@ -3,9 +3,9 @@
 # DevLand
 
 Site educativo de DevOps com mascotes de massinha. Cada conceito (contêineres, CI/CD, controle de
-versão, orquestração, deploy, observabilidade, desempenho e segurança) tem um quiz e um mascote. Os
-quizzes rendem moedas virtuais, e as moedas adotam os mascotes. Cada mascote adotado desbloqueia
-uma página que explica o conceito dele de forma simples.
+versão, orquestração, deploy, observabilidade, desempenho, segurança e infraestrutura como código)
+tem um quiz e um mascote. Os quizzes rendem moedas virtuais, e as moedas adotam os mascotes. Cada
+mascote adotado desbloqueia uma página que explica o conceito dele de forma simples.
 
 Projeto final do curso de DevOps e Engenharia de Software do Geração Tech 4.0.
 

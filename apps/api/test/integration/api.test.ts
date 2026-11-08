@@ -102,8 +102,8 @@ describe("saúde e catálogo", () => {
     expect(response.json()).toEqual({ status: "ok", database: "ok" });
   });
 
-  it("lista os 8 mascotes com preço em moedas e imagem versionada", () => {
-    expect(products).toHaveLength(8);
+  it("lista os 9 mascotes com preço em moedas e imagem versionada", () => {
+    expect(products).toHaveLength(9);
     for (const item of products) {
       expect(item.priceCoins).toBeGreaterThan(0);
       expect(item.imageUrl).toMatch(/^\/images\/mascots\/[a-z-]+\.svg\?v=[0-9a-f]{8}$/);
@@ -175,7 +175,7 @@ describe("carteiras", () => {
 describe("quizzes e moedas", () => {
   it("cada quiz paga o preço do seu mascote", async () => {
     const quizzes = (await inject({ url: "/quizzes" })).json<QuizSummary[]>();
-    expect(quizzes).toHaveLength(8);
+    expect(quizzes).toHaveLength(9);
     for (const quiz of quizzes) {
       expect(quiz.totalCoins).toBe(product(quiz.slug).priceCoins);
     }

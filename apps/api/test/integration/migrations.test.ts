@@ -49,6 +49,6 @@ describe("migrations", () => {
 
     expect(await runMigrations(db, migrations)).toHaveLength(migrations.length);
     const products = await db("products").count<Array<{ count: string }>>({ count: "*" });
-    expect(Number(products[0]?.count)).toBe(8);
+    expect(Number(products[0]?.count)).toBe(9);
   });
 });
