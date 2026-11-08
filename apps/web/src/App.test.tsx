@@ -187,7 +187,9 @@ describe("adoção com moedas", () => {
 
     await go("#vitrine");
     expect(await screen.findByRole("button", { name: "Adotado ✓" })).toBeDisabled();
-    expect(screen.getByRole("link", { name: "Conhecer meu mascote →" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Interagir com o mascote Caranguejo dos Contêineres →" }),
+    ).toHaveAttribute("href", "#mascote-caranguejo-dos-conteineres");
   });
 
   it("o mascote adotado sai do carrinho e não entra de novo", async () => {

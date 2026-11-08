@@ -106,3 +106,30 @@
     inset 0 0 0 3px color-mix(in srgb, var(--mint) 60%, transparent),
     inset 0 2px 0 var(--shine);
 }
+
+/* Mascote já adotado: o card inteiro leva à página dele. O link se estende por cima do card (em vez
+   de envolvê-lo) porque um <a> não pode conter o botão "Adotado". */
+.card--adopted {
+  position: relative;
+  transition: transform 150ms ease;
+}
+.card--adopted:hover {
+  transform: translateY(-3px);
+}
+.card--adopted .card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Acima do desenho, que tem z-index 1. */
+  z-index: 2;
+  border-radius: inherit;
+}
+/* O foco do teclado aparece no card todo, que é a área do link. */
+.card--adopted .card-link:focus-visible {
+  outline: none;
+}
+.card--adopted .card-link:focus-visible::after {
+  border-radius: var(--r-xl);
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
