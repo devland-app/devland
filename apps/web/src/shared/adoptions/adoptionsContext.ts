@@ -3,7 +3,6 @@ import { createContext, useContext } from "react";
 import type { Order } from "../api/types.ts";
 
 export interface Adoption {
-  orderId: string;
   adoptedAt: string;
 }
 
