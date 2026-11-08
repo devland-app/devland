@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="title">
-  <title id="title">João-de-barro da Infraestrutura: um passarinho marrom de massinha com uma bolinha de barro no bico, ao lado da casinha de barro que construiu, com chaves de código desenhadas em volta da porta</title>
+  <title id="title">João-de-barro da Infraestrutura: um passarinho marrom de massinha, de perfil, com uma bolinha de barro no bico, ao lado da casinha de barro que construiu, com chaves de código desenhadas em volta da porta</title>
   <defs>
     <!-- Efeito massinha: sombra projetada, sombra e brilho internos, brilho especular e granulado. -->
     <filter id="clay" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
@@ -78,22 +78,16 @@
     <circle cx="98" cy="100" r="30" fill="#c4743f"/>
   </g>
   <g class="eye">
-    <ellipse cx="90" cy="98" rx="6.5" ry="7.5" fill="url(#eye)"/>
-    <circle cx="87.6" cy="94.6" r="2.6" fill="#fff"/>
+    <ellipse cx="112" cy="95" rx="7.5" ry="8.5" fill="url(#eye)"/>
+    <circle cx="109.4" cy="91.4" r="2.8" fill="#fff"/>
   </g>
-  <path class="eye-happy" opacity="0" d="M83.5 99.875 Q90 91.25 96.5 99.875" fill="none" stroke="#2a1f35" stroke-width="3.6" stroke-linecap="round"/>
-  <g class="eye">
-    <ellipse cx="112" cy="98" rx="6.5" ry="7.5" fill="url(#eye)"/>
-    <circle cx="109.6" cy="94.6" r="2.6" fill="#fff"/>
-  </g>
-  <path class="eye-happy" opacity="0" d="M105.5 99.875 Q112 91.25 118.5 99.875" fill="none" stroke="#2a1f35" stroke-width="3.6" stroke-linecap="round"/>
-  <path d="M119 106 Q135 107 147 116 Q134 115 119 113 Z" fill="url(#beak)" stroke="#3a2a22" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M123 108.2 Q133 108.8 140 112" fill="none" stroke="#a88a78" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
+  <path class="eye-happy" opacity="0" d="M104.5 97.125 Q112 87.35 119.5 97.125" fill="none" stroke="#2a1f35" stroke-width="3.8" stroke-linecap="round"/>
+  <path d="M121 101 Q137 102 149 111 Q136 110 121 108 Z" fill="url(#beak)" stroke="#3a2a22" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M125 103.2 Q135 103.8 142 107" fill="none" stroke="#a88a78" stroke-width="1.6" stroke-linecap="round" opacity="0.8"/>
   <g filter="url(#clay)">
-    <circle cx="150" cy="118" r="6" fill="#d39461"/>
+    <circle cx="152" cy="113" r="6" fill="#d39461"/>
   </g>
-  <ellipse class="cheek" cx="80" cy="111" rx="7" ry="4.5" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
-  <ellipse class="cheek" cx="112" cy="112" rx="6" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
+  <ellipse class="cheek" cx="104" cy="108" rx="6.5" ry="4" fill="#ff8fab" opacity="0.65" filter="url(#soft)"/>
   <path d="M76 178 V192 M94 178 V192" fill="none" stroke="#8d7b70" stroke-width="5" stroke-linecap="round"/>
   <g filter="url(#clay)">
     <ellipse cx="78" cy="193" rx="9" ry="4.5" fill="#8d7b70"/>

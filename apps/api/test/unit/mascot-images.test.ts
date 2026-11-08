@@ -20,13 +20,15 @@ describe("ilustrações dos mascotes", () => {
 
   // O site esconde o fundo redondo, faz os olhos piscarem e troca por olhos felizes ao adotar:
   // depende dessas classes em todo desenho.
-  it.each(files)("%s tem título, fundo e dois olhos que piscam", (name) => {
+  it.each(files)("%s tem título, fundo e olhos que piscam", (name) => {
     const svg = readFileSync(new URL(name, IMAGES_DIR), "utf8");
     expect(svg).toMatch(/<title id="title">[^<]+<\/title>/);
     // Fundo redondo e, em alguns, a sombra no chão: os dois somem no site.
     expect(count(svg, /class="backdrop"/g)).toBeGreaterThanOrEqual(1);
-    expect(count(svg, /class="eye"/g)).toBe(2);
-    expect(count(svg, /class="eye-happy"/g)).toBe(2);
+    // Dois olhos de frente, um de perfil; cada olho tem a versão feliz, que aparece ao adotar.
+    const eyes = count(svg, /class="eye"/g);
+    expect(eyes).toBeGreaterThanOrEqual(1);
+    expect(count(svg, /class="eye-happy"/g)).toBe(eyes);
   });
 
   it.each(files)("%s não tem script nem atributo de evento", (name) => {
