@@ -34,8 +34,9 @@ sem acesso ou exige cartão e manutenção.
 
 - Custo zero e nenhum servidor para manter; preview por pull request sem tocar nos dados de
   produção.
-- O banco do Neon dorme depois de 5 minutos sem uso: a primeira consulta depois disso leva cerca
-  de 1 a 2 segundos. Manter o banco acordado gastaria mais horas de computação do que o plano dá.
+- O banco do Neon dorme depois de 5 minutos sem uso: a primeira requisição depois disso levou
+  1,5 segundo na medição, contra uns 0,3 segundo das seguintes (`docs/desempenho.md`). Manter o
+  banco acordado gastaria mais horas de computação do que o plano dá.
 - O catálogo e as ilustrações são servidos pela CDN (`s-maxage` e `stale-while-revalidate`), sem
   acordar a função nem o banco.
 - O carregador da Vercel não aceita `require()` de módulo ES: o CI checa isso depois do build.
