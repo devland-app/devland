@@ -180,6 +180,13 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 - Catálogo com `Cache-Control` de CDN (`s-maxage=30, stale-while-revalidate=300`) e ilustrações
   `immutable` (o endereço muda quando o desenho muda).
 - O CI testa o `docker compose` em x64 e ARM e publica as imagens para as duas arquiteturas.
+- Armadilha: o carregador das funções da Vercel não aceita `require()` de módulo ES (o Node 22
+  aceita, então localmente tudo passa). Dependência CommonJS que passe a exigir um pacote só-ESM
+  derruba a API só em produção (`FUNCTION_INVOCATION_FAILED`). Correção: `overrides` no
+  `package.json` raiz (hoje, `content-disposition` 2.0.1 dentro do `@fastify/static`). O CI roda
+  `npm run check:serverless -w @devland/api` com essa limitação depois do build.
+- No GitHub Actions, `cond && '' || 'x'` sempre dá `'x'` (string vazia conta como falso): inverta a
+  condição para que o valor vazio fique no fim.
 
 ## Segurança
 
