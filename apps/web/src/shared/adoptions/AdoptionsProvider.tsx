@@ -30,10 +30,7 @@ export function AdoptionsProvider({ children }: { children: ReactNode }) {
       if (order.status !== "paid") continue;
       for (const item of order.items) {
         if (!adopted.has(item.productId)) {
-          adopted.set(item.productId, {
-            orderId: order.id,
-            adoptedAt: order.paidAt ?? order.createdAt,
-          });
+          adopted.set(item.productId, { adoptedAt: order.paidAt ?? order.createdAt });
         }
       }
     }

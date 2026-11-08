@@ -1,14 +1,21 @@
+import { useSound } from "../../shared/sound/soundContext.ts";
 import { useTheme } from "./useTheme.ts";
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
+  const sound = useSound();
   const dark = theme === "dark";
+
+  function changeTheme() {
+    sound.play(dark ? "themeLight" : "themeDark");
+    toggleTheme();
+  }
 
   return (
     <button
       className="btn btn--soft btn--icon"
       type="button"
-      onClick={toggleTheme}
+      onClick={changeTheme}
       aria-pressed={dark}
       aria-label={
         dark ? "Tema escuro ativo. Mudar para o claro" : "Tema claro ativo. Mudar para o escuro"

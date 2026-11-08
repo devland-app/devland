@@ -76,10 +76,7 @@ export function MascotPage({ slug }: MascotPageProps) {
             <p>{product.lesson.inProject}</p>
           </section>
 
-          <p className="fine">
-            Adotado em {formatDateTime(adoption.adoptedAt)} · pedido{" "}
-            <span className="code">{adoption.orderId.slice(0, 8)}</span>
-          </p>
+          <p className="fine">Adotado em {formatDateTime(adoption.adoptedAt)}</p>
         </div>
       </div>
     </article>
