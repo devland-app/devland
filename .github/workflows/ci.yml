@@ -28,6 +28,8 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run build
+      - name: API carrega no runtime da Vercel (sem require de módulo ES)
+        run: npm run check:serverless -w @devland/api
       # Regera o contrato a partir das rotas: se mudou, a API foi alterada sem atualizar o docs/openapi.yaml.
       - name: Contrato OpenAPI atualizado
         run: |
@@ -225,8 +227,9 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_CLI: vercel@65.12.1
       TARGET: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
-      # "1" em produção; vazio no preview (os comandos usam ${PRODUCTION:+--prod}).
-      PRODUCTION: ${{ github.event_name == 'pull_request' && '' || '1' }}
+      # "1" em produção; vazio no preview (os comandos usam ${PRODUCTION:+--prod}). A condição é
+      # "push" porque, no GitHub Actions, "cond && '' || '1'" sempre dá '1': o vazio conta como falso.
+      PRODUCTION: ${{ github.event_name == 'push' && '1' || '' }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
