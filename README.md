@@ -3,9 +3,9 @@
 # DevLand
 
 Site educativo de DevOps com mascotes de massinha. Cada conceito (contêineres, CI/CD, controle de
-versão, orquestração, deploy, observabilidade, desempenho e segurança) tem um quiz e um mascote. Os
-quizzes rendem moedas virtuais, e as moedas adotam os mascotes. Cada mascote adotado desbloqueia
-uma página que explica o conceito dele de forma simples.
+versão, orquestração, deploy, observabilidade, desempenho, segurança e infraestrutura como código)
+tem um quiz e um mascote. Os quizzes rendem moedas virtuais, e as moedas adotam os mascotes. Cada
+mascote adotado desbloqueia uma página que explica o conceito dele de forma simples.
 
 Projeto final do curso de DevOps e Engenharia de Software do Geração Tech 4.0.
 
@@ -212,15 +212,16 @@ Segredos do deploy, todos no GitHub: `VERCEL_TOKEN` (repositório) e `DATABASE_U
 
 ## Documentação
 
-| Documento                                | O que tem                                                |
-| ---------------------------------------- | -------------------------------------------------------- |
-| [`docs/adr`](docs/adr/README.md)         | Decisões de arquitetura e as alternativas descartadas    |
-| [`docs/c4`](docs/c4/README.md)           | Diagramas C4: contexto, contêineres e componentes da API |
-| [`docs/openapi.yaml`](docs/openapi.yaml) | Contrato da API (OpenAPI 3.1)                            |
-| [`docs/testes.md`](docs/testes.md)       | Estratégia de testes e cobertura                         |
-| [`infra/README.md`](infra/README.md)     | Infraestrutura como código (Terraform)                   |
-| [`docs/ia.md`](docs/ia.md)               | Registro do uso de IA                                    |
-| [`CONTRIBUTORS.md`](CONTRIBUTORS.md)     | Autoria e divisão do trabalho                            |
+| Documento                                  | O que tem                                                |
+| ------------------------------------------ | -------------------------------------------------------- |
+| [`docs/adr`](docs/adr/README.md)           | Decisões de arquitetura e as alternativas descartadas    |
+| [`docs/c4`](docs/c4/README.md)             | Diagramas C4: contexto, contêineres e componentes da API |
+| [`docs/openapi.yaml`](docs/openapi.yaml)   | Contrato da API (OpenAPI 3.1)                            |
+| [`docs/testes.md`](docs/testes.md)         | Estratégia de testes e cobertura                         |
+| [`docs/desempenho.md`](docs/desempenho.md) | SLO, métrica e teste de fumaça com o p95 medido          |
+| [`infra/README.md`](infra/README.md)       | Infraestrutura como código (Terraform)                   |
+| [`docs/ia.md`](docs/ia.md)                 | Registro do uso de IA                                    |
+| [`CONTRIBUTORS.md`](CONTRIBUTORS.md)       | Autoria e divisão do trabalho                            |
 
 ## Fluxo de contribuição
 

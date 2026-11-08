@@ -24,6 +24,7 @@ const CREATION_ORDER = [
   "payments_002_pay_with_coins",
   "wallets_001_create_wallets",
   "quizzes_001_create_attempts",
+  "catalog_009_add_infrastructure_mascot",
 ];
 
 const byName = new Map(

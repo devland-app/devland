@@ -73,7 +73,7 @@ describe("banco de perguntas", () => {
 
   it("tem um quiz por conceito, com 5 perguntas de 3 opções", () => {
     const quizzes = bank.list();
-    expect(quizzes).toHaveLength(8);
+    expect(quizzes).toHaveLength(9);
     for (const quiz of quizzes) {
       expect(quiz.questions).toHaveLength(5);
       for (const item of quiz.questions) {

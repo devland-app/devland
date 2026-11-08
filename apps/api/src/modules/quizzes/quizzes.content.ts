@@ -560,4 +560,73 @@ export const QUIZ_CONTENT: QuizContent[] = [
       },
     ],
   },
+  {
+    slug: "joao-de-barro-da-infraestrutura",
+    title: "Infraestrutura como código",
+    concept: "Infraestrutura como código",
+    questions: [
+      {
+        key: "infra-1",
+        prompt: "O que é infraestrutura como código?",
+        options: [
+          "Descrever servidores, bancos e redes em arquivos, que uma ferramenta usa para criar tudo",
+          "Escrever o código da aplicação direto no servidor de produção",
+          "Configurar cada servidor à mão pelo painel do provedor e anotar os passos",
+        ],
+        explanation:
+          "Em vez de clicar num painel, você descreve o que quer em arquivos versionados. A ferramenta " +
+          "lê a descrição e cria (ou ajusta) a infraestrutura do mesmo jeito, quantas vezes for preciso.",
+      },
+      {
+        key: "infra-2",
+        prompt: "O que o terraform plan mostra?",
+        options: [
+          "O que vai ser criado, alterado ou apagado, antes de mudar qualquer coisa",
+          "O custo exato da infraestrutura no fim do mês",
+          "Os bugs do código da aplicação",
+        ],
+        explanation:
+          "O plan compara o que está descrito no código com o que existe de verdade e mostra a " +
+          "diferença. Só o apply executa as mudanças: dá para revisar antes, como num pull request.",
+      },
+      {
+        key: "infra-3",
+        prompt: "Por que guardar a descrição da infraestrutura no git?",
+        options: [
+          "Para ter histórico, revisão por pull request e poder recriar tudo igual",
+          "Porque o git deixa os servidores mais rápidos",
+          "Para não precisar mais de backup do banco de dados",
+        ],
+        explanation:
+          "Cada mudança vira um commit: dá para ver quem mudou o quê, revisar antes de aplicar e voltar " +
+          "atrás. O backup continua necessário: o código descreve o banco, não guarda o que está " +
+          "dentro dele.",
+      },
+      {
+        key: "infra-4",
+        prompt: "O que quer dizer que a infraestrutura como código é declarativa?",
+        options: [
+          "Você descreve o resultado que quer, e a ferramenta descobre os passos para chegar lá",
+          "Você escreve cada comando na ordem exata em que ele deve rodar",
+          "Cada recurso precisa ser declarado antes no painel do provedor",
+        ],
+        explanation:
+          'Em vez de "crie um banco, depois um projeto, depois ligue os dois", você diz "quero um banco ' +
+          'e um projeto ligados". Rodar de novo não duplica nada: se já está como descrito, nada muda.',
+      },
+      {
+        key: "infra-5",
+        prompt: "O que o arquivo de estado (state) do Terraform guarda?",
+        options: [
+          "O que a ferramenta já criou e o id de cada recurso, para comparar com o código",
+          "O código-fonte da aplicação",
+          "As senhas de quem usa o site",
+        ],
+        explanation:
+          "Com o estado, o Terraform sabe que o banco descrito no código já existe e qual é o id dele. " +
+          "Como ele pode conter dados sensíveis, como endereços de conexão com senha, o estado da " +
+          "DevLand fica fora do git.",
+      },
+    ],
+  },
 ];

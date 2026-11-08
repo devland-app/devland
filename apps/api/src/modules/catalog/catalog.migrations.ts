@@ -334,6 +334,37 @@ const priceInCoins: Migration = {
   },
 };
 
+// O nono conceito, infraestrutura como código. O quiz dele (mesmo slug) passa a pagar o preço
+// deste mascote, e a economia continua fechando: acertar tudo paga a coleção inteira.
+const INFRASTRUCTURE_SLUG = "joao-de-barro-da-infraestrutura";
+
+const addInfrastructureMascot: Migration = {
+  name: "catalog_009_add_infrastructure_mascot",
+  async up(db) {
+    const lesson = MASCOT_LESSONS[INFRASTRUCTURE_SLUG];
+    if (lesson === undefined) {
+      throw new Error(`Lição do mascote ${INFRASTRUCTURE_SLUG} não encontrada`);
+    }
+    await db("products").insert({
+      slug: INFRASTRUCTURE_SLUG,
+      name: "João-de-barro da Infraestrutura",
+      concept: "Infraestrutura como código",
+      description:
+        "Descreve servidores e bancos em código para criar tudo igual, quantas vezes precisar.",
+      price_coins: 100,
+      stock: 1000,
+      image_path: `/images/mascots/${INFRASTRUCTURE_SLUG}.svg`,
+      lesson_explanation: lesson.explanation,
+      lesson_real_world: lesson.realWorld,
+      lesson_in_project: lesson.inProject,
+    });
+  },
+  async down(db) {
+    // Pedidos que já adotaram o mascote guardam nome e preço copiados: o histórico continua inteiro.
+    await db("products").where({ slug: INFRASTRUCTURE_SLUG }).delete();
+  },
+};
+
 export const catalogMigrations: Migration[] = [
   createProducts,
   insertInitialProducts,
@@ -343,4 +374,5 @@ export const catalogMigrations: Migration[] = [
   rewriteDescriptions,
   renameToDevLand,
   priceInCoins,
+  addInfrastructureMascot,
 ];

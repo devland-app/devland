@@ -5,8 +5,14 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
-  gap: 1.4rem;
+  --grid-gap: 1.4rem;
+  /* No máximo três por linha: cada coluna tem pelo menos um terço da linha (descontados os
+     espaços). Em telas estreitas vale o mínimo de 14rem, e cabem duas ou uma. */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(14rem, (100% - 2 * var(--grid-gap)) / 3)), 1fr)
+  );
+  gap: var(--grid-gap);
 }
 .quiz-grid > li {
   grid-row: span 4;

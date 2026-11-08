@@ -106,4 +106,18 @@ export const MASCOT_LESSONS: Record<string, MascotLesson> = {
       "o gitleaks procura segredos em cada pull request. E a loja segue a regra até no checkout: ela " +
       "nunca pede dados de cartão.",
   },
+  "joao-de-barro-da-infraestrutura": {
+    explanation:
+      "Infraestrutura como código é descrever em arquivos de texto tudo de que um sistema precisa " +
+      "para rodar: servidores, bancos de dados, redes e permissões. Uma ferramenta, como o " +
+      "Terraform, lê essa descrição, mostra o que vai mudar e cria tudo do mesmo jeito, quantas " +
+      "vezes for preciso. Nada de clicar em painéis e torcer para lembrar de cada passo.",
+    realWorld:
+      "É a planta de uma casa: com ela, qualquer equipe constrói a mesma casa, e uma reforma começa " +
+      "mudando o desenho, não quebrando parede no improviso.",
+    inProject:
+      "O projeto da Vercel (site e API) e o banco PostgreSQL no Neon, com um banco separado para os " +
+      "previews, são criados pelo Terraform a partir da pasta infra/. Antes de aplicar, o plan " +
+      "mostra o que vai mudar, e o estado e as chaves ficam fora do git.",
+  },
 };

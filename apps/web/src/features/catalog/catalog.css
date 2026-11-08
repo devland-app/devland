@@ -1,7 +1,13 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
-  gap: 1.6rem;
+  --grid-gap: 1.6rem;
+  /* No máximo três por linha: cada coluna tem pelo menos um terço da linha (descontados os
+     espaços). Em telas estreitas vale o mínimo de 15.5rem, e cabem duas ou uma. */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, max(15.5rem, (100% - 2 * var(--grid-gap)) / 3)), 1fr)
+  );
+  gap: var(--grid-gap);
 }
 
 /* Cada card ocupa cinco linhas da grade e usa as linhas dela (subgrid): imagem, nome, etiqueta,
