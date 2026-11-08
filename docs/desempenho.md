@@ -116,11 +116,98 @@ levam mais que no k6, que reaproveita a conexão. O 1,49 s inclui acordar a fun�
 Como acontece só depois de um período sem acesso, essa espera fica fora dos 95% mais rápidos de
 um uso normal, mas é o pior caso de quem chega a um site vazio.
 
+## Teste de carga (k6, 3 estágios)
+
+[`perf/load.js`](../perf/load.js) sobe a carga (15 s), sustenta no patamar (40 s) e desce (15 s), com
+o banco já cheio: 100 mil pedidos sintéticos, cerca de 70% pagos, e 200 carteiras
+([`perf/seed-orders.sql`](../perf/seed-orders.sql)). Cada usuário virtual faz o caminho de quem adota
+um mascote: vitrine, quizzes, um pedido antigo sorteado, um pedido novo e o pagamento dele.
+
+```bash
+docker compose up --build --wait db api
+docker compose --profile perf run --rm seed
+docker compose --profile perf run --rm k6 run /perf/load.js          # 800 usuários
+docker compose --profile perf run --rm -e VUS=1400 k6 run /perf/load.js
+```
+
+O teste grava no banco: rode só no compose, nunca em produção. Para não misturar com o banco de
+desenvolvimento, use outro projeto e outras portas (`docker compose -p devland-perf`, com `API_PORT`,
+`WEB_PORT` e `DB_PORT` diferentes), e apague depois com `down -v`.
+
+**Ambiente:** Docker Desktop no macOS, 15 CPUs e 7,7 GB, com API, banco e k6 na mesma máquina. Os
+números servem para comparar antes e depois, não como capacidade da produção. Cada rodada começou de
+um banco novo, com os 100 mil pedidos e um aquecimento de 200 usuários (o JIT do Node começa frio).
+
+### Como o gargalo foi encontrado
+
+1. **Subindo a carga** de 60 a 1.400 usuários, a vazão cresceu até cerca de 3.000 requisições por
+   segundo e parou: de 800 para 1.400 usuários, ela ficou igual, e a latência multiplicou por 9.
+2. **CPU dos containers no patamar:** API em cerca de 115% (um núcleo cheio, o Node atende em uma
+   thread), banco em 90% e k6 em 35%. O limite não era o gerador de carga.
+3. **Perfil de CPU da API** (`node --cpu-prof`): nenhuma função pesada. O tempo vai em escrita em
+   socket e no Knex, ou seja, na conversa com o banco.
+4. **`EXPLAIN ANALYZE`** com 191 mil pedidos: as consultas por id, por `Idempotency-Key` e de
+   pagamento usam índice e levam de 0,02 a 0,04 ms. O volume não era o problema.
+5. **`pg_stat_statements`** mostrou o culpado: um único comando somava 63% de todo o tempo de banco.
+
+```sql
+update "products" set "stock" = "stock" - $1 where "id" = $2 and "stock" >= $3
+-- 84.247 execuções, 41,8 s no total, 0,496 ms em média (as outras: de 0,009 a 0,038 ms)
+```
+
+**O gargalo era espera de trava numa linha quente.** Cada pagamento atualiza a linha de um mascote,
+são só 9 linhas, e a trava só é solta no fim da transação. A baixa de estoque vinha logo no começo,
+então a trava ficava presa durante todos os passos seguintes: débito, extrato, pagamento e pedido
+pago. Cada pagamento esperava os anteriores do mesmo mascote, ocupando uma das 10 conexões do pool.
+
+**A correção** foi mudar a ordem: a baixa de estoque passou a ser o último passo da transação. A
+regra não muda, porque continua tudo numa transação só: se o estoque falhar, o débito é desfeito. A
+ordem das travas continua igual para todos (pedido, carteira, mascotes em ordem de id), o que evita
+deadlock. A única diferença visível: sem moedas e com o mascote esgotado ao mesmo tempo, a resposta
+agora é 402 em vez de 409.
+
+### Antes e depois
+
+Uma rodada de cada, com 0 erro em todas.
+
+| 800 usuários (abaixo do limite) |    Antes |  Depois |
+| ------------------------------- | -------: | ------: |
+| p95 geral                       |  58,0 ms | 26,4 ms |
+| p95 `POST /orders/:id/payment`  | 101,3 ms | 36,7 ms |
+| p95 `POST /orders`              |  98,6 ms | 34,4 ms |
+| p95 `GET /orders/:id`           |  39,0 ms | 13,8 ms |
+| p95 `GET /products`             |  20,6 ms |  7,5 ms |
+| Requisições por segundo         |    2.868 |   3.040 |
+
+| 1.400 usuários (saturado)      |    Antes |   Depois |
+| ------------------------------ | -------: | -------: |
+| p95 geral                      | 397,6 ms | 416,8 ms |
+| p95 `POST /orders/:id/payment` | 417,7 ms | 496,9 ms |
+| Requisições por segundo        |    3.082 |    3.027 |
+
+| Banco, somando as duas cargas |    Antes |   Depois |
+| ----------------------------- | -------: | -------: |
+| Tempo na baixa de estoque     |   41,8 s |    2,5 s |
+| Média da baixa de estoque     | 0,496 ms | 0,029 ms |
+| Tempo total de banco          |   66,1 s |   26,7 s |
+
+A 800 usuários, o p95 caiu 55%, e até as leituras melhoraram, provavelmente porque deixaram de
+esperar por uma conexão ocupada. A 1.400 usuários não houve ganho: a diferença é pequena e veio de uma rodada só. Ali o
+limite já é outro.
+
+### O próximo gargalo
+
+O processo Node usa um núcleo e satura perto de 3.000 requisições por segundo, ainda dentro do SLO
+(p95 abaixo de 500 ms) e sem erros. Não apliquei `cluster` porque a produção não roda um processo só:
+a Vercel distribui as requisições entre instâncias da função. Nesse cenário, a tendência é a CPU deixar
+de ser o limite e a concorrência no banco crescer, e é aí que a correção da linha quente importa.
+
+O plano de p95 do projeto usa cache com tolerância na CDN (o catálogo com `s-maxage=30` e
+`stale-while-revalidate=300`). Fila não foi usada: o motivo está no
+[ADR 0003](adr/0003-pagamento-transacao-sem-fila.md).
+
 ## O que fica para depois
 
-- **Teste de carga com estágios** (subir, sustentar e descer a carga) e com volume de dados, para
-  achar o gargalo e medir o antes e o depois de uma otimização. O teste de fumaça mostra que o
-  sistema cumpre o SLO com pouca carga, não onde ele quebra.
 - **Rastreamento distribuído** (OpenTelemetry), útil quando uma requisição passa por vários
   serviços. Aqui ela passa por um processo e um banco, e a métrica por rota já aponta onde está a
   demora.

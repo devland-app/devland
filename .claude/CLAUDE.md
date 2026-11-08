@@ -33,6 +33,7 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
 | Gerar o contrato     | `npm run openapi -w @devland/api` (atualiza `docs/openapi.yaml`)                       |
 | Lint do contrato     | `npm run lint:openapi` (Redocly, regras em `redocly.yaml`)                             |
 | Teste de fumaça (k6) | `docker compose --profile perf run --rm k6` (SLO em `docs/desempenho.md`)              |
+| Teste de carga (k6)  | `docker compose --profile perf run --rm seed`, depois `... k6 run /perf/load.js`       |
 
 ## Arquitetura da API
 
@@ -88,8 +89,9 @@ Monorepo com npm workspaces, Node 22 (`.nvmrc`) e ESM em todo lugar (`"type": "m
   `src/shared/http.ts`); erros 5xx viram mensagem genérica e o detalhe vai só para o log.
 - O AJV rejeita campos desconhecidos (`removeAdditional: false`): campo extra no body é 400.
 - Pagamento (`POST /orders/{id}/payment`, body `{ walletId }`): `CoinsPaymentGateway` atrás da
-  interface `PaymentGateway` (Strategy). Trava o pedido (`FOR UPDATE`), baixa o estoque, debita as
-  moedas e marca como pago numa transação só. Saldo insuficiente recusa (402, "faltam N moedas") e
+  interface `PaymentGateway` (Strategy). Trava o pedido (`FOR UPDATE`), debita as moedas, marca como
+  pago e baixa o estoque por último (a linha do mascote é disputada: `docs/desempenho.md`), numa
+  transação só. Saldo insuficiente recusa (402, "faltam N moedas") e
   a tentativa recusada é gravada fora dela. Pagar de novo devolve o mesmo recibo, sem novo débito.
   O banco aceita um único pagamento aprovado por pedido. Pix e cartão simulados (`pix`,
   `toy_card`, `broke_toy_card`) só existem no histórico de pedidos antigos.
