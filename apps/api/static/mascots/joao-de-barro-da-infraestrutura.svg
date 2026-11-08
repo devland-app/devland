@@ -62,6 +62,7 @@
     <ellipse cx="170" cy="164" rx="13" ry="17" fill="#5d3a24"/>
   </g>
   <path d="M150 144 Q142 144 143 152 Q144 160 137 162 Q144 164 143 172 Q142 180 150 180 M190 144 Q198 144 197 152 Q196 160 203 162 Q196 164 197 172 Q198 180 190 180" fill="none" stroke="#fbe3c9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g class="act-peck">
   <g filter="url(#clay)">
     <path d="M58 146 L26 178 Q30 186 40 184 L74 160 Z" fill="#a9572a" stroke="#a9572a" stroke-width="6" stroke-linejoin="round"/>
   </g>
@@ -92,5 +93,6 @@
   <g filter="url(#clay)">
     <ellipse cx="78" cy="193" rx="9" ry="4.5" fill="#8d7b70"/>
     <ellipse cx="96" cy="193" rx="9" ry="4.5" fill="#8d7b70"/>
+  </g>
   </g>
 </svg>

@@ -31,6 +31,12 @@ describe("ilustrações dos mascotes", () => {
     expect(count(svg, /class="eye-happy"/g)).toBe(eyes);
   });
 
+  // A vitrine anima de vez em quando a parte que o desenho marca (classe act-*, em mascot-art.css).
+  it.each(files)("%s marca uma parte que se mexe na vitrine", (name) => {
+    const svg = readFileSync(new URL(name, IMAGES_DIR), "utf8");
+    expect(svg).toMatch(/class="act-(toss|pop|hop|sway|rewind|flutter|flash|unlock|peck)\b/);
+  });
+
   it.each(files)("%s não tem script nem atributo de evento", (name) => {
     const svg = readFileSync(new URL(name, IMAGES_DIR), "utf8");
     expect(svg).not.toMatch(/<script|<foreignObject|\son[a-z]+=|javascript:/i);

@@ -86,7 +86,7 @@
     <circle cx="135.5" cy="98.5" r="2.1" fill="#fff"/>
   </g>
   <path class="eye-happy" opacity="0" d="M132 103.75 Q138 95.7 144 103.75" fill="none" stroke="#2a1f35" stroke-width="2.6" stroke-linecap="round"/>
-  <g filter="url(#clay)">
+  <g class="act-unlock" filter="url(#clay)">
     <path d="M106 168 V158 Q106 146 118 146 Q130 146 130 158 V168" fill="none" stroke="#b0bec5" stroke-width="7" stroke-linecap="round"/>
   </g>
   <g filter="url(#clay)">
