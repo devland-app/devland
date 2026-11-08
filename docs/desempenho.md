@@ -203,9 +203,37 @@ O processo Node usa um núcleo e satura perto de 3.000 requisições por segundo
 a Vercel distribui as requisições entre instâncias da função. Nesse cenário, a tendência é a CPU deixar
 de ser o limite e a concorrência no banco crescer, e é aí que a correção da linha quente importa.
 
-O plano de p95 do projeto usa cache com tolerância na CDN (o catálogo com `s-maxage=30` e
-`stale-while-revalidate=300`). Fila não foi usada: o motivo está no
-[ADR 0003](adr/0003-pagamento-transacao-sem-fila.md).
+## Plano de p95
+
+O objetivo é o do SLO: 95% das requisições abaixo de 500 ms. O plano tem três partes.
+
+**1. Cache com tolerância, na CDN.** Na vitrine, um dado alguns segundos velho não prejudica ninguém,
+então o catálogo responde com `s-maxage=30, stale-while-revalidate=300`: a CDN serve a mesma resposta
+por 30 segundos e, depois disso, ainda por até 5 minutos enquanto busca uma nova em segundo plano. A
+vitrine continua respondendo sem acordar a função nem o banco.
+
+A tolerância tem limite: um preço ou estoque pode aparecer atrasado na vitrine, mas nunca vale na
+hora da compra. O preço do pedido vem do banco, o estoque é conferido ao criar o pedido e baixado no
+pagamento. Respostas de erro não entram no cache, e as ilustrações ficam guardadas por um ano, porque
+o endereço muda quando o desenho muda.
+
+**2. Idempotência em toda escrita que pode se repetir.** Clique duplo e nova tentativa da rede são o
+que uma fila teria de tratar, e já são tratados no banco, com índices únicos:
+
+| Repetição                         | Garantia                                           |
+| --------------------------------- | -------------------------------------------------- |
+| Mesmo pedido enviado de novo      | `Idempotency-Key` única: devolve o pedido já feito |
+| Mesmo acerto de quiz ou pagamento | Referência única no extrato: a carteira não mexe   |
+| Pagar o mesmo pedido duas vezes   | Um único pagamento aprovado por pedido             |
+
+**3. Fila: avaliada e descartada, por enquanto.** O pagamento é local, leva milissegundos e a pessoa
+precisa do resultado na hora, então uma fila só acrescentaria um broker e um worker sempre ligados,
+que não rodam numa função serverless. A decisão está no
+[ADR 0003](adr/0003-pagamento-transacao-sem-fila.md). Ela muda se o pagamento passar a depender de um
+sistema externo, e aí as garantias da tabela acima são o que torna o consumo da fila seguro.
+
+**Resultado medido:** p95 de 204 ms em produção no teste de fumaça e de 26 ms no teste de carga com
+800 usuários, ambos dentro do objetivo.
 
 ## Trace (OpenTelemetry e Jaeger)
 
