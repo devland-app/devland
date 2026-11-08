@@ -42,9 +42,9 @@ const BLINK_RHYTHMS: Record<Exclude<BlinkPace, "off">, Rhythm> = {
 
 // Animações da vitrine: raras e uma de cada vez na página, para enfeitar sem distrair.
 const SHOWCASE_RHYTHM: Rhythm = {
-  interval: [9000, 22000],
+  interval: [6000, 15000],
   duration: 1700,
-  minGap: 3500,
+  minGap: 2500,
   channel: { lastAt: Number.NEGATIVE_INFINITY },
 };
 
