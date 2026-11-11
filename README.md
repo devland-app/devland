@@ -1,4 +1,4 @@
-**Nível: A (avançado)**
+**Nível: B (simples)**
 
 # DevLand
 
