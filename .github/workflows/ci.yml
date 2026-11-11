@@ -126,6 +126,9 @@ jobs:
           tags: ${{ env.IMAGE }}:scan
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+          # A etapa final roda o apk upgrade. Vinda do cache, ela não pegava correções de segurança
+          # publicadas no Alpine depois do build anterior, e o Trivy reprovava um pacote já corrigido.
+          no-cache-filters: runtime
 
       - name: Escaneia vulnerabilidades da imagem (Trivy)
         uses: aquasecurity/trivy-action@v0.36.0
@@ -170,6 +173,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.app }}
+          no-cache-filters: runtime
 
   compose:
     name: Docker Compose (${{ matrix.arch }})
