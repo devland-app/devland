@@ -165,7 +165,10 @@ describe("adoção com moedas", () => {
     await user.click(cartButton());
     await user.click(within(cartDrawer()).getByRole("button", { name: "Pagar agora" }));
     const payment = await screen.findByRole("dialog", { name: "Adoção" });
-    expect(within(payment).getByText("Saldo depois")).toBeInTheDocument();
+    // Saldo igual ao total: o que sobra é 0, nunca "-0".
+    const balanceAfter = within(payment).getByText("Saldo depois").nextElementSibling;
+    expect(balanceAfter).toHaveTextContent("0 moedas");
+    expect(balanceAfter).not.toHaveTextContent("-");
     await user.click(within(payment).getByRole("button", { name: "Pagar 120 moedas" }));
     expect(
       await within(payment).findByRole("heading", { name: "Adoção concluída!" }, PAYMENT_TIMEOUT),

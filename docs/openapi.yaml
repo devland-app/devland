@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: DevLand API
-  version: 0.6.2
+  version: 0.6.3
   description: "API da DevLand: quizzes de DevOps rendem moedas virtuais, e as
     moedas adotam mascotes que explicam cada conceito. As moedas não valem
     dinheiro e nada é cobrado."
