@@ -240,6 +240,9 @@ function CoinPayment({ order, error, heading, onPay, onLater }: CoinPaymentProps
   const wallet = useWallet();
   const ready = wallet.status === "ready";
   const missing = order.totalCoins - wallet.balanceCoins;
+  // Calculado na ordem certa, e não como -missing: com saldo igual ao total, -missing dá -0, e a tela
+  // mostraria "-0" no caso mais comum da loja (as moedas fecham exatas com os preços).
+  const balanceAfter = wallet.balanceCoins - order.totalCoins;
 
   return (
     <div className="step">
@@ -261,7 +264,7 @@ function CoinPayment({ order, error, heading, onPay, onLater }: CoinPaymentProps
           <div>
             <dt>Saldo depois</dt>
             <dd>
-              <Coins value={-missing} />
+              <Coins value={balanceAfter} />
             </dd>
           </div>
         )}
